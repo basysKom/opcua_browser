@@ -11,7 +11,9 @@
 
 class AttributeModel;
 class OpcUaModel;
+class QAbstractItemModel;
 class QAbstractListModel;
+class QSortFilterProxyModel;
 
 class TreeItem : public QObject
 {
@@ -22,7 +24,7 @@ public:
     TreeItem(QOpcUaNode *node, OpcUaModel *model, const QOpcUaReferenceDescription &browsingData, TreeItem *parent);
     ~TreeItem();
 
-    QAbstractListModel *attributes() const noexcept;
+    QAbstractItemModel *attributes() const noexcept;
     QAbstractListModel *references() const noexcept;
     QAbstractListModel *monitoredAttributes() const noexcept;
 
@@ -55,10 +57,12 @@ private:
     TreeItem *mParentItem = nullptr;
 
     AttributeModel *mAttributeModel;
+    QSortFilterProxyModel *mSortedAttributeProxyModel;
     QMap<QOpcUa::NodeAttribute, Attribute> mAttributeList;
     QString mNodeBrowseName;
     QString mNodeId;
     QOpcUa::NodeClass mNodeClass = QOpcUa::NodeClass::Undefined;
+    bool mIsMonitored = false;
 };
 
 #endif // TREEITEM_H

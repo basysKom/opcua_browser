@@ -1,4 +1,5 @@
 #include <QColor>
+#include <QSortFilterProxyModel>
 
 #include <QOpcUaArgument>
 #include <QOpcUaAxisInformation>
@@ -195,8 +196,12 @@ TreeItem::TreeItem(QOpcUaNode *node, OpcUaModel *model, QOpcUa::NodeClass nodeCl
     , mModel(model)
     , mParentItem(parent)
     , mAttributeModel(new AttributeModel(this))
+    , mSortedAttributeProxyModel(new QSortFilterProxyModel(this))
     , mNodeClass(nodeClass)
 {
+    mSortedAttributeProxyModel->setSourceModel(mAttributeModel);
+    mSortedAttributeProxyModel->sort(0);
+
     connect(mOpcNode.get(), &QOpcUaNode::attributeRead, this, &TreeItem::handleAttributes);
     connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this, &TreeItem::handleAttributes);
     connect(mOpcNode.get(), &QOpcUaNode::browseFinished, this, &TreeItem::browseFinished);
@@ -217,9 +222,9 @@ TreeItem::~TreeItem()
     qDeleteAll(mChildItems);
 }
 
-QAbstractListModel *TreeItem::attributes() const noexcept
+QAbstractItemModel *TreeItem::attributes() const noexcept
 {
-    return mAttributeModel;
+    return mSortedAttributeProxyModel;
 }
 
 QAbstractListModel *TreeItem::references() const noexcept
