@@ -29,6 +29,7 @@ public:
 
     Q_INVOKABLE void setCurrentIndex(const QModelIndex &index);
     Q_INVOKABLE void refreshIndex(const QModelIndex &index);
+    Q_INVOKABLE void monitorIndex(const QModelIndex &index);
 
 private:
     QOpcUaClient *mOpcUaClient = nullptr;

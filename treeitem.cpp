@@ -286,6 +286,11 @@ bool TreeItem::canMonitored() const noexcept
     return (QOpcUa::NodeClass::Variable == mNodeClass);
 }
 
+bool TreeItem::isMonitored() const noexcept
+{
+    return mIsMonitored;
+}
+
 int TreeItem::row() const
 {
     if (!mParentItem)
@@ -327,6 +332,26 @@ void TreeItem::refreshAttributes()
     mAttributeList.clear();
     mAttributeList.insert(QOpcUa::NodeAttribute::NodeId, Attribute(QOpcUa::NodeAttribute::NodeId, mNodeId));
     readNodeClassSpecificAttributes(mOpcNode.get(), mNodeClass);
+}
+
+void TreeItem::enableMonitoring()
+{
+    QOpcUaMonitoringParameters p(100);
+    mOpcNode->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
+
+    connect(mOpcNode.get(), &QOpcUaNode::enableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
+        mIsMonitored = true;
+    });
+}
+
+void TreeItem::disableMonitoring()
+{
+    mOpcNode->disableMonitoring(QOpcUa::NodeAttribute::Value);
+
+    connect(mOpcNode.get(), &QOpcUaNode::disableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
+        mIsMonitored = false;
+    });
+
 }
 
 void TreeItem::startBrowsing()

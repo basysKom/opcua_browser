@@ -147,3 +147,14 @@ void OpcUaModel::refreshIndex(const QModelIndex &index)
         treeItem->refresh();
     }
 }
+
+void OpcUaModel::monitorIndex(const QModelIndex &index)
+{
+    if (!index.isValid())
+        return;
+
+    auto treeItem = static_cast<TreeItem*>(index.internalPointer());
+    if (nullptr != treeItem) {
+        treeItem->enableMonitoring();
+    }
+}

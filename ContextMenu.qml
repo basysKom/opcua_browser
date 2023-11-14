@@ -69,7 +69,7 @@ Popup {
                             BackEnd.opcUaModel.refreshIndex(contextMenu.currentTreeViewIndex)
                         } else if (1 === model.index) {
                             // monitor pressed
-
+                            BackEnd.opcUaModel.monitorIndex(contextMenu.currentTreeViewIndex)
                         }
 
                         contextMenu.close()

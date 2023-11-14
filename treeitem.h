@@ -39,8 +39,13 @@ public:
     const QString &displayName() const noexcept;
     const QColor &nodeClassColor() const noexcept;
     bool canMonitored() const noexcept;
+    bool isMonitored() const noexcept;
+
     void refresh();
     void refreshAttributes();
+
+    void enableMonitoring();
+    void disableMonitoring();
 
 private slots:
     void startBrowsing();
