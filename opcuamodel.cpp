@@ -8,7 +8,8 @@ enum Roles : int {
     AttributesRole,
     ReferencesRole,
     MonitoredAttributesRole,
-    SelectedRole
+    SelectedRole,
+    CanMonitoringRole
 };
 
 QHash<int, QByteArray> OpcUaModel::roleNames() const {
@@ -18,6 +19,7 @@ QHash<int, QByteArray> OpcUaModel::roleNames() const {
     names[ReferencesRole] = "references";
     names[MonitoredAttributesRole] = "monitoredAttributes";
     names[SelectedRole] = "isSelected";
+    names[CanMonitoringRole] = "canMonitoring";
     return names;
 }
 
@@ -63,6 +65,8 @@ QVariant OpcUaModel::data(const QModelIndex &index, int role) const
         return QVariant::fromValue<QObject *>(item->monitoredAttributes());
     case SelectedRole:
         return (index == mCurrentIndex);
+    case CanMonitoringRole:
+        return item->canMonitored();
     default:
         break;
     }
@@ -128,8 +132,9 @@ void OpcUaModel::setCurrentIndex(const QModelIndex &index)
 
     const auto lastCurrentIndex = mCurrentIndex;
     mCurrentIndex = index;
-    emit dataChanged(lastCurrentIndex, lastCurrentIndex, QList<int>() << SelectedRole);
     emit dataChanged(index, index, QList<int>() << SelectedRole);
+    if (lastCurrentIndex.isValid())
+        emit dataChanged(lastCurrentIndex, lastCurrentIndex, QList<int>() << SelectedRole);
 }
 
 void OpcUaModel::refreshIndex(const QModelIndex &index)

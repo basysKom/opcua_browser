@@ -29,13 +29,14 @@ public:
     TreeItem *child(int row);
     int childIndex(const TreeItem *child) const;
     int childCount();
-    const QString &displayName() const noexcept;
-    const QColor &nodeClassColor() const noexcept;
     int row() const;
     TreeItem *parentItem();
     void appendChild(TreeItem *child);
     bool hasChildNodeItem(const QString &nodeId) const;
 
+    const QString &displayName() const noexcept;
+    const QColor &nodeClassColor() const noexcept;
+    bool canMonitored() const noexcept;
     void refresh();
     void refreshAttributes();
 

@@ -8,6 +8,7 @@ Popup {
     modal: true
 
     property var currentTreeViewIndex
+    property bool showMonitoringItem: false;
 
     implicitWidth: contentItem.childrenRect.width
     implicitHeight: contentItem.childrenRect.height
@@ -53,8 +54,10 @@ Popup {
             clip: true
 
             delegate: Item {
-                height: 30
+                height: visible ? 30 : 0
                 width: 200
+                // hide Monitor item, if monitoring is not supported for node class
+                visible: contextMenu.showMonitoringItem || (1 !== index)
 
                 MouseArea {
                     anchors.fill: parent

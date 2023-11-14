@@ -276,6 +276,11 @@ const QColor &TreeItem::nodeClassColor() const noexcept
     return defaultColor;
 }
 
+bool TreeItem::canMonitored() const noexcept
+{
+    return (QOpcUa::NodeClass::Variable == mNodeClass);
+}
+
 int TreeItem::row() const
 {
     if (!mParentItem)

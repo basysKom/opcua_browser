@@ -64,7 +64,8 @@ Item {
                         contextMenu.y = yPos
                     }
 
-                    contextMenu.currentTreeViewIndex = treeView.index(row, column)
+                    contextMenu.currentTreeViewIndex = treeView.index(row, column);
+                    contextMenu.showMonitoringItem = model.canMonitoring;
                     contextMenu.open();
                 }
             }
