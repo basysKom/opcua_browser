@@ -26,7 +26,7 @@ Item {
         anchors.right: parent.right
         anchors.top: tabBar.bottom
         anchors.bottom: parent.bottom
-        visible: BackEnd.isConnected
+        visible: tabBar.visible
 
         currentIndex: tabBar.currentIndex
         BrowserView {

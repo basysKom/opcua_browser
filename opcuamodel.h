@@ -9,16 +9,19 @@
 
 #include "treeitem.h"
 
+class MonitoredItemModel;
+
 class OpcUaModel : public QAbstractItemModel
 {
     Q_OBJECT
-    QML_ELEMENT
 
 public:
     explicit OpcUaModel(QObject *parent = nullptr);
 
     void setOpcUaClient(QOpcUaClient *client);
-    QOpcUaClient* opcUaClient() const;
+    QOpcUaClient *opcUaClient() const noexcept;
+
+    MonitoredItemModel *monitoredItemModel() const noexcept;
 
     virtual QHash<int, QByteArray> roleNames() const override;
     virtual QVariant data(const QModelIndex &index, int role) const override;
@@ -33,6 +36,7 @@ public:
 
 private:
     QOpcUaClient *mOpcUaClient = nullptr;
+    MonitoredItemModel *mMonitoredItemModel = nullptr;
     std::unique_ptr<TreeItem> mRootItem;
     QModelIndex mCurrentIndex = QModelIndex();
 

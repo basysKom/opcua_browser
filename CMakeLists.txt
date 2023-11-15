@@ -24,7 +24,6 @@ qt_add_qml_module(appOPC_UA_Browser
               DashboardView.qml
               NodeAttributeList.qml
               NodeDetailView.qml
-              NodeMonitoringList.qml
               NodeReferenceList.qml
               NodesView.qml
               StyledScrollBar.qml
@@ -32,13 +31,15 @@ qt_add_qml_module(appOPC_UA_Browser
     SOURCES attribute.h attribute.cpp
     SOURCES attributemodel.h attributemodel.cpp
     SOURCES backend.h backend.cpp
+    SOURCES monitoreditemmodel.h monitoreditemmodel.cpp
     SOURCES opcuamodel.h opcuamodel.cpp
     SOURCES treeitem.h treeitem.cpp
 )
 
 qt_add_resources(appOPC_UA_Browser "icons"
     PREFIX "/"
-    FILES icons/eye.png
+    FILES icons/delete.png
+          icons/eye.png
           icons/refresh.png)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

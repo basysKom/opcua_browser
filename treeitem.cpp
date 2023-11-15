@@ -14,6 +14,7 @@
 #include "treeitem.h"
 #include "opcuamodel.h"
 #include "attributemodel.h"
+#include "monitoreditemmodel.h"
 
 static constexpr QOpcUa::NodeAttributes objectAttributes = QOpcUa::NodeAttribute::EventNotifier;
 static constexpr QOpcUa::NodeAttributes variableAttributes = QOpcUa::NodeAttribute::Value | QOpcUa::NodeAttribute::DataType | QOpcUa::NodeAttribute::ValueRank
@@ -219,6 +220,7 @@ TreeItem::TreeItem(QOpcUaNode *node, OpcUaModel *model, const QOpcUaReferenceDes
 
 TreeItem::~TreeItem()
 {
+    mModel->monitoredItemModel()->removeItem(this);
     qDeleteAll(mChildItems);
 }
 
@@ -228,11 +230,6 @@ QAbstractItemModel *TreeItem::attributes() const noexcept
 }
 
 QAbstractListModel *TreeItem::references() const noexcept
-{
-    return nullptr;
-}
-
-QAbstractListModel *TreeItem::monitoredAttributes() const noexcept
 {
     return nullptr;
 }
@@ -281,14 +278,14 @@ const QColor &TreeItem::nodeClassColor() const noexcept
     return defaultColor;
 }
 
+QString TreeItem::value() const noexcept
+{
+    return mValue;
+}
+
 bool TreeItem::canMonitored() const noexcept
 {
     return (QOpcUa::NodeClass::Variable == mNodeClass);
-}
-
-bool TreeItem::isMonitored() const noexcept
-{
-    return mIsMonitored;
 }
 
 int TreeItem::row() const
@@ -340,7 +337,8 @@ void TreeItem::enableMonitoring()
     mOpcNode->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
 
     connect(mOpcNode.get(), &QOpcUaNode::enableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
-        mIsMonitored = true;
+        qDebug() << "enableMonitoring" << attr << statusCode;
+        mModel->monitoredItemModel()->addItem(this);
     });
 }
 
@@ -349,7 +347,8 @@ void TreeItem::disableMonitoring()
     mOpcNode->disableMonitoring(QOpcUa::NodeAttribute::Value);
 
     connect(mOpcNode.get(), &QOpcUaNode::disableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
-        mIsMonitored = false;
+        qDebug() << "disableMonitoring" << attr << statusCode;
+        mModel->monitoredItemModel()->removeItem(this);
     });
 
 }
@@ -416,7 +415,9 @@ void TreeItem::handleAttributes(QOpcUa::NodeAttributes attr)
     if (attr & QOpcUa::NodeAttribute::Value) {
         const QString type = mOpcNode->attribute(QOpcUa::NodeAttribute::DataType).toString();
         const QVariant value = mOpcNode->attribute(QOpcUa::NodeAttribute::Value);
-        mAttributeList.insert(QOpcUa::NodeAttribute::Value, Attribute(QOpcUa::NodeAttribute::Value, variantToString(value, type)));
+        mValue = variantToString(value, type);
+        mAttributeList.insert(QOpcUa::NodeAttribute::Value, Attribute(QOpcUa::NodeAttribute::Value, mValue));
+        mModel->monitoredItemModel()->valueChanged(this);
     }
     if (attr & QOpcUa::NodeAttribute::DataType) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::DataType).toString();

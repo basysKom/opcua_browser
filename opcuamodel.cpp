@@ -1,13 +1,14 @@
 #include <QColor>
 
+#include "monitoreditemmodel.h"
 #include "opcuamodel.h"
 #include "treeitem.h"
 
 enum Roles : int {
     ColorRole = Qt::UserRole,
+    ValueRole,
     AttributesRole,
     ReferencesRole,
-    MonitoredAttributesRole,
     SelectedRole,
     CanMonitoringRole
 };
@@ -15,9 +16,9 @@ enum Roles : int {
 QHash<int, QByteArray> OpcUaModel::roleNames() const {
     auto names = QAbstractItemModel::roleNames();
     names[ColorRole] = "color";
+    names[ValueRole] = "value";
     names[AttributesRole] = "attributes";
     names[ReferencesRole] = "references";
-    names[MonitoredAttributesRole] = "monitoredAttributes";
     names[SelectedRole] = "isSelected";
     names[CanMonitoringRole] = "canMonitoring";
     return names;
@@ -25,6 +26,7 @@ QHash<int, QByteArray> OpcUaModel::roleNames() const {
 
 OpcUaModel::OpcUaModel(QObject *parent)
     : QAbstractItemModel{parent}
+    , mMonitoredItemModel(new MonitoredItemModel(this))
 {
 
 }
@@ -40,9 +42,14 @@ void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
     endResetModel();
 }
 
-QOpcUaClient *OpcUaModel::opcUaClient() const
+QOpcUaClient *OpcUaModel::opcUaClient() const noexcept
 {
     return mOpcUaClient;
+}
+
+MonitoredItemModel *OpcUaModel::monitoredItemModel() const noexcept
+{
+    return mMonitoredItemModel;
 }
 
 QVariant OpcUaModel::data(const QModelIndex &index, int role) const
@@ -57,12 +64,12 @@ QVariant OpcUaModel::data(const QModelIndex &index, int role) const
         return item->displayName();
     case ColorRole:
         return item->nodeClassColor();
+    case ValueRole:
+        return item->value();
     case AttributesRole:
         return QVariant::fromValue<QObject *>(item->attributes());
     case ReferencesRole:
         return QVariant::fromValue<QObject *>(item->references());
-    case MonitoredAttributesRole:
-        return QVariant::fromValue<QObject *>(item->monitoredAttributes());
     case SelectedRole:
         return (index == mCurrentIndex);
     case CanMonitoringRole:

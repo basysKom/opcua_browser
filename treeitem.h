@@ -26,7 +26,6 @@ public:
 
     QAbstractItemModel *attributes() const noexcept;
     QAbstractListModel *references() const noexcept;
-    QAbstractListModel *monitoredAttributes() const noexcept;
 
     TreeItem *child(int row);
     int childIndex(const TreeItem *child) const;
@@ -38,8 +37,8 @@ public:
 
     const QString &displayName() const noexcept;
     const QColor &nodeClassColor() const noexcept;
+    QString value() const noexcept;
     bool canMonitored() const noexcept;
-    bool isMonitored() const noexcept;
 
     void refresh();
     void refreshAttributes();
@@ -67,7 +66,7 @@ private:
     QString mNodeBrowseName;
     QString mNodeId;
     QOpcUa::NodeClass mNodeClass = QOpcUa::NodeClass::Undefined;
-    bool mIsMonitored = false;
+    QString mValue;
 };
 
 #endif // TREEITEM_H

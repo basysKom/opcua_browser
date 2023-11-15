@@ -5,7 +5,6 @@ Item {
     id: root
     property var attributes
     property var references
-    property var monitoredAttributes
 
     ContextMenu {
         id: contextMenu
@@ -45,7 +44,6 @@ Item {
                     treeView.toggleExpanded(row)
                     root.attributes = model.attributes
                     root.references = model.references
-                    root.monitoredAttributes = model.monitoredAttributes
                     BackEnd.opcUaModel.setCurrentIndex(treeView.index(row, column))
                 }
 

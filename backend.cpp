@@ -5,6 +5,7 @@
 #include <QOpcUaAuthenticationInformation>
 
 #include "backend.h"
+#include "monitoreditemmodel.h"
 #include "opcuamodel.h"
 
 static bool copyDirRecursively(const QString &from, const QString &to)
@@ -80,6 +81,11 @@ QVector<QString> BackEnd::endpointList() const
 OpcUaModel *BackEnd::opcUaModel() const noexcept
 {
     return mOpcUaModel;
+}
+
+QAbstractItemModel *BackEnd::monitoredItemModel() const noexcept
+{
+    return mOpcUaModel->monitoredItemModel();
 }
 
 void BackEnd::clearServerList()
