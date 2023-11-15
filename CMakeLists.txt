@@ -17,9 +17,11 @@ qt_add_qml_module(appOPC_UA_Browser
     URI OPC_UA_Browser
     VERSION 1.0
     QML_FILES Main.qml
+              BrowserView.qml
               ConnectionView.qml
               ContentView.qml
               ContextMenu.qml
+              DashboardView.qml
               NodeAttributeList.qml
               NodeDetailView.qml
               NodeMonitoringList.qml

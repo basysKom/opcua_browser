@@ -1,28 +1,39 @@
 import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
 
-Rectangle {
-    id: root
-    color: "#FFBC42"
-    clip: true
-
-    NodesView {
-        id: nodesView
+Item {    
+    TabBar {
+        id: tabBar
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.bottom: nodeDetailView.top
+        visible: BackEnd.isConnected
+
+        background: Rectangle {
+            color: "transparent"
+        }
+
+        Repeater {
+            model: ["Browser", "Dashboard"/*, "Log"*/]
+            StyledTabButton { text: modelData }
+        }
     }
 
-    NodeDetailView {
-        id: nodeDetailView
+    StackLayout {
+        id: stackLayout
         anchors.left: parent.left
         anchors.right: parent.right
+        anchors.top: tabBar.bottom
         anchors.bottom: parent.bottom
         visible: BackEnd.isConnected
-        height: 200
 
-        attributes: nodesView.attributes
-        references: nodesView.references
-        monitoredAttributes: nodesView.monitoredAttributes
+        currentIndex: tabBar.currentIndex
+        BrowserView {
+            id: browserTab
+        }
+        DashboardView {
+            id: dashboardTab
+        }
     }
 }

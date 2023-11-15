@@ -6,7 +6,6 @@ Item {
     id: root
     property alias attributes: attributesTab.attributes
     property alias references: referencesTab.references
-    property alias monitoredAttributes: monitoringTab.monitoredAttributes
 
     TabBar {
         id: tabBar
@@ -20,7 +19,7 @@ Item {
         }
 
         Repeater {
-            model: ["Attributes", "References", "Monitoring"/*, "Log"*/]
+            model: ["Attributes", "References"]
             StyledTabButton { text: modelData }
         }
     }
@@ -40,9 +39,6 @@ Item {
         }
         NodeReferenceList {
             id: referencesTab
-        }
-        NodeMonitoringList {
-            id: monitoringTab
         }
     }
 }
