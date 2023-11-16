@@ -33,6 +33,7 @@ OpcUaModel::OpcUaModel(QObject *parent)
 
 void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
 {
+    mCurrentIndex = QModelIndex();
     beginResetModel();
     mOpcUaClient = client;
     if (mOpcUaClient)
