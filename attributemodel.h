@@ -15,7 +15,9 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 
+    void setAttribute(QOpcUa::NodeAttribute attribute, const QString &value);
     void setAttributes(const QList<Attribute> &attributes);
+    void clearAttributes();
 
 private:
     QList<Attribute> mAttributes;

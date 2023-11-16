@@ -9,18 +9,29 @@ static QString nodeAttributeToString(QOpcUa::NodeAttribute attribute)
 }
 
 Attribute::Attribute(QOpcUa::NodeAttribute attribute, const QString &value)
-    : mAttribute(nodeAttributeToString(attribute))
+    : mAttribute(attribute)
+    , mAttributeName(nodeAttributeToString(attribute))
     , mValue(value)
 {
 
 }
 
-const QString &Attribute::attribute() const noexcept
+QOpcUa::NodeAttribute Attribute::attribute() const noexcept
 {
     return mAttribute;
+}
+
+const QString &Attribute::attributeName() const noexcept
+{
+    return mAttributeName;
 }
 
 const QString &Attribute::value() const noexcept
 {
     return mValue;
+}
+
+void Attribute::setValue(const QString &value)
+{
+    mValue = value;
 }

@@ -326,8 +326,8 @@ void TreeItem::refresh()
 
 void TreeItem::refreshAttributes()
 {
-    mAttributeList.clear();
-    mAttributeList.insert(QOpcUa::NodeAttribute::NodeId, Attribute(QOpcUa::NodeAttribute::NodeId, mNodeId));
+    mAttributeModel->clearAttributes();
+    mAttributeModel->setAttribute(QOpcUa::NodeAttribute::NodeId, mNodeId);
     readNodeClassSpecificAttributes(mOpcNode.get(), mNodeClass);
 }
 
@@ -364,101 +364,99 @@ void TreeItem::startBrowsing()
         mBrowseStarted = true;
 }
 
-void TreeItem::handleAttributes(QOpcUa::NodeAttributes attr)
+void TreeItem::handleAttributes(const QOpcUa::NodeAttributes &attr)
 {
     if (attr & QOpcUa::NodeAttribute::NodeClass) {
         mNodeClass = mOpcNode->attribute(QOpcUa::NodeAttribute::NodeClass).value<QOpcUa::NodeClass>();
         const QMetaEnum metaEnum = QMetaEnum::fromType<QOpcUa::NodeClass>();
-        mAttributeList.insert(QOpcUa::NodeAttribute::NodeClass, Attribute(QOpcUa::NodeAttribute::NodeClass, metaEnum.valueToKey(int(mNodeClass))));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::NodeClass, metaEnum.valueToKey(int(mNodeClass)));
     }
     if (attr & QOpcUa::NodeAttribute::BrowseName) {
         mNodeBrowseName = mOpcNode->attribute(QOpcUa::NodeAttribute::BrowseName).value<QOpcUaQualifiedName>().name();
-        mAttributeList.insert(QOpcUa::NodeAttribute::BrowseName, Attribute(QOpcUa::NodeAttribute::BrowseName, mNodeBrowseName));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::BrowseName, mNodeBrowseName);
     }
     if (attr & QOpcUa::NodeAttribute::DisplayName) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::DisplayName).value<QOpcUaLocalizedText>().text();
-        mAttributeList.insert(QOpcUa::NodeAttribute::DisplayName, Attribute(QOpcUa::NodeAttribute::DisplayName, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::DisplayName, value);
     }
     if (attr & QOpcUa::NodeAttribute::Description) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::Description).value<QOpcUaLocalizedText>().text();
-        mAttributeList.insert(QOpcUa::NodeAttribute::Description, Attribute(QOpcUa::NodeAttribute::Description, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Description, value);
     }
     if (attr & QOpcUa::NodeAttribute::WriteMask) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::WriteMask).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::WriteMask, Attribute(QOpcUa::NodeAttribute::WriteMask, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::WriteMask, value);
     }
     if (attr & QOpcUa::NodeAttribute::UserWriteMask) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::UserWriteMask).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::UserWriteMask, Attribute(QOpcUa::NodeAttribute::UserWriteMask, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::UserWriteMask, value);
     }
     if (attr & QOpcUa::NodeAttribute::IsAbstract) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::IsAbstract).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::IsAbstract, Attribute(QOpcUa::NodeAttribute::IsAbstract, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::IsAbstract, value);
     }
     if (attr & QOpcUa::NodeAttribute::Symmetric) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::Symmetric).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::Symmetric, Attribute(QOpcUa::NodeAttribute::Symmetric, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Symmetric, value);
     }
     if (attr & QOpcUa::NodeAttribute::InverseName) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::InverseName).value<QOpcUaLocalizedText>().text();
-        mAttributeList.insert(QOpcUa::NodeAttribute::InverseName, Attribute(QOpcUa::NodeAttribute::InverseName, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::InverseName, value);
     }
     if (attr & QOpcUa::NodeAttribute::ContainsNoLoops) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::ContainsNoLoops).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::ContainsNoLoops, Attribute(QOpcUa::NodeAttribute::ContainsNoLoops, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::ContainsNoLoops, value);
     }
     if (attr & QOpcUa::NodeAttribute::EventNotifier) {
         const quint32 byte = mOpcNode->attribute(QOpcUa::NodeAttribute::EventNotifier).toUInt();
         const QString value = QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
-        mAttributeList.insert(QOpcUa::NodeAttribute::EventNotifier, Attribute(QOpcUa::NodeAttribute::EventNotifier, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::EventNotifier, value);
     }
     if (attr & QOpcUa::NodeAttribute::Value) {
         const QString type = mOpcNode->attribute(QOpcUa::NodeAttribute::DataType).toString();
         const QVariant value = mOpcNode->attribute(QOpcUa::NodeAttribute::Value);
         mValue = variantToString(value, type);
-        mAttributeList.insert(QOpcUa::NodeAttribute::Value, Attribute(QOpcUa::NodeAttribute::Value, mValue));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Value, mValue);
         mModel->monitoredItemModel()->valueChanged(this);
     }
     if (attr & QOpcUa::NodeAttribute::DataType) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::DataType).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::DataType, Attribute(QOpcUa::NodeAttribute::DataType, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::DataType, value);
     }
     if (attr & QOpcUa::NodeAttribute::ValueRank) {
         const QString value = QString::number(mOpcNode->attribute(QOpcUa::NodeAttribute::ValueRank).toInt());
-        mAttributeList.insert(QOpcUa::NodeAttribute::ValueRank, Attribute(QOpcUa::NodeAttribute::ValueRank, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::ValueRank, value);
     }
     if (attr & QOpcUa::NodeAttribute::ArrayDimensions) {
         const QString value = QString::number(mOpcNode->attribute(QOpcUa::NodeAttribute::ArrayDimensions).toUInt());
-        mAttributeList.insert(QOpcUa::NodeAttribute::ArrayDimensions, Attribute(QOpcUa::NodeAttribute::ArrayDimensions, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::ArrayDimensions, value);
     }
     if (attr & QOpcUa::NodeAttribute::AccessLevel) {
         const quint32 byte = mOpcNode->attribute(QOpcUa::NodeAttribute::AccessLevel).toUInt();
         const QString value = QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
-        mAttributeList.insert(QOpcUa::NodeAttribute::AccessLevel, Attribute(QOpcUa::NodeAttribute::AccessLevel, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::AccessLevel, value);
     }
     if (attr & QOpcUa::NodeAttribute::UserAccessLevel) {
         const quint32 byte = mOpcNode->attribute(QOpcUa::NodeAttribute::UserAccessLevel).toUInt();
         const QString value = QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
-        mAttributeList.insert(QOpcUa::NodeAttribute::UserAccessLevel, Attribute(QOpcUa::NodeAttribute::UserAccessLevel, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::UserAccessLevel, value);
     }
     if (attr & QOpcUa::NodeAttribute::MinimumSamplingInterval) {
         const QString value = QString::number(mOpcNode->attribute(QOpcUa::NodeAttribute::MinimumSamplingInterval).toDouble());
-        mAttributeList.insert(QOpcUa::NodeAttribute::MinimumSamplingInterval, Attribute(QOpcUa::NodeAttribute::MinimumSamplingInterval, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::MinimumSamplingInterval, value);
     }
     if (attr & QOpcUa::NodeAttribute::Historizing) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::Historizing).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::Historizing, Attribute(QOpcUa::NodeAttribute::Historizing, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Historizing, value);
     }
     if (attr & QOpcUa::NodeAttribute::Executable) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::Executable).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::Executable, Attribute(QOpcUa::NodeAttribute::Executable, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Executable, value);
     }
     if (attr & QOpcUa::NodeAttribute::UserExecutable) {
         const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::UserExecutable).toString();
-        mAttributeList.insert(QOpcUa::NodeAttribute::UserExecutable, Attribute(QOpcUa::NodeAttribute::UserExecutable, value));
+        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::UserExecutable, value);
     }
-
-    mAttributeModel->setAttributes(mAttributeList.values());
 
     mAttributesReady = true;
     emit mModel->dataChanged(mModel->createIndex(row(), 0, this), mModel->createIndex(row(), 0, this));

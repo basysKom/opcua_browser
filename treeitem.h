@@ -7,8 +7,6 @@
 
 #include <QOpcUaNode>
 
-#include "attribute.h"
-
 class AttributeModel;
 class OpcUaModel;
 class QAbstractItemModel;
@@ -48,7 +46,7 @@ public:
 
 private slots:
     void startBrowsing();
-    void handleAttributes(QOpcUa::NodeAttributes attr);
+    void handleAttributes(const QOpcUa::NodeAttributes &attr);
     void browseFinished(const QList<QOpcUaReferenceDescription> &children, QOpcUa::UaStatusCode statusCode);
 
 private:
@@ -62,7 +60,6 @@ private:
 
     AttributeModel *mAttributeModel;
     QSortFilterProxyModel *mSortedAttributeProxyModel;
-    QMap<QOpcUa::NodeAttribute, Attribute> mAttributeList;
     QString mNodeBrowseName;
     QString mNodeId;
     QOpcUa::NodeClass mNodeClass = QOpcUa::NodeClass::Undefined;

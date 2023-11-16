@@ -31,7 +31,7 @@ QVariant AttributeModel::data(const QModelIndex &index, int role) const
 
     switch (role) {
     case AttributeRole:
-        return mAttributes[index.row()].attribute();
+        return mAttributes[index.row()].attributeName();
     case ValueRole:
         return mAttributes[index.row()].value();
     }
@@ -39,9 +39,32 @@ QVariant AttributeModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+void AttributeModel::setAttribute(QOpcUa::NodeAttribute attribute, const QString &value)
+{
+    auto it = std::find_if(mAttributes.begin(), mAttributes.end(), [&](Attribute attr) { return (attr.attribute() == attribute); });
+    if (it == mAttributes.end()) {
+        int count = mAttributes.size();
+        beginInsertRows(QModelIndex(), count, count);
+        mAttributes << Attribute(attribute, value);
+        endInsertRows();
+    } else {
+        it->setValue(value);
+        const int index = std::distance(mAttributes.begin(), it);
+        const QModelIndex modelIndex = this->index(index);
+        emit dataChanged(modelIndex, modelIndex, QList<int>() << ValueRole);
+    }
+}
+
 void AttributeModel::setAttributes(const QList<Attribute> &attributes)
 {
     beginResetModel();
     mAttributes = attributes;
+    endResetModel();
+}
+
+void AttributeModel::clearAttributes()
+{
+    beginResetModel();
+    mAttributes.clear();
     endResetModel();
 }

@@ -9,11 +9,15 @@ class Attribute
 public:
     Attribute(QOpcUa::NodeAttribute attribute, const QString &value);
 
-    const QString &attribute() const noexcept;
+    QOpcUa::NodeAttribute attribute() const noexcept;
+    const QString &attributeName() const noexcept;
     const QString &value() const noexcept;
 
+    void setValue(const QString &value);
+
 private:
-    QString mAttribute;
+    QOpcUa::NodeAttribute mAttribute;
+    QString mAttributeName;
     QString mValue;
 };
 
