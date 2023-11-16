@@ -243,32 +243,9 @@ void BackEnd::clientState(QOpcUaClient::ClientState state)
 void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
 {
     const QString statuscode = QOpcUa::statusToString(errorState->errorCode());
-    QString msg = errorState->isClientSideError() ? tr("The client reported: ") : tr("The server reported: ");
-
-    switch (errorState->connectionStep()) {
-    case QOpcUaErrorState::ConnectionStep::Unknown:
-        break;
-    case QOpcUaErrorState::ConnectionStep::CertificateValidation: {
-        //CertificateDialog dlg(this);
-        //msg += tr("Server certificate validation failed with error 0x%1 (%2).\nClick 'Abort' to abort the connect, or 'Ignore' to continue connecting.")
-        //           .arg(static_cast<ulong>(errorState->errorCode()), 8, 16, QLatin1Char('0')).arg(statuscode);
-        //int result = dlg.showCertificate(msg, m_endpoint.serverCertificate(), m_pkiConfig.trustListDirectory());
-        //errorState->setIgnoreError(result == 1);
-        break;
-    }
-    case QOpcUaErrorState::ConnectionStep::OpenSecureChannel:
-        msg += tr("OpenSecureChannel failed with error 0x%1 (%2).").arg(errorState->errorCode(), 8, 16, QLatin1Char('0')).arg(statuscode);
-        setState(tr("Connection Error") % "\n" % msg);
-        break;
-    case QOpcUaErrorState::ConnectionStep::CreateSession:
-        msg += tr("CreateSession failed with error 0x%1 (%2).").arg(errorState->errorCode(), 8, 16, QLatin1Char('0')).arg(statuscode);
-        setState(tr("Connection Error") % "\n" % msg);
-        break;
-    case QOpcUaErrorState::ConnectionStep::ActivateSession:
-        msg += tr("ActivateSession failed with error 0x%1 (%2).").arg(errorState->errorCode(), 8, 16, QLatin1Char('0')).arg(statuscode);
-        setState(tr("Connection Error") % "\n" % msg);
-        break;
-    }
+    const QString msg = errorState->isClientSideError() ? tr("The client reported: ") : tr("The server reported: ");
+    setState(tr("Connection Error") % "\n" % msg
+             % QStringLiteral("0x%1 (%2)").arg(errorState->errorCode(), 8, 16, QLatin1Char('0')).arg(statuscode));
 }
 
 void BackEnd::createClient()
@@ -276,7 +253,8 @@ void BackEnd::createClient()
     if (mOpcUaClient == nullptr) {
         mOpcUaClient = mOpcUaProvider->createClient("open62541");
         if (!mOpcUaClient) {
-            setState(QStringLiteral("Failed to connect to server"));
+            const QString message(tr("A possible cause could be that the backend could not be loaded as a plugin."));
+            setState(QStringLiteral("Failed to connect to server") % "\n" % message);
             return;
         }
 

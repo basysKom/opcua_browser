@@ -69,14 +69,13 @@ void readNodeClassSpecificAttributes(QOpcUaNode *node, QOpcUa::NodeClass nodeCla
 template <typename T>
 QString numberArrayToString(const QList<T> &vec)
 {
-    QString list(QLatin1Char('['));
-    for (int i = 0, size = vec.size(); i < size; ++i) {
-        if (i)
-            list.append(QLatin1Char(';'));
-        list.append(QString::number(vec.at(i)));
+    QStringList list;
+    list.reserve(vec.size());
+    for (const auto &i : vec) {
+        list << QString::number(i);
     }
-    list.append(QLatin1Char(']'));
-    return list;
+
+    return QStringLiteral("[%1]").arg(list.join(';'));
 }
 
 QString localizedTextToString(const QOpcUaLocalizedText &text)
@@ -363,98 +362,75 @@ void TreeItem::startBrowsing()
         mBrowseStarted = true;
 }
 
-void TreeItem::handleAttributes(const QOpcUa::NodeAttributes &attr)
+QString getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr, const QVariant &value)
 {
-    if (attr & QOpcUa::NodeAttribute::NodeClass) {
-        mNodeClass = mOpcNode->attribute(QOpcUa::NodeAttribute::NodeClass).value<QOpcUa::NodeClass>();
+    switch(attr) {
+    case QOpcUa::NodeAttribute::NodeClass: {
+        const auto nodeClass = node->attribute(attr).value<QOpcUa::NodeClass>();
         const QMetaEnum metaEnum = QMetaEnum::fromType<QOpcUa::NodeClass>();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::NodeClass, metaEnum.valueToKey(int(mNodeClass)));
+        return metaEnum.valueToKey(int(nodeClass));
     }
-    if (attr & QOpcUa::NodeAttribute::BrowseName) {
-        mNodeBrowseName = mOpcNode->attribute(QOpcUa::NodeAttribute::BrowseName).value<QOpcUaQualifiedName>().name();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::BrowseName, mNodeBrowseName);
+    case QOpcUa::NodeAttribute::BrowseName:
+        return node->attribute(attr).value<QOpcUaQualifiedName>().name();
+    case QOpcUa::NodeAttribute::DisplayName: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::Description: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::InverseName:
+        return node->attribute(attr).value<QOpcUaLocalizedText>().text();
+    case QOpcUa::NodeAttribute::NodeId: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::WriteMask: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::UserWriteMask: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::IsAbstract: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::Symmetric: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::ContainsNoLoops: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::DataType: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::Historizing: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::Executable: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::UserExecutable:
+        return node->attribute(attr).toString();
+    case QOpcUa::NodeAttribute::ValueRank:
+        return QString::number(node->attribute(attr).toInt());
+    case QOpcUa::NodeAttribute::ArrayDimensions:
+        return QString::number(node->attribute(attr).toUInt());
+    case QOpcUa::NodeAttribute::MinimumSamplingInterval:
+        return QString::number(node->attribute(attr).toDouble());
+    case QOpcUa::NodeAttribute::EventNotifier: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::AccessLevel: Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::UserAccessLevel: {
+        const quint32 byte = node->attribute(attr).toUInt();
+        return QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
     }
-    if (attr & QOpcUa::NodeAttribute::DisplayName) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::DisplayName).value<QOpcUaLocalizedText>().text();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::DisplayName, value);
+    case QOpcUa::NodeAttribute::Value: {
+        const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();
+        const QVariant attrValue = node->attribute(attr);
+        return variantToString(attrValue, type);
     }
-    if (attr & QOpcUa::NodeAttribute::Description) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::Description).value<QOpcUaLocalizedText>().text();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Description, value);
+    case QOpcUa::NodeAttribute::None:
+        return QString();
     }
-    if (attr & QOpcUa::NodeAttribute::WriteMask) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::WriteMask).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::WriteMask, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::UserWriteMask) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::UserWriteMask).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::UserWriteMask, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::IsAbstract) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::IsAbstract).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::IsAbstract, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::Symmetric) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::Symmetric).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Symmetric, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::InverseName) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::InverseName).value<QOpcUaLocalizedText>().text();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::InverseName, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::ContainsNoLoops) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::ContainsNoLoops).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::ContainsNoLoops, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::EventNotifier) {
-        const quint32 byte = mOpcNode->attribute(QOpcUa::NodeAttribute::EventNotifier).toUInt();
-        const QString value = QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::EventNotifier, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::Value) {
-        const QString type = mOpcNode->attribute(QOpcUa::NodeAttribute::DataType).toString();
-        const QVariant value = mOpcNode->attribute(QOpcUa::NodeAttribute::Value);
-        mValue = variantToString(value, type);
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Value, mValue);
-        mModel->monitoredItemModel()->valueChanged(this);
-    }
-    if (attr & QOpcUa::NodeAttribute::DataType) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::DataType).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::DataType, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::ValueRank) {
-        const QString value = QString::number(mOpcNode->attribute(QOpcUa::NodeAttribute::ValueRank).toInt());
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::ValueRank, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::ArrayDimensions) {
-        const QString value = QString::number(mOpcNode->attribute(QOpcUa::NodeAttribute::ArrayDimensions).toUInt());
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::ArrayDimensions, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::AccessLevel) {
-        const quint32 byte = mOpcNode->attribute(QOpcUa::NodeAttribute::AccessLevel).toUInt();
-        const QString value = QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::AccessLevel, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::UserAccessLevel) {
-        const quint32 byte = mOpcNode->attribute(QOpcUa::NodeAttribute::UserAccessLevel).toUInt();
-        const QString value = QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::UserAccessLevel, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::MinimumSamplingInterval) {
-        const QString value = QString::number(mOpcNode->attribute(QOpcUa::NodeAttribute::MinimumSamplingInterval).toDouble());
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::MinimumSamplingInterval, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::Historizing) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::Historizing).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Historizing, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::Executable) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::Executable).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::Executable, value);
-    }
-    if (attr & QOpcUa::NodeAttribute::UserExecutable) {
-        const QString value = mOpcNode->attribute(QOpcUa::NodeAttribute::UserExecutable).toString();
-        mAttributeModel->setAttribute(QOpcUa::NodeAttribute::UserExecutable, value);
+
+    Q_UNREACHABLE();
+    return QString();
+}
+
+void TreeItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
+{
+    for (int i = 0; i <= 21; ++i) {
+        const QOpcUa::NodeAttribute attr = static_cast<QOpcUa::NodeAttribute>(1 << i);
+        if (!attributes.testFlag(attr))
+            continue;
+
+        const QVariant value = mOpcNode->attribute(attr);
+        const QString stringValue = getAttributeValue(mOpcNode.get(), attr, value);
+        mAttributeModel->setAttribute(attr, stringValue);
+
+        if (QOpcUa::NodeAttribute::NodeClass == attr) {
+            mNodeClass = mOpcNode->attribute(attr).value<QOpcUa::NodeClass>();
+        } else if (QOpcUa::NodeAttribute::BrowseName == attr) {
+            mNodeBrowseName = stringValue;
+        } else if (QOpcUa::NodeAttribute::Value == attr) {
+            mValue = stringValue;
+            mModel->monitoredItemModel()->valueChanged(this);
+        }
     }
 
     mAttributesReady = true;
