@@ -34,6 +34,8 @@ public:
     Q_INVOKABLE void refreshIndex(const QModelIndex &index);
     Q_INVOKABLE void monitorIndex(const QModelIndex &index);
 
+    Q_INVOKABLE void refreshAttributesForCurrentIndex();
+
 private:
     QOpcUaClient *mOpcUaClient = nullptr;
     MonitoredItemModel *mMonitoredItemModel = nullptr;

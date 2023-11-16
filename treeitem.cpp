@@ -207,6 +207,7 @@ TreeItem::TreeItem(QOpcUaNode *node, OpcUaModel *model, QOpcUa::NodeClass nodeCl
     connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this, &TreeItem::handleAttributes);
     connect(mOpcNode.get(), &QOpcUaNode::browseFinished, this, &TreeItem::browseFinished);
 
+    mAttributeModel->setAttribute(QOpcUa::NodeAttribute::NodeId, mNodeId);
     refreshAttributes();
 }
 
@@ -326,8 +327,6 @@ void TreeItem::refresh()
 
 void TreeItem::refreshAttributes()
 {
-    mAttributeModel->clearAttributes();
-    mAttributeModel->setAttribute(QOpcUa::NodeAttribute::NodeId, mNodeId);
     readNodeClassSpecificAttributes(mOpcNode.get(), mNodeClass);
 }
 
