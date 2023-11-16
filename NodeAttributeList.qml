@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 Rectangle {
     id: root
@@ -9,52 +10,68 @@ Rectangle {
     opacity: attributeList.model ? 1 : 0.3
     clip: true
 
-    ListView {
-        id: attributeList
+    Flickable {
+        id: flickable
         anchors.fill: parent
+        clip: true
 
-        ScrollBar.vertical: StyledScrollBar { }
+        contentWidth: attributeList.width
+        contentHeight: attributeList.height
+
+        boundsBehavior: Flickable.StopAtBounds
         ScrollBar.horizontal: StyledScrollBar { }
 
+    ListView {
+        id: attributeList
+
+        height: flickable.height
+        width: contentItem.childrenRect.width
+
         model: root.attributes
+        //boundsBehavior: Flickable.StopAtBounds
+        ScrollBar.vertical: StyledScrollBar { }
 
         delegate: Rectangle {
             id: listViewDelegate
             readonly property real padding: 5
 
-            width: attributeList.width
-            height: 30
+            width: Math.max(implicitWidth, attributeList.width)
+            implicitWidth: Math.max(flickable.width, childrenRect.width)
+            implicitHeight: childrenRect.height
 
             color: ((index % 2) == 0) ? "#9AE4E6" : "#9AE69A"
 
-            Text {
-                id: attribute
-                anchors.left: parent.left
-                anchors.leftMargin: listViewDelegate.padding
-                width: listViewDelegate.width / 3
-                height: listViewDelegate.height
-                verticalAlignment: Qt.AlignVCenter
-                clip: true
-                text: model.attribute
-            }
+            RowLayout {
+                spacing: 0
+                height: Math.max(30, valueLabel.implicitHeight)
 
-            Rectangle {
-                id: divider
-                anchors.left: attribute.right
-                width: 1
-                height: listViewDelegate.height
-                color: "black"
-            }
+                Text {
+                    id: attribute
+                    Layout.margins: 5
+                    Layout.fillHeight: true
+                    Layout.preferredWidth: root.width / 3
+                    verticalAlignment: Qt.AlignVCenter
+                    text: model.attribute
+                    elide: Qt.ElideRight
+                }
 
-            Text {
-                id: valueLabel
-                anchors.left: divider.right
-                anchors.leftMargin: listViewDelegate.padding
-                height: listViewDelegate.height
-                verticalAlignment: Qt.AlignVCenter
-                clip: true
-                text: model.value
+                Rectangle {
+                    id: divider
+                    Layout.fillHeight: true
+                    width: 1
+                    color: "black"
+                }
+
+                Text {
+                    id: valueLabel
+                    Layout.margins: 5
+                    Layout.fillWidth: true
+                    Layout.fillHeight: true
+                    verticalAlignment: Qt.AlignVCenter
+                    text: model.value
+                }
             }
         }
+    }
     }
 }
