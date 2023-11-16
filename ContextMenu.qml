@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 
 Popup {
     id: contextMenu
@@ -20,13 +19,6 @@ Popup {
         height: contextMenu.height
         radius: 3
         color: "orange"
-        layer.enabled: true
-        layer.effect: DropShadow {
-            transparentBorder: true
-            horizontalOffset: 3
-            verticalOffset: 3
-            samples: 17
-        }
     }
 
     contentItem: Item {
