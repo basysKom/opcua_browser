@@ -86,6 +86,16 @@ TreeItem::TreeItem(QOpcUaNode *node, OpcUaModel *model, QOpcUa::NodeClass nodeCl
     connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this, &TreeItem::handleAttributes);
     connect(mOpcNode.get(), &QOpcUaNode::browseFinished, this, &TreeItem::browseFinished);
 
+    connect(mOpcNode.get(), &QOpcUaNode::enableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
+        qDebug() << "enableMonitoring" << attr << statusCode;
+        mModel->monitoredItemModel()->addItem(this);
+    });
+
+    connect(mOpcNode.get(), &QOpcUaNode::disableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
+        qDebug() << "disableMonitoring" << attr << statusCode;
+        mModel->monitoredItemModel()->removeItem(this);
+    });
+
     mAttributeModel->setAttribute(QOpcUa::NodeAttribute::NodeId, mNodeId);
     refreshAttributes();
 }
@@ -219,22 +229,11 @@ void TreeItem::enableMonitoring()
 {
     QOpcUaMonitoringParameters p(100);
     mOpcNode->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
-
-    connect(mOpcNode.get(), &QOpcUaNode::enableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
-        qDebug() << "enableMonitoring" << attr << statusCode;
-        mModel->monitoredItemModel()->addItem(this);
-    });
 }
 
 void TreeItem::disableMonitoring()
 {
     mOpcNode->disableMonitoring(QOpcUa::NodeAttribute::Value);
-
-    connect(mOpcNode.get(), &QOpcUaNode::disableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
-        qDebug() << "disableMonitoring" << attr << statusCode;
-        mModel->monitoredItemModel()->removeItem(this);
-    });
-
 }
 
 void TreeItem::startBrowsing(bool forceRebrowse, QOpcUa::ReferenceTypeId referenceType)
