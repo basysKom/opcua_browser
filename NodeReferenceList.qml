@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 
 Rectangle {
     id: root
@@ -9,53 +10,87 @@ Rectangle {
     opacity: referenceList.model ? 1 : 0.3
     clip: true
 
-    ListView {
-        id: referenceList
-        anchors.fill: parent
+    function maxDelegateWidth() {
+        var max = flickable.width;
+        for(var child in referenceList.contentItem.children) {
+            max = Math.max(max, referenceList.contentItem.children[child].childrenRect.width);
+        }
+        return max;
+    }
 
-        ScrollBar.vertical: StyledScrollBar { }
+    Flickable {
+        id: flickable
+        anchors.fill: parent
+        clip: true
+
+        contentWidth: referenceList.width
+        contentHeight: referenceList.height
+
+        boundsBehavior: Flickable.StopAtBounds
         ScrollBar.horizontal: StyledScrollBar { }
 
-        model: root.references
+        ListView {
+            id: referenceList
 
-        delegate: Rectangle {
-            id: listViewDelegate
-            readonly property real padding: 5
+            height: flickable.height
+            width: contentItem.childrenRect.width
 
-            width: referenceList.width
-            height: 30
+            //boundsBehavior: Flickable.StopAtBounds
+            ScrollBar.vertical: StyledScrollBar { }
 
-            color: ((index % 2) == 0) ? "#9AE4E6" : "#9AE69A"
+            highlightFollowsCurrentItem: false
 
-            // ToDo
-            /*Text {
-                id: reference
-                anchors.left: parent.left
-                anchors.leftMargin: listViewDelegate.padding
-                width: listViewDelegate.width / 3
-                height: listViewDelegate.height
-                verticalAlignment: Qt.AlignVCenter
-                clip: true
-                text: model.reference
+            delegate: Rectangle {
+                id: listViewDelegate
+                readonly property real padding: 5
+
+                width: maxDelegateWidth()
+                implicitHeight: childrenRect.height
+
+                color: ((index % 2) == 0) ? "#9AE4E6" : "#9AE69A"
+
+                RowLayout {
+                    spacing: 0
+                    height: 30
+
+                    Text {
+                        Layout.margins: 5
+                        Layout.fillHeight: true
+                        Layout.preferredWidth: root.width / 3
+                        verticalAlignment: Qt.AlignVCenter
+                        text: model.type
+                        elide: Qt.ElideRight
+                    }
+
+                    Rectangle {
+                        Layout.fillHeight: true
+                        width: 1
+                        color: "black"
+                    }
+
+                    Text {
+                        Layout.margins: 5
+                        Layout.fillHeight: true
+                        Layout.preferredWidth: 25
+                        verticalAlignment: Qt.AlignVCenter
+                        text: model.isForward ? "true" : "false"
+                    }
+
+                    Rectangle {
+                        Layout.fillHeight: true
+                        width: 1
+                        color: "black"
+                    }
+
+                    Text {
+                        Layout.margins: 5
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        verticalAlignment: Qt.AlignVCenter
+                        text: model.target
+                    }
+                }
             }
-
-            Rectangle {
-                id: divider
-                anchors.left: reference.right
-                width: 1
-                height: listViewDelegate.height
-                color: "black"
-            }
-
-            Text {
-                id: valueLabel
-                anchors.left: divider.right
-                anchors.leftMargin: listViewDelegate.padding
-                height: listViewDelegate.height
-                verticalAlignment: Qt.AlignVCenter
-                clip: true
-                text: model.value
-            }*/
         }
     }
 }

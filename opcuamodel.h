@@ -22,6 +22,7 @@ public:
     QOpcUaClient *opcUaClient() const noexcept;
 
     MonitoredItemModel *monitoredItemModel() const noexcept;
+    QString getStringForRefTypeId(const QString &refTypeId, bool isForward) const;
 
     virtual QHash<int, QByteArray> roleNames() const override;
     virtual QVariant data(const QModelIndex &index, int role) const override;
@@ -36,11 +37,18 @@ public:
 
     Q_INVOKABLE void refreshAttributesForCurrentIndex();
 
+signals:
+    void browsingForReferenceTypesFinished();
+
 private:
+    void resetModel();
+    void browseReferenceTypes(QOpcUaNode *node);
+
     QOpcUaClient *mOpcUaClient = nullptr;
     MonitoredItemModel *mMonitoredItemModel = nullptr;
     std::unique_ptr<TreeItem> mRootItem;
     QModelIndex mCurrentIndex = QModelIndex();
+    QHash<QString, QPair<QString, QString> > mReferencesList;
 
     friend class TreeItem;
 };

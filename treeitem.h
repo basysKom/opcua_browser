@@ -8,6 +8,7 @@
 #include <QOpcUaNode>
 
 class AttributeModel;
+class ReferenceModel;
 class OpcUaModel;
 class QAbstractItemModel;
 class QAbstractListModel;
@@ -23,7 +24,7 @@ public:
     ~TreeItem();
 
     QAbstractItemModel *attributes() const noexcept;
-    QAbstractListModel *references() const noexcept;
+    QAbstractItemModel *references() const noexcept;
 
     TreeItem *child(int row);
     int childIndex(const TreeItem *child) const;
@@ -45,7 +46,7 @@ public:
     void disableMonitoring();
 
 private slots:
-    void startBrowsing();
+    void startBrowsing(bool forceRebrowse = false, QOpcUa::ReferenceTypeId referenceType = QOpcUa::ReferenceTypeId::HierarchicalReferences);
     void handleAttributes(const QOpcUa::NodeAttributes &attr);
     void browseFinished(const QList<QOpcUaReferenceDescription> &children, QOpcUa::UaStatusCode statusCode);
 
@@ -54,12 +55,15 @@ private:
     OpcUaModel *mModel = nullptr;
     bool mAttributesReady = false;
     bool mBrowseStarted = false;
+    bool mBrowseNonHierarchicalReferences = false;
     QList<TreeItem *> mChildItems;
     QSet<QString> mChildNodeIds;
     TreeItem *mParentItem = nullptr;
 
     AttributeModel *mAttributeModel;
     QSortFilterProxyModel *mSortedAttributeProxyModel;
+    ReferenceModel *mReferenceModel;
+    QSortFilterProxyModel *mSortedReferenceProxyModel;
     QString mNodeBrowseName;
     QString mNodeId;
     QOpcUa::NodeClass mNodeClass = QOpcUa::NodeClass::Undefined;

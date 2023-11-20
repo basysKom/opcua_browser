@@ -2,6 +2,7 @@
 
 #include "monitoreditemmodel.h"
 #include "opcuamodel.h"
+#include "opcuahelper.h"
 #include "treeitem.h"
 
 enum Roles : int {
@@ -28,19 +29,23 @@ OpcUaModel::OpcUaModel(QObject *parent)
     : QAbstractItemModel{parent}
     , mMonitoredItemModel(new MonitoredItemModel(this))
 {
-
+    connect(this, &OpcUaModel::browsingForReferenceTypesFinished, this, [=] () {
+        resetModel();
+    });
 }
 
 void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
 {
     mCurrentIndex = QModelIndex();
-    beginResetModel();
+    mReferencesList.clear();
     mOpcUaClient = client;
-    if (mOpcUaClient)
-        mRootItem.reset(new TreeItem(client->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::RootFolder)), this, QOpcUa::NodeClass::Object, nullptr));
-    else
-        mRootItem.reset(nullptr);
-    endResetModel();
+
+    if (nullptr != mOpcUaClient) {
+        auto referencesNode = client->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::References));
+        browseReferenceTypes(referencesNode);
+    } else {
+        resetModel();
+    }
 }
 
 QOpcUaClient *OpcUaModel::opcUaClient() const noexcept
@@ -51,6 +56,17 @@ QOpcUaClient *OpcUaModel::opcUaClient() const noexcept
 MonitoredItemModel *OpcUaModel::monitoredItemModel() const noexcept
 {
     return mMonitoredItemModel;
+}
+
+QString OpcUaModel::getStringForRefTypeId(const QString &refTypeId, bool isForward) const
+{
+    if (!mReferencesList.contains(refTypeId)) {
+        static QString emptyString;
+        return emptyString;
+    }
+
+    return isForward ? mReferencesList[refTypeId].first
+                     : mReferencesList[refTypeId].second;
 }
 
 QVariant OpcUaModel::data(const QModelIndex &index, int role) const
@@ -175,5 +191,86 @@ void OpcUaModel::refreshAttributesForCurrentIndex()
     auto treeItem = static_cast<TreeItem*>(mCurrentIndex.internalPointer());
     if (nullptr != treeItem) {
         treeItem->refreshAttributes();
+    }
+}
+
+void OpcUaModel::resetModel() {
+    beginResetModel();
+    if (nullptr == mOpcUaClient) {
+        mRootItem.reset();
+    } else {
+        mRootItem.reset(new TreeItem(mOpcUaClient->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::RootFolder)), this, QOpcUa::NodeClass::Object, nullptr));
+    }
+    endResetModel();
+}
+
+void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
+{
+    static int cntNodes = 0;
+
+    auto deleteNode = [=](QOpcUaNode *n)
+    {
+        n->deleteLater();
+        --cntNodes;
+
+        if (0 == cntNodes) {
+            // all reference type nodes have been read
+            emit browsingForReferenceTypesFinished();
+        }
+    };
+
+    connect(node, &QOpcUaNode::attributeRead, this, [=] (const QOpcUa::NodeAttributes &attributes) {
+        QString nodeId;
+        if (attributes.testFlag(QOpcUa::NodeAttribute::NodeId)) {
+            nodeId = QOpcUaHelper::getAttributeValue(node, QOpcUa::NodeAttribute::NodeId);
+        }
+
+        QString displayName;
+        if (attributes.testFlag(QOpcUa::NodeAttribute::DisplayName)) {
+            displayName = QOpcUaHelper::getAttributeValue(node, QOpcUa::NodeAttribute::DisplayName);
+        }
+
+        QString inverseName;
+        if (attributes.testFlag(QOpcUa::NodeAttribute::InverseName)) {
+            inverseName = QOpcUaHelper::getAttributeValue(node, QOpcUa::NodeAttribute::InverseName);
+        }
+
+        if (!nodeId.isEmpty()) {
+            mReferencesList[nodeId] = std::make_pair(displayName, inverseName);
+        }
+
+        // Third step: delete node
+        deleteNode(node);
+    });
+
+    connect(node, &QOpcUaNode::browseFinished, this, [=] (const QList<QOpcUaReferenceDescription> &children, QOpcUa::UaStatusCode statusCode) {
+        if (nullptr == mOpcUaClient) {
+            qWarning() << "OPC UA client is null" << node->nodeId();
+            deleteNode(node);
+            return;
+        }
+
+        for (const auto &item : children) {
+            auto childNode = mOpcUaClient->node(item.targetNodeId());
+            if (!childNode) {
+                qWarning() << "Failed to instantiate node:" << item.targetNodeId().nodeId();
+                continue;
+            }
+
+            browseReferenceTypes(childNode);
+        }
+
+        // Second step: read attributes
+        if (!node->readAttributes(QOpcUa::NodeAttribute::NodeId | QOpcUa::NodeAttribute::DisplayName | QOpcUa::NodeAttribute::InverseName)) {
+            qWarning() << "Reading attributes" << node->nodeId() << "failed";
+            deleteNode(node);
+        }
+    });
+
+    cntNodes++;
+    // First step: browse for children
+    if (!node->browseChildren(QOpcUa::ReferenceTypeId::HierarchicalReferences, QOpcUa::NodeClass::ReferenceType)) {
+        qWarning() << "Browsing node" << node->nodeId() << "failed";
+        deleteNode(node);
     }
 }
