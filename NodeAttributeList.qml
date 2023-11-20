@@ -10,6 +10,14 @@ Rectangle {
     opacity: attributeList.model ? 1 : 0.3
     clip: true
 
+    function maxDelegateWidth() {
+        var max = flickable.width;
+        for(var child in attributeList.contentItem.children) {
+            max = Math.max(max, attributeList.contentItem.children[child].childrenRect.width);
+        }
+        return max;
+    }
+
     Flickable {
         id: flickable
         anchors.fill: parent
@@ -44,8 +52,7 @@ Rectangle {
                 id: listViewDelegate
                 readonly property real padding: 5
 
-                width: Math.max(implicitWidth, attributeList.width)
-                implicitWidth: Math.max(flickable.width, childrenRect.width)
+                width: maxDelegateWidth()
                 implicitHeight: childrenRect.height
 
                 color: ((index % 2) == 0) ? "#9AE4E6" : "#9AE69A"
