@@ -19,8 +19,9 @@ class BackEnd : public QObject
     QML_SINGLETON
 
 public:
-    Q_PROPERTY(QString state READ state NOTIFY stateChanged FINAL)
+    Q_PROPERTY(QString stateText READ stateText NOTIFY stateTextChanged FINAL)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionStateChanged FINAL)
+    Q_PROPERTY(int connectionState READ connectionState NOTIFY connectionStateChanged FINAL)
     Q_PROPERTY(QVector<QString> serverList READ serverList NOTIFY serverListChanged FINAL)
     Q_PROPERTY(QVector<QString> endpointList READ endpointList NOTIFY endpointListChanged FINAL)
     Q_PROPERTY(QAbstractItemModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
@@ -28,8 +29,9 @@ public:
 
     explicit BackEnd(QObject *parent = nullptr);
 
-    bool isConnected() const noexcept;
-    QString state() const noexcept;
+    bool isConnected() const;
+    int connectionState() const;
+    QString stateText() const noexcept;
     QVector<QString> serverList() const noexcept;
     QVector<QString> endpointList() const;
     OpcUaModel *opcUaModel() const noexcept;
@@ -46,7 +48,7 @@ public:
 signals:
     void serverListChanged();
     void endpointListChanged();
-    void stateChanged();
+    void stateTextChanged();
     void connectionStateChanged();
     void opcUaModelChanged();
 
@@ -71,7 +73,6 @@ private:
     QOpcUaApplicationIdentity mIdentity;
     QOpcUaPkiConfiguration mPkiConfig;
 
-    bool mClientConnected = false;
     QString mState;
     QVector<QString> mServerList;
     QList<QOpcUaEndpointDescription> mEndpointList;

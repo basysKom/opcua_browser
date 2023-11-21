@@ -41,12 +41,20 @@ BackEnd::BackEnd(QObject *parent)
     //! [Application Identity]
 }
 
-bool BackEnd::isConnected() const noexcept
+bool BackEnd::isConnected() const
 {
-    return mClientConnected;
+    return (QOpcUaClient::Connected == connectionState());
 }
 
-QString BackEnd::state() const noexcept
+int BackEnd::connectionState() const
+{
+    if (nullptr == mOpcUaClient)
+        return QOpcUaClient::Disconnected;
+
+    return mOpcUaClient->state();
+}
+
+QString BackEnd::stateText() const noexcept
 {
     return mState;
 }
@@ -191,9 +199,6 @@ void BackEnd::clientConnected()
     qDebug() << "client connected";
     setState(QStringLiteral("client connected"));
 
-    mClientConnected = true;
-    emit connectionStateChanged();
-
     connect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this, &BackEnd::namespacesArrayUpdated);
     mOpcUaClient->updateNamespaceArray();
 }
@@ -203,16 +208,9 @@ void BackEnd::clientDisconnected()
     qDebug() << "client disconnected";
     setState(QStringLiteral("client disconnected"));
 
-    mClientConnected = false;
     mOpcUaClient->deleteLater();
     mOpcUaClient = nullptr;
     mOpcUaModel->setOpcUaClient(nullptr);
-    emit connectionStateChanged();
-}
-
-void listNodes(QOpcUaNode *node)
-{
-
 }
 
 void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)
@@ -258,6 +256,7 @@ void BackEnd::createClient()
             return;
         }
 
+        connect(mOpcUaClient, &QOpcUaClient::stateChanged, this, &BackEnd::connectionStateChanged);
         connect(mOpcUaClient, &QOpcUaClient::connectError, this, &BackEnd::clientConnectError);
         //mOpcUaClient->setApplicationIdentity(m_identity);
         //mOpcUaClient->setPkiConfiguration(m_pkiConfig);
@@ -305,6 +304,6 @@ void BackEnd::setState(const QString &state)
 {
     if (state != mState) {
         mState = state;
-        emit stateChanged();
+        emit stateTextChanged();
     }
 }
