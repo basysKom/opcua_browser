@@ -1,6 +1,5 @@
 #include <QColor>
 
-#include "monitoreditemmodel.h"
 #include "opcuamodel.h"
 #include "opcuahelper.h"
 #include "treeitem.h"
@@ -8,6 +7,7 @@
 enum Roles : int {
     ColorRole = Qt::UserRole,
     ValueRole,
+    NodeIdRole,
     AttributesRole,
     ReferencesRole,
     SelectedRole,
@@ -18,6 +18,7 @@ QHash<int, QByteArray> OpcUaModel::roleNames() const {
     auto names = QAbstractItemModel::roleNames();
     names[ColorRole] = "color";
     names[ValueRole] = "value";
+    names[NodeIdRole] = "nodeId";
     names[AttributesRole] = "attributes";
     names[ReferencesRole] = "references";
     names[SelectedRole] = "isSelected";
@@ -27,7 +28,6 @@ QHash<int, QByteArray> OpcUaModel::roleNames() const {
 
 OpcUaModel::OpcUaModel(QObject *parent)
     : QAbstractItemModel{parent}
-    , mMonitoredItemModel(new MonitoredItemModel(this))
 {
     connect(this, &OpcUaModel::browsingForReferenceTypesFinished, this, [=] () {
         resetModel();
@@ -51,11 +51,6 @@ void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
 QOpcUaClient *OpcUaModel::opcUaClient() const noexcept
 {
     return mOpcUaClient;
-}
-
-MonitoredItemModel *OpcUaModel::monitoredItemModel() const noexcept
-{
-    return mMonitoredItemModel;
 }
 
 QString OpcUaModel::getStringForRefTypeId(const QString &refTypeId, bool isForward) const
@@ -83,6 +78,8 @@ QVariant OpcUaModel::data(const QModelIndex &index, int role) const
         return item->nodeClassColor();
     case ValueRole:
         return item->value();
+    case NodeIdRole:
+        return item->nodeId();
     case AttributesRole:
         return QVariant::fromValue<QObject *>(item->attributes());
     case ReferencesRole:
@@ -169,17 +166,6 @@ void OpcUaModel::refreshIndex(const QModelIndex &index)
     auto treeItem = static_cast<TreeItem*>(index.internalPointer());
     if (nullptr != treeItem) {
         treeItem->refresh();
-    }
-}
-
-void OpcUaModel::monitorIndex(const QModelIndex &index)
-{
-    if (!index.isValid())
-        return;
-
-    auto treeItem = static_cast<TreeItem*>(index.internalPointer());
-    if (nullptr != treeItem) {
-        treeItem->enableMonitoring();
     }
 }
 

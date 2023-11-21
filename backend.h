@@ -45,6 +45,8 @@ public:
     Q_INVOKABLE void connectToEndpoint(int endpointIndex);
     Q_INVOKABLE void disconnectFromEndpoint();
 
+    Q_INVOKABLE void monitorNode(const QString& nodeId);
+
 signals:
     void serverListChanged();
     void endpointListChanged();
@@ -77,6 +79,7 @@ private:
     QVector<QString> mServerList;
     QList<QOpcUaEndpointDescription> mEndpointList;
     QOpcUaEndpointDescription mCurrentEndpoint;
+    MonitoredItemModel *mMonitoredItemModel = nullptr;
 };
 
 #endif // BACKEND_H

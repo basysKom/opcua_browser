@@ -2,7 +2,6 @@
 #include <QSortFilterProxyModel>
 
 #include "attributemodel.h"
-#include "monitoreditemmodel.h"
 #include "opcuamodel.h"
 #include "opcuahelper.h"
 #include "referencemodel.h"
@@ -86,16 +85,6 @@ TreeItem::TreeItem(QOpcUaNode *node, OpcUaModel *model, QOpcUa::NodeClass nodeCl
     connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this, &TreeItem::handleAttributes);
     connect(mOpcNode.get(), &QOpcUaNode::browseFinished, this, &TreeItem::browseFinished);
 
-    connect(mOpcNode.get(), &QOpcUaNode::enableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
-        qDebug() << "enableMonitoring" << attr << statusCode;
-        mModel->monitoredItemModel()->addItem(this);
-    });
-
-    connect(mOpcNode.get(), &QOpcUaNode::disableMonitoringFinished, this, [this] (QOpcUa::NodeAttribute attr, QOpcUa::UaStatusCode statusCode) {
-        qDebug() << "disableMonitoring" << attr << statusCode;
-        mModel->monitoredItemModel()->removeItem(this);
-    });
-
     mAttributeModel->setAttribute(QOpcUa::NodeAttribute::NodeId, mNodeId);
     refreshAttributes();
 }
@@ -112,7 +101,6 @@ TreeItem::TreeItem(QOpcUaNode *node, OpcUaModel *model, const QOpcUaReferenceDes
 
 TreeItem::~TreeItem()
 {
-    mModel->monitoredItemModel()->removeItem(this);
     qDeleteAll(mChildItems);
 }
 
@@ -170,7 +158,7 @@ const QColor &TreeItem::nodeClassColor() const noexcept
     return defaultColor;
 }
 
-QString TreeItem::value() const noexcept
+const QString &TreeItem::value() const noexcept
 {
     return mValue;
 }
@@ -208,6 +196,11 @@ void TreeItem::appendChild(TreeItem *child)
 bool TreeItem::hasChildNodeItem(const QString &nodeId) const
 {
     return mChildNodeIds.contains(nodeId);
+}
+
+const QString &TreeItem::nodeId() const noexcept
+{
+    return mNodeId;
 }
 
 void TreeItem::refresh()
@@ -265,7 +258,6 @@ void TreeItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
             mNodeBrowseName = stringValue;
         } else if (QOpcUa::NodeAttribute::Value == attr) {
             mValue = stringValue;
-            mModel->monitoredItemModel()->valueChanged(this);
         }
     }
 

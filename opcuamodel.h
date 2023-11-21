@@ -9,8 +9,6 @@
 
 #include "treeitem.h"
 
-class MonitoredItemModel;
-
 class OpcUaModel : public QAbstractItemModel
 {
     Q_OBJECT
@@ -21,7 +19,6 @@ public:
     void setOpcUaClient(QOpcUaClient *client);
     QOpcUaClient *opcUaClient() const noexcept;
 
-    MonitoredItemModel *monitoredItemModel() const noexcept;
     QString getStringForRefTypeId(const QString &refTypeId, bool isForward) const;
 
     virtual QHash<int, QByteArray> roleNames() const override;
@@ -33,7 +30,6 @@ public:
 
     Q_INVOKABLE void setCurrentIndex(const QModelIndex &index);
     Q_INVOKABLE void refreshIndex(const QModelIndex &index);
-    Q_INVOKABLE void monitorIndex(const QModelIndex &index);
 
     Q_INVOKABLE void refreshAttributesForCurrentIndex();
 
@@ -45,7 +41,6 @@ private:
     void browseReferenceTypes(QOpcUaNode *node);
 
     QOpcUaClient *mOpcUaClient = nullptr;
-    MonitoredItemModel *mMonitoredItemModel = nullptr;
     std::unique_ptr<TreeItem> mRootItem;
     QModelIndex mCurrentIndex = QModelIndex();
     QHash<QString, QPair<QString, QString> > mReferencesList;

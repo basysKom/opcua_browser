@@ -34,9 +34,10 @@ public:
     void appendChild(TreeItem *child);
     bool hasChildNodeItem(const QString &nodeId) const;
 
+    const QString &nodeId() const noexcept;
     const QString &displayName() const noexcept;
     const QColor &nodeClassColor() const noexcept;
-    QString value() const noexcept;
+    const QString &value() const noexcept;
     bool canMonitored() const noexcept;
 
     void refresh();

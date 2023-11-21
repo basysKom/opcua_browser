@@ -3,6 +3,10 @@
 
 #include <QAbstractListModel>
 
+#include <QOpcUaNode>
+
+#include "monitoreditem.h"
+
 class TreeItem;
 
 class MonitoredItemModel : public QAbstractListModel
@@ -16,16 +20,13 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 
-    void addItem(TreeItem *item);
-    void removeItem(TreeItem *item);
-    void setItems(const QList<TreeItem *> &items);
-
-    void valueChanged(TreeItem *item);
+    bool containsItem(const QString &nodeId) const noexcept;
+    void addItem(QOpcUaNode *node);
 
     Q_INVOKABLE void disableMonitoring(int index);
 
 private:
-    QList<TreeItem *> mItems;
+    QList<MonitoredItem*> mItems;
 };
 
 #endif // MONITOREDITEMMODEL_H

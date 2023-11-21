@@ -7,7 +7,8 @@ Popup {
     modal: true
 
     property var currentTreeViewIndex
-    property bool showMonitoringItem: false;
+    property string currentNodeId
+    property bool showMonitoringItem: false
 
     implicitWidth: contentItem.childrenRect.width
     implicitHeight: contentItem.childrenRect.height
@@ -61,7 +62,7 @@ Popup {
                             BackEnd.opcUaModel.refreshIndex(contextMenu.currentTreeViewIndex)
                         } else if (1 === model.index) {
                             // monitor pressed
-                            BackEnd.opcUaModel.monitorIndex(contextMenu.currentTreeViewIndex)
+                            BackEnd.monitorNode(contextMenu.currentNodeId)
                         }
 
                         contextMenu.close()

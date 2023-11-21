@@ -31,6 +31,7 @@ qt_add_qml_module(appOPC_UA_Browser
     SOURCES attribute.h attribute.cpp
     SOURCES attributemodel.h attributemodel.cpp
     SOURCES backend.h backend.cpp
+    SOURCES monitoreditem.h monitoreditem.cpp
     SOURCES monitoreditemmodel.h monitoreditemmodel.cpp
     SOURCES opcuahelper.h opcuahelper.cpp
     SOURCES opcuamodel.h opcuamodel.cpp

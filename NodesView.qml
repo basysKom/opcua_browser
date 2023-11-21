@@ -63,6 +63,7 @@ Item {
                     }
 
                     contextMenu.currentTreeViewIndex = treeView.index(row, column);
+                    contextMenu.currentNodeId = model.nodeId;
                     contextMenu.showMonitoringItem = model.canMonitoring;
                     contextMenu.open();
                 }

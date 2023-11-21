@@ -1,5 +1,4 @@
 #include "monitoreditemmodel.h"
-#include "treeitem.h"
 
 enum Roles : int {
     DisplayNameRole = Qt::DisplayRole,
@@ -30,7 +29,6 @@ QVariant MonitoredItemModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    qDebug() << mItems[index.row()]->displayName() << role;
     switch (role) {
     case DisplayNameRole:
         return mItems[index.row()]->displayName();
@@ -41,46 +39,34 @@ QVariant MonitoredItemModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void MonitoredItemModel::addItem(TreeItem *item)
+bool MonitoredItemModel::containsItem(const QString &nodeId) const noexcept
 {
-    int count = mItems.size();
+    auto it = std::find_if(mItems.begin(), mItems.end(), [&](MonitoredItem *item) { return (item->nodeId() == nodeId); });
+    return (it != mItems.end());
+}
+
+void MonitoredItemModel::addItem(QOpcUaNode *node)
+{
+    const int count = mItems.size();
+    MonitoredItem *monitoredItem = new MonitoredItem(node);
+    connect(monitoredItem, &MonitoredItem::displayNameChanged, this, [=] () {
+        emit dataChanged(index(count), index(count), QList<int>() << DisplayNameRole);
+    });
+
+    connect(monitoredItem, &MonitoredItem::valueChanged, this, [=] () {
+        emit dataChanged(index(count), index(count), QList<int>() << ValueRole);
+    });
+
     beginInsertRows(QModelIndex(), count, count);
-    mItems << item;
+    mItems.push_back(monitoredItem);
     endInsertRows();
-}
-
-void MonitoredItemModel::removeItem(TreeItem *item)
-{
-    const int index = mItems.indexOf(item);
-    if (index < 0)
-        return;
-
-    beginRemoveRows(QModelIndex(), index, index);
-    mItems.remove(index);
-    endRemoveRows();
-}
-
-void MonitoredItemModel::setItems(const QList<TreeItem *> &items)
-{
-    beginResetModel();
-    mItems = items;
-    endResetModel();
-}
-
-void MonitoredItemModel::valueChanged(TreeItem *item)
-{
-    const int index = mItems.indexOf(item);
-    if (index < 0)
-        return;
-
-    const auto modelIndex = this->index(index);
-    emit dataChanged(modelIndex, modelIndex, QList<int>() << ValueRole);
 }
 
 void MonitoredItemModel::disableMonitoring(int index)
 {
-    if ((index < 0) || (index >= mItems.size()))
-        return;
+    beginRemoveRows(QModelIndex(), index, index);
+    auto item = mItems.takeAt(index);
+    endRemoveRows();
 
-    mItems.at(index)->disableMonitoring();
+    item->deleteLater();
 }

@@ -34,6 +34,7 @@ BackEnd::BackEnd(QObject *parent)
     : QObject{parent}
     , mOpcUaModel(new OpcUaModel(this))
     , mOpcUaProvider(new QOpcUaProvider(this))
+    , mMonitoredItemModel(new MonitoredItemModel(this))
 {
 
     //! [Application Identity]
@@ -93,7 +94,7 @@ OpcUaModel *BackEnd::opcUaModel() const noexcept
 
 QAbstractItemModel *BackEnd::monitoredItemModel() const noexcept
 {
-    return mOpcUaModel->monitoredItemModel();
+    return mMonitoredItemModel;
 }
 
 void BackEnd::clearServerList()
@@ -125,6 +126,26 @@ void BackEnd::connectToEndpoint(int endpointIndex)
 void BackEnd::disconnectFromEndpoint()
 {
     mOpcUaClient->disconnectFromEndpoint();
+}
+
+void BackEnd::monitorNode(const QString &nodeId)
+{
+    Q_ASSERT(mMonitoredItemModel);
+    if (mMonitoredItemModel->containsItem(nodeId))
+        return;
+
+    if (nullptr == mOpcUaClient) {
+        qWarning() << QStringLiteral("cannot monitor node %1, OPC UA client is null").arg(nodeId);
+        return;
+    }
+
+    const auto node = mOpcUaClient->node(nodeId);
+    if (nullptr == node) {
+        qWarning() << QStringLiteral("cannot monitor node %1, could not get a node from the plugin").arg(nodeId);
+        return;
+    }
+
+    mMonitoredItemModel->addItem(node);
 }
 
 void BackEnd::findServers(const QString &urlString)
