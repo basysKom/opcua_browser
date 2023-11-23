@@ -143,7 +143,7 @@ int OpcUaModel::columnCount(const QModelIndex &parent) const
 
 void OpcUaModel::setCurrentIndex(const QModelIndex &index)
 {
-    if (!index.isValid())
+    if (!index.isValid() || (index == mCurrentIndex))
         return;
 
     auto treeItem = static_cast<TreeItem*>(index.internalPointer());

@@ -43,9 +43,6 @@ public:
     void refresh();
     void refreshAttributes();
 
-    void enableMonitoring();
-    void disableMonitoring();
-
 private slots:
     void startBrowsing(bool forceRebrowse = false, QOpcUa::ReferenceTypeId referenceType = QOpcUa::ReferenceTypeId::HierarchicalReferences);
     void handleAttributes(const QOpcUa::NodeAttributes &attr);

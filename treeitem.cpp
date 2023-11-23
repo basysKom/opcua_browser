@@ -82,7 +82,6 @@ TreeItem::TreeItem(QOpcUaNode *node, OpcUaModel *model, QOpcUa::NodeClass nodeCl
     mSortedReferenceProxyModel->sort(0);
 
     connect(mOpcNode.get(), &QOpcUaNode::attributeRead, this, &TreeItem::handleAttributes);
-    connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this, &TreeItem::handleAttributes);
     connect(mOpcNode.get(), &QOpcUaNode::browseFinished, this, &TreeItem::browseFinished);
 
     mAttributeModel->setAttribute(QOpcUa::NodeAttribute::NodeId, mNodeId);
@@ -205,28 +204,25 @@ const QString &TreeItem::nodeId() const noexcept
 
 void TreeItem::refresh()
 {
+    mChildNodeIds.clear();
+    const auto index = mModel->createIndex(row(), 0, this);
+    mModel->beginRemoveRows(index, 0, mChildItems.size() - 1);
+    qDeleteAll(mChildItems);
+    mChildItems.clear();
+    mModel->endRemoveRows();
+
     if (nullptr != mReferenceModel) {
         mReferenceModel->clearForwardReferences();
     }
 
-    startBrowsing(true);
+    mBrowseStarted = false;
+    startBrowsing();
     refreshAttributes();
 }
 
 void TreeItem::refreshAttributes()
 {
     readNodeClassSpecificAttributes(mOpcNode.get(), mNodeClass);
-}
-
-void TreeItem::enableMonitoring()
-{
-    QOpcUaMonitoringParameters p(100);
-    mOpcNode->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
-}
-
-void TreeItem::disableMonitoring()
-{
-    mOpcNode->disableMonitoring(QOpcUa::NodeAttribute::Value);
 }
 
 void TreeItem::startBrowsing(bool forceRebrowse, QOpcUa::ReferenceTypeId referenceType)
@@ -288,7 +284,7 @@ void TreeItem::browseFinished(const QList<QOpcUaReferenceDescription> &children,
                 continue;
             }
 
-            mModel->beginInsertRows(index, mChildItems.size(), mChildItems.size() + 1);
+            mModel->beginInsertRows(index, mChildItems.size(), mChildItems.size());
             appendChild(new TreeItem(node, mModel, item, this));
             mModel->endInsertRows();
         }

@@ -38,16 +38,23 @@ Item {
             required property int hasChildren
             required property int depth
 
+            function setCurrentIndexToModel(index) {
+                root.attributes = model.attributes
+                root.references = model.references
+                BackEnd.opcUaModel.setCurrentIndex(index)
+            }
+
             TapHandler {
                 id: tapHandler
                 onTapped: {
                     treeView.toggleExpanded(row)
-                    root.attributes = model.attributes
-                    root.references = model.references
-                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(row, column))
+                    setCurrentIndexToModel(treeView.index(row, column))
                 }
 
                 onLongPressed: {
+                    var index = treeView.index(row, column);
+                    setCurrentIndexToModel(index);
+
                     var xPos = tapHandler.point.position.x + treeDelegate.x - treeView.contentX
                     var yPos = tapHandler.point.position.y + treeDelegate.y - treeView.contentY
                     if (xPos + contextMenu.width > treeView.width) {
@@ -62,7 +69,7 @@ Item {
                         contextMenu.y = yPos
                     }
 
-                    contextMenu.currentTreeViewIndex = treeView.index(row, column);
+                    contextMenu.currentTreeViewIndex = index;
                     contextMenu.currentNodeId = model.nodeId;
                     contextMenu.showMonitoringItem = model.canMonitoring;
                     contextMenu.open();
