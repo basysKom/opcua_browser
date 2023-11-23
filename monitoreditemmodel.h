@@ -22,6 +22,7 @@ public:
 
     bool containsItem(const QString &nodeId) const noexcept;
     void addItem(QOpcUaNode *node);
+    void clearItems();
 
     Q_INVOKABLE void disableMonitoring(int index);
 

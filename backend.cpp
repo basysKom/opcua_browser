@@ -232,6 +232,7 @@ void BackEnd::clientDisconnected()
     mOpcUaClient->deleteLater();
     mOpcUaClient = nullptr;
     mOpcUaModel->setOpcUaClient(nullptr);
+    mMonitoredItemModel->clearItems();
 }
 
 void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)

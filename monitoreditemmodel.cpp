@@ -8,7 +8,7 @@ enum Roles : int {
 MonitoredItemModel::MonitoredItemModel(QObject *parent)
     : QAbstractListModel{parent}
 {
-
+    qDeleteAll(mItems);
 }
 
 QHash<int, QByteArray> MonitoredItemModel::roleNames() const
@@ -60,6 +60,14 @@ void MonitoredItemModel::addItem(QOpcUaNode *node)
     beginInsertRows(QModelIndex(), count, count);
     mItems.push_back(monitoredItem);
     endInsertRows();
+}
+
+void MonitoredItemModel::clearItems()
+{
+    beginResetModel();
+    qDeleteAll(mItems);
+    mItems.clear();
+    endResetModel();
 }
 
 void MonitoredItemModel::disableMonitoring(int index)
