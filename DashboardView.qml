@@ -84,6 +84,7 @@ Rectangle {
                         width: parent.width - 2 * parent.padding
                         text: dragArea.value
                         elide: Text.ElideRight
+                        clip: true
                     }
                 }
             }
