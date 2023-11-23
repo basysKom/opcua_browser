@@ -69,6 +69,8 @@ private:
     void setupPkiConfiguration();
     void setState(const QString &state);
 
+    void restoreMonitoredNodeIds();
+
     OpcUaModel *mOpcUaModel;
     QOpcUaProvider *mOpcUaProvider;
     QOpcUaClient *mOpcUaClient = nullptr;
@@ -80,6 +82,7 @@ private:
     QList<QOpcUaEndpointDescription> mEndpointList;
     QOpcUaEndpointDescription mCurrentEndpoint;
     MonitoredItemModel *mMonitoredItemModel = nullptr;
+    QStringList mStoredMonitoredNodeIds;
 };
 
 #endif // BACKEND_H

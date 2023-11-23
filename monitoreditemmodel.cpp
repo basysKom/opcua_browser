@@ -70,6 +70,16 @@ void MonitoredItemModel::clearItems()
     endResetModel();
 }
 
+QStringList MonitoredItemModel::getNodeIds() const
+{
+    QStringList nodeIds;
+    for (const auto &item : mItems) {
+        nodeIds << item->nodeId();
+    }
+
+    return nodeIds;
+}
+
 void MonitoredItemModel::disableMonitoring(int index)
 {
     beginRemoveRows(QModelIndex(), index, index);

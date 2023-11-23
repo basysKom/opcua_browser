@@ -24,6 +24,8 @@ public:
     void addItem(QOpcUaNode *node);
     void clearItems();
 
+    QStringList getNodeIds() const;
+
     Q_INVOKABLE void disableMonitoring(int index);
 
 private:

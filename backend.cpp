@@ -222,6 +222,7 @@ void BackEnd::clientConnected()
 
     connect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this, &BackEnd::namespacesArrayUpdated);
     mOpcUaClient->updateNamespaceArray();
+    restoreMonitoredNodeIds();
 }
 
 void BackEnd::clientDisconnected()
@@ -232,6 +233,8 @@ void BackEnd::clientDisconnected()
     mOpcUaClient->deleteLater();
     mOpcUaClient = nullptr;
     mOpcUaModel->setOpcUaClient(nullptr);
+
+    mStoredMonitoredNodeIds = mMonitoredItemModel->getNodeIds();
     mMonitoredItemModel->clearItems();
 }
 
@@ -327,5 +330,12 @@ void BackEnd::setState(const QString &state)
     if (state != mState) {
         mState = state;
         emit stateTextChanged();
+    }
+}
+
+void BackEnd::restoreMonitoredNodeIds()
+{
+    for (const auto &nodeId : mStoredMonitoredNodeIds) {
+        monitorNode(nodeId);
     }
 }
