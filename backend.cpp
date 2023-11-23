@@ -1,4 +1,5 @@
 #include <QDir>
+#include <QSettings>
 #include <QStandardPaths>
 #include <QStringBuilder>
 
@@ -40,6 +41,19 @@ BackEnd::BackEnd(QObject *parent)
     //! [Application Identity]
     //m_identity = m_pkiConfig.applicationIdentity();
     //! [Application Identity]
+
+    QSettings settings;
+    mStoredMonitoredNodeIds = settings.value("monitoredNodeIds").toStringList();
+}
+
+BackEnd::~BackEnd()
+{
+    QSettings settings;
+    if (isConnected()) {
+        settings.setValue("monitoredNodeIds", mMonitoredItemModel->getNodeIds());
+    } else {
+        settings.setValue("monitoredNodeIds", mStoredMonitoredNodeIds);
+    }
 }
 
 bool BackEnd::isConnected() const

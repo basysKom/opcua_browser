@@ -28,6 +28,7 @@ public:
     Q_PROPERTY(QAbstractItemModel *monitoredItemModel READ monitoredItemModel NOTIFY opcUaModelChanged FINAL)
 
     explicit BackEnd(QObject *parent = nullptr);
+    ~BackEnd();
 
     bool isConnected() const;
     int connectionState() const;
