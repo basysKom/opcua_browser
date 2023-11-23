@@ -1,8 +1,10 @@
 #include <QColor>
 
+#include <QOpcUaClient>
+#include <QOpcUaNode>
+
 #include "opcuamodel.h"
 #include "opcuahelper.h"
-#include "treeitem.h"
 
 enum Roles : int {
     ColorRole = Qt::UserRole,
@@ -185,7 +187,7 @@ void OpcUaModel::resetModel() {
     if (nullptr == mOpcUaClient) {
         mRootItem.reset();
     } else {
-        mRootItem.reset(new TreeItem(mOpcUaClient->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::RootFolder)), this, QOpcUa::NodeClass::Object, nullptr));
+        mRootItem.reset(new TreeItem(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::RootFolder), this, QOpcUa::NodeClass::Object, nullptr));
     }
     endResetModel();
 }

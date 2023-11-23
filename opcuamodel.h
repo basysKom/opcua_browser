@@ -1,13 +1,12 @@
 #ifndef OPCUAMODEL_H
 #define OPCUAMODEL_H
 
-#include <QQmlEngine>
-
 #include <QAbstractItemModel>
-#include <QOpcUaClient>
-#include <QOpcUaNode>
 
 #include "treeitem.h"
+
+class QOpcUaClient;
+class QOpcUaNode;
 
 class OpcUaModel : public QAbstractItemModel
 {

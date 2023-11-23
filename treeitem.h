@@ -2,16 +2,13 @@
 #define TREEITEM_H
 
 #include <QObject>
-#include <QHash>
-#include <QQmlPropertyMap>
 
-#include <QOpcUaNode>
+#include <QOpcUaReferenceDescription>
 
 class AttributeModel;
 class ReferenceModel;
 class OpcUaModel;
 class QAbstractItemModel;
-class QAbstractListModel;
 class QSortFilterProxyModel;
 
 class TreeItem : public QObject
@@ -19,8 +16,8 @@ class TreeItem : public QObject
     Q_OBJECT
 public:
     explicit TreeItem(OpcUaModel *model);
-    TreeItem(QOpcUaNode *node, OpcUaModel *model, QOpcUa::NodeClass nodeClass, TreeItem *parent);
-    TreeItem(QOpcUaNode *node, OpcUaModel *model, const QOpcUaReferenceDescription &browsingData, TreeItem *parent);
+    TreeItem(const QString &nodeId, OpcUaModel *model, QOpcUa::NodeClass nodeClass, TreeItem *parent);
+    TreeItem(const QString &nodeId, OpcUaModel *model, const QOpcUaReferenceDescription &browsingData, TreeItem *parent);
     ~TreeItem();
 
     QAbstractItemModel *attributes() const noexcept;
@@ -43,17 +40,13 @@ public:
     void refresh();
     void refreshAttributes();
 
-private slots:
-    void startBrowsing(bool forceRebrowse = false, QOpcUa::ReferenceTypeId referenceType = QOpcUa::ReferenceTypeId::HierarchicalReferences);
-    void handleAttributes(const QOpcUa::NodeAttributes &attr);
-    void browseFinished(const QList<QOpcUaReferenceDescription> &children, QOpcUa::UaStatusCode statusCode);
-
 private:
-    std::unique_ptr<QOpcUaNode> mOpcNode;
+    void startBrowsing();
+    bool browseChildren();
+    bool browseNonHierarchicalReferences();
+
     OpcUaModel *mModel = nullptr;
-    bool mAttributesReady = false;
     bool mBrowseStarted = false;
-    bool mBrowseNonHierarchicalReferences = false;
     QList<TreeItem *> mChildItems;
     QSet<QString> mChildNodeIds;
     TreeItem *mParentItem = nullptr;
