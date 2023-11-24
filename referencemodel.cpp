@@ -1,23 +1,15 @@
 #include "referencemodel.h"
 
-enum Roles : int {
-    TypeRole = Qt::DisplayRole,
-    ForwardRole = Qt::UserRole,
-    TargetRole
-};
+enum Roles : int { TypeRole = Qt::DisplayRole, ForwardRole = Qt::UserRole, TargetRole };
 
-ReferenceModel::ReferenceModel(QObject *parent)
-    : QAbstractListModel{parent}
-{
-
-}
+ReferenceModel::ReferenceModel(QObject *parent) : QAbstractListModel{ parent } { }
 
 QHash<int, QByteArray> ReferenceModel::roleNames() const
 {
     return {
-        {TypeRole, "type"},
-        {ForwardRole, "isForward"},
-        {TargetRole, "target"},
+        { TypeRole, "type" },
+        { ForwardRole, "isForward" },
+        { TargetRole, "target" },
     };
 }
 

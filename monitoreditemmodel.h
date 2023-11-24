@@ -29,7 +29,7 @@ public:
     Q_INVOKABLE void disableMonitoring(int index);
 
 private:
-    QList<MonitoredItem*> mItems;
+    QList<MonitoredItem *> mItems;
 };
 
 #endif // MONITOREDITEMMODEL_H

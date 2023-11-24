@@ -15,7 +15,7 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
 
-    void addReference(const QString& type, bool isForward, const QString &target);
+    void addReference(const QString &type, bool isForward, const QString &target);
     void setReferences(const QList<Reference> &references);
     void clearReferences();
     void clearForwardReferences();

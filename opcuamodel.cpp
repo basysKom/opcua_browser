@@ -16,7 +16,8 @@ enum Roles : int {
     CanMonitoringRole
 };
 
-QHash<int, QByteArray> OpcUaModel::roleNames() const {
+QHash<int, QByteArray> OpcUaModel::roleNames() const
+{
     auto names = QAbstractItemModel::roleNames();
     names[ColorRole] = "color";
     names[ValueRole] = "value";
@@ -28,12 +29,9 @@ QHash<int, QByteArray> OpcUaModel::roleNames() const {
     return names;
 }
 
-OpcUaModel::OpcUaModel(QObject *parent)
-    : QAbstractItemModel{parent}
+OpcUaModel::OpcUaModel(QObject *parent) : QAbstractItemModel{ parent }
 {
-    connect(this, &OpcUaModel::browsingForReferenceTypesFinished, this, [=] () {
-        resetModel();
-    });
+    connect(this, &OpcUaModel::browsingForReferenceTypesFinished, this, [=]() { resetModel(); });
 }
 
 void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
@@ -43,7 +41,8 @@ void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
     mOpcUaClient = client;
 
     if (nullptr != mOpcUaClient) {
-        auto referencesNode = client->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::References));
+        auto referencesNode =
+                client->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::References));
         browseReferenceTypes(referencesNode);
     } else {
         resetModel();
@@ -62,8 +61,7 @@ QString OpcUaModel::getStringForRefTypeId(const QString &refTypeId, bool isForwa
         return emptyString;
     }
 
-    return isForward ? mReferencesList[refTypeId].first
-                     : mReferencesList[refTypeId].second;
+    return isForward ? mReferencesList[refTypeId].first : mReferencesList[refTypeId].second;
 }
 
 QVariant OpcUaModel::data(const QModelIndex &index, int role) const
@@ -103,8 +101,8 @@ QModelIndex OpcUaModel::index(int row, int column, const QModelIndex &parent) co
         return QModelIndex();
 
     TreeItem *item = parent.isValid()
-                         ? static_cast<TreeItem*>(parent.internalPointer())->child(row)
-                         : mRootItem.get();
+            ? static_cast<TreeItem *>(parent.internalPointer())->child(row)
+            : mRootItem.get();
 
     return item ? createIndex(row, column, item) : QModelIndex();
 }
@@ -114,7 +112,7 @@ QModelIndex OpcUaModel::parent(const QModelIndex &index) const
     if (!index.isValid())
         return QModelIndex();
 
-    auto childItem = static_cast<TreeItem*>(index.internalPointer());
+    auto childItem = static_cast<TreeItem *>(index.internalPointer());
     auto parentItem = childItem->parentItem();
 
     if (childItem == mRootItem.get() || !parentItem)
@@ -134,7 +132,7 @@ int OpcUaModel::rowCount(const QModelIndex &parent) const
     if (!parent.isValid())
         return 1; // only one root item
 
-    auto parentItem = static_cast<TreeItem*>(parent.internalPointer());
+    auto parentItem = static_cast<TreeItem *>(parent.internalPointer());
     return parentItem ? parentItem->childCount() : 0;
 }
 
@@ -148,7 +146,7 @@ void OpcUaModel::setCurrentIndex(const QModelIndex &index)
     if (!index.isValid() || (index == mCurrentIndex))
         return;
 
-    auto treeItem = static_cast<TreeItem*>(index.internalPointer());
+    auto treeItem = static_cast<TreeItem *>(index.internalPointer());
     if (nullptr != treeItem) {
         treeItem->refreshAttributes();
     }
@@ -165,7 +163,7 @@ void OpcUaModel::refreshIndex(const QModelIndex &index)
     if (!index.isValid())
         return;
 
-    auto treeItem = static_cast<TreeItem*>(index.internalPointer());
+    auto treeItem = static_cast<TreeItem *>(index.internalPointer());
     if (nullptr != treeItem) {
         treeItem->refresh();
     }
@@ -176,18 +174,20 @@ void OpcUaModel::refreshAttributesForCurrentIndex()
     if (!mCurrentIndex.isValid())
         return;
 
-    auto treeItem = static_cast<TreeItem*>(mCurrentIndex.internalPointer());
+    auto treeItem = static_cast<TreeItem *>(mCurrentIndex.internalPointer());
     if (nullptr != treeItem) {
         treeItem->refreshAttributes();
     }
 }
 
-void OpcUaModel::resetModel() {
+void OpcUaModel::resetModel()
+{
     beginResetModel();
     if (nullptr == mOpcUaClient) {
         mRootItem.reset();
     } else {
-        mRootItem.reset(new TreeItem(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::RootFolder), this, QOpcUa::NodeClass::Object, nullptr));
+        mRootItem.reset(new TreeItem(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::RootFolder),
+                                     this, QOpcUa::NodeClass::Object, nullptr));
     }
     endResetModel();
 }
@@ -196,8 +196,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
 {
     static int cntNodes = 0;
 
-    auto deleteNode = [=](QOpcUaNode *n)
-    {
+    auto deleteNode = [=](QOpcUaNode *n) {
         n->deleteLater();
         --cntNodes;
 
@@ -207,7 +206,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
         }
     };
 
-    connect(node, &QOpcUaNode::attributeRead, this, [=] (const QOpcUa::NodeAttributes &attributes) {
+    connect(node, &QOpcUaNode::attributeRead, this, [=](const QOpcUa::NodeAttributes &attributes) {
         QString nodeId;
         if (attributes.testFlag(QOpcUa::NodeAttribute::NodeId)) {
             nodeId = QOpcUaHelper::getAttributeValue(node, QOpcUa::NodeAttribute::NodeId);
@@ -231,33 +230,38 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
         deleteNode(node);
     });
 
-    connect(node, &QOpcUaNode::browseFinished, this, [=] (const QList<QOpcUaReferenceDescription> &children, QOpcUa::UaStatusCode statusCode) {
-        if (nullptr == mOpcUaClient) {
-            qWarning() << "OPC UA client is null" << node->nodeId();
-            deleteNode(node);
-            return;
-        }
+    connect(node, &QOpcUaNode::browseFinished, this,
+            [=](const QList<QOpcUaReferenceDescription> &children,
+                QOpcUa::UaStatusCode statusCode) {
+                if (nullptr == mOpcUaClient) {
+                    qWarning() << "OPC UA client is null" << node->nodeId();
+                    deleteNode(node);
+                    return;
+                }
 
-        for (const auto &item : children) {
-            auto childNode = mOpcUaClient->node(item.targetNodeId());
-            if (!childNode) {
-                qWarning() << "Failed to instantiate node:" << item.targetNodeId().nodeId();
-                continue;
-            }
+                for (const auto &item : children) {
+                    auto childNode = mOpcUaClient->node(item.targetNodeId());
+                    if (!childNode) {
+                        qWarning() << "Failed to instantiate node:" << item.targetNodeId().nodeId();
+                        continue;
+                    }
 
-            browseReferenceTypes(childNode);
-        }
+                    browseReferenceTypes(childNode);
+                }
 
-        // Second step: read attributes
-        if (!node->readAttributes(QOpcUa::NodeAttribute::NodeId | QOpcUa::NodeAttribute::DisplayName | QOpcUa::NodeAttribute::InverseName)) {
-            qWarning() << "Reading attributes" << node->nodeId() << "failed";
-            deleteNode(node);
-        }
-    });
+                // Second step: read attributes
+                if (!node->readAttributes(QOpcUa::NodeAttribute::NodeId
+                                          | QOpcUa::NodeAttribute::DisplayName
+                                          | QOpcUa::NodeAttribute::InverseName)) {
+                    qWarning() << "Reading attributes" << node->nodeId() << "failed";
+                    deleteNode(node);
+                }
+            });
 
     cntNodes++;
     // First step: browse for children
-    if (!node->browseChildren(QOpcUa::ReferenceTypeId::HierarchicalReferences, QOpcUa::NodeClass::ReferenceType)) {
+    if (!node->browseChildren(QOpcUa::ReferenceTypeId::HierarchicalReferences,
+                              QOpcUa::NodeClass::ReferenceType)) {
         qWarning() << "Browsing node" << node->nodeId() << "failed";
         deleteNode(node);
     }

@@ -16,7 +16,8 @@ static bool copyDirRecursively(const QString &from, const QString &to)
     if (!QDir().mkpath(to))
         return false;
 
-    const QFileInfoList infos = srcDir.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    const QFileInfoList infos =
+            srcDir.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
     for (const QFileInfo &info : infos) {
         const QString srcItemPath = info.absoluteFilePath();
         const QString dstItemPath = targetDir.absoluteFilePath(info.fileName());
@@ -32,14 +33,14 @@ static bool copyDirRecursively(const QString &from, const QString &to)
 }
 
 BackEnd::BackEnd(QObject *parent)
-    : QObject{parent}
-    , mOpcUaModel(new OpcUaModel(this))
-    , mOpcUaProvider(new QOpcUaProvider(this))
-    , mMonitoredItemModel(new MonitoredItemModel(this))
+    : QObject{ parent },
+      mOpcUaModel(new OpcUaModel(this)),
+      mOpcUaProvider(new QOpcUaProvider(this)),
+      mMonitoredItemModel(new MonitoredItemModel(this))
 {
 
     //! [Application Identity]
-    //m_identity = m_pkiConfig.applicationIdentity();
+    // m_identity = m_pkiConfig.applicationIdentity();
     //! [Application Identity]
 
     QSettings settings;
@@ -81,12 +82,8 @@ QVector<QString> BackEnd::serverList() const noexcept
 
 QVector<QString> BackEnd::endpointList() const
 {
-    static const std::array<const char *, 4> modes = {
-        "Invalid",
-        "None",
-        "Sign",
-        "SignAndEncrypt"
-    };
+    static const std::array<const char *, 4> modes = { "Invalid", "None", "Sign",
+                                                       "SignAndEncrypt" };
 
     QVector<QString> list;
     for (const auto &endpoint : mEndpointList) {
@@ -127,7 +124,10 @@ void BackEnd::connectToEndpoint(int endpointIndex)
 {
     if ((endpointIndex < 0) || (endpointIndex >= mEndpointList.size())) {
         setState(QStringLiteral("endpoint index out of range"));
-        qCritical() << QStringLiteral("endpoint index out of range, index: %1, endpoint list size: %2").arg(endpointIndex).arg(mEndpointList.size());
+        qCritical() << QStringLiteral(
+                               "endpoint index out of range, index: %1, endpoint list size: %2")
+                               .arg(endpointIndex)
+                               .arg(mEndpointList.size());
         return;
     }
 
@@ -155,7 +155,8 @@ void BackEnd::monitorNode(const QString &nodeId)
 
     const auto node = mOpcUaClient->node(nodeId);
     if (nullptr == node) {
-        qWarning() << QStringLiteral("cannot monitor node %1, could not get a node from the plugin").arg(nodeId);
+        qWarning() << QStringLiteral("cannot monitor node %1, could not get a node from the plugin")
+                              .arg(nodeId);
         return;
     }
 
@@ -169,16 +170,17 @@ void BackEnd::findServers(const QString &urlString)
 
     createClient();
     // set default port if missing
-    if (url.port() == -1) url.setPort(4840);
+    if (url.port() == -1)
+        url.setPort(4840);
 
     if (mOpcUaClient) {
         mOpcUaClient->findServers(url);
         qDebug() << "Discovering servers on " << url.toString();
     }
-
 }
 
-void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &servers, QOpcUa::UaStatusCode statusCode)
+void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &servers,
+                                  QOpcUa::UaStatusCode statusCode)
 {
     qDebug() << "findServersComplete " << statusCode;
     if (!isSuccessStatus(statusCode)) {
@@ -190,7 +192,8 @@ void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &ser
     mServerList.clear();
     for (const auto &server : servers) {
         mServerList << server.discoveryUrls();
-        qDebug() << server.applicationUri() << server.applicationName() << server.discoveryUrls() << server.productUri();
+        qDebug() << server.applicationUri() << server.applicationName() << server.discoveryUrls()
+                 << server.productUri();
     }
 
     emit serverListChanged();
@@ -200,7 +203,9 @@ void BackEnd::getEndpoints(int serverIndex)
 {
     if ((serverIndex < 0) || (serverIndex >= mServerList.size())) {
         setState(QStringLiteral("server index out of range"));
-        qCritical() << QStringLiteral("server index out of range, index: %1, server list size: %2").arg(serverIndex).arg(mServerList.size());
+        qCritical() << QStringLiteral("server index out of range, index: %1, server list size: %2")
+                               .arg(serverIndex)
+                               .arg(mServerList.size());
         return;
     }
 
@@ -211,7 +216,8 @@ void BackEnd::getEndpoints(int serverIndex)
     mOpcUaClient->requestEndpoints(serverUrl);
 }
 
-void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpoints, QOpcUa::UaStatusCode statusCode)
+void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpoints,
+                                   QOpcUa::UaStatusCode statusCode)
 {
     qDebug() << "getEndpointsComplete " << statusCode;
     if (!isSuccessStatus(statusCode)) {
@@ -222,8 +228,8 @@ void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpo
     setState(QStringLiteral("%1 endpoint(s) received").arg(endpoints.size()));
     mEndpointList = endpoints;
     for (const auto &endpoint : endpoints) {
-        qDebug() << endpoint.endpointUrl() << endpoint.securityLevel()
-                 << endpoint.securityMode() << endpoint.securityPolicy();
+        qDebug() << endpoint.endpointUrl() << endpoint.securityLevel() << endpoint.securityMode()
+                 << endpoint.securityPolicy();
     }
 
     emit endpointListChanged();
@@ -234,7 +240,8 @@ void BackEnd::clientConnected()
     qDebug() << "client connected";
     setState(QStringLiteral("client connected"));
 
-    connect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this, &BackEnd::namespacesArrayUpdated);
+    connect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this,
+            &BackEnd::namespacesArrayUpdated);
     mOpcUaClient->updateNamespaceArray();
     restoreMonitoredNodeIds();
 }
@@ -260,7 +267,8 @@ void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)
     }
 
     qDebug() << "namespace array updated" << namespaceArray;
-    disconnect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this, &BackEnd::namespacesArrayUpdated);
+    disconnect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this,
+               &BackEnd::namespacesArrayUpdated);
 
     mOpcUaModel->setOpcUaClient(mOpcUaClient);
 }
@@ -280,9 +288,12 @@ void BackEnd::clientState(QOpcUaClient::ClientState state)
 void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
 {
     const QString statuscode = QOpcUa::statusToString(errorState->errorCode());
-    const QString msg = errorState->isClientSideError() ? tr("The client reported: ") : tr("The server reported: ");
+    const QString msg = errorState->isClientSideError() ? tr("The client reported: ")
+                                                        : tr("The server reported: ");
     setState(tr("Connection Error") % "\n" % msg
-             % QStringLiteral("0x%1 (%2)").arg(errorState->errorCode(), 8, 16, QLatin1Char('0')).arg(statuscode));
+             % QStringLiteral("0x%1 (%2)")
+                       .arg(errorState->errorCode(), 8, 16, QLatin1Char('0'))
+                       .arg(statuscode));
 }
 
 void BackEnd::createClient()
@@ -290,35 +301,41 @@ void BackEnd::createClient()
     if (mOpcUaClient == nullptr) {
         mOpcUaClient = mOpcUaProvider->createClient("open62541");
         if (!mOpcUaClient) {
-            const QString message(tr("A possible cause could be that the backend could not be loaded as a plugin."));
+            const QString message(tr("A possible cause could be that the backend "
+                                     "could not be loaded as a plugin."));
             setState(QStringLiteral("Failed to connect to server") % "\n" % message);
             return;
         }
 
         connect(mOpcUaClient, &QOpcUaClient::stateChanged, this, &BackEnd::connectionStateChanged);
         connect(mOpcUaClient, &QOpcUaClient::connectError, this, &BackEnd::clientConnectError);
-        //mOpcUaClient->setApplicationIdentity(m_identity);
-        //mOpcUaClient->setPkiConfiguration(m_pkiConfig);
+        // mOpcUaClient->setApplicationIdentity(m_identity);
+        // mOpcUaClient->setPkiConfiguration(m_pkiConfig);
 
-        //if (mOpcUaClient->supportedUserTokenTypes().contains(QOpcUaUserTokenPolicy::TokenType::Certificate)) {
-        //    QOpcUaAuthenticationInformation authInfo;
-        //    authInfo.setCertificateAuthentication();
-        //    mOpcUaClient->setAuthenticationInformation(authInfo);
-        //}
+        // if
+        // (mOpcUaClient->supportedUserTokenTypes().contains(QOpcUaUserTokenPolicy::TokenType::Certificate))
+        // {
+        //     QOpcUaAuthenticationInformation authInfo;
+        //     authInfo.setCertificateAuthentication();
+        //     mOpcUaClient->setAuthenticationInformation(authInfo);
+        // }
 
         connect(mOpcUaClient, &QOpcUaClient::connected, this, &BackEnd::clientConnected);
         connect(mOpcUaClient, &QOpcUaClient::disconnected, this, &BackEnd::clientDisconnected);
         connect(mOpcUaClient, &QOpcUaClient::errorChanged, this, &BackEnd::clientError);
         connect(mOpcUaClient, &QOpcUaClient::stateChanged, this, &BackEnd::clientState);
-        connect(mOpcUaClient, &QOpcUaClient::endpointsRequestFinished, this, &BackEnd::getEndpointsComplete);
-        connect(mOpcUaClient, &QOpcUaClient::findServersFinished, this, &BackEnd::findServersComplete);
+        connect(mOpcUaClient, &QOpcUaClient::endpointsRequestFinished, this,
+                &BackEnd::getEndpointsComplete);
+        connect(mOpcUaClient, &QOpcUaClient::findServersFinished, this,
+                &BackEnd::findServersComplete);
     }
 }
 
 //! [PKI Configuration]
 void BackEnd::setupPkiConfiguration()
 {
-    const QDir pkidir = QDir(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/pki");
+    const QDir pkidir =
+            QDir(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/pki");
 
     if (!pkidir.exists() && !copyDirRecursively(":/pki", pkidir.path()))
         qFatal("Could not set up directory %s!", qUtf8Printable(pkidir.path()));

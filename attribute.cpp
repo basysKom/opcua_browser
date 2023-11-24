@@ -9,11 +9,8 @@ static QString nodeAttributeToString(QOpcUa::NodeAttribute attribute)
 }
 
 Attribute::Attribute(QOpcUa::NodeAttribute attribute, const QString &value)
-    : mAttribute(attribute)
-    , mAttributeName(nodeAttributeToString(attribute))
-    , mValue(value)
+    : mAttribute(attribute), mAttributeName(nodeAttributeToString(attribute)), mValue(value)
 {
-
 }
 
 QOpcUa::NodeAttribute Attribute::attribute() const noexcept

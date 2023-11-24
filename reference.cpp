@@ -1,11 +1,8 @@
 #include "reference.h"
 
-Reference::Reference(const QString& type, bool isForward, const QString &target)
-    : mType(type)
-    , mIsForward(isForward)
-    , mTarget(target)
+Reference::Reference(const QString &type, bool isForward, const QString &target)
+    : mType(type), mIsForward(isForward), mTarget(target)
 {
-
 }
 
 const QString &Reference::type() const noexcept

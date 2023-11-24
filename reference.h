@@ -6,7 +6,7 @@
 class Reference
 {
 public:
-    explicit Reference(const QString& type, bool isForward, const QString &target);
+    explicit Reference(const QString &type, bool isForward, const QString &target);
 
     const QString &type() const noexcept;
     bool isForward() const noexcept;

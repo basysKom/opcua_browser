@@ -25,7 +25,8 @@ public:
     Q_PROPERTY(QVector<QString> serverList READ serverList NOTIFY serverListChanged FINAL)
     Q_PROPERTY(QVector<QString> endpointList READ endpointList NOTIFY endpointListChanged FINAL)
     Q_PROPERTY(QAbstractItemModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
-    Q_PROPERTY(QAbstractItemModel *monitoredItemModel READ monitoredItemModel NOTIFY opcUaModelChanged FINAL)
+    Q_PROPERTY(QAbstractItemModel *monitoredItemModel READ monitoredItemModel NOTIFY
+                       opcUaModelChanged FINAL)
 
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
@@ -46,7 +47,7 @@ public:
     Q_INVOKABLE void connectToEndpoint(int endpointIndex);
     Q_INVOKABLE void disconnectFromEndpoint();
 
-    Q_INVOKABLE void monitorNode(const QString& nodeId);
+    Q_INVOKABLE void monitorNode(const QString &nodeId);
 
 signals:
     void serverListChanged();
@@ -56,8 +57,10 @@ signals:
     void opcUaModelChanged();
 
 private slots:
-    void findServersComplete(const QList<QOpcUaApplicationDescription> &servers, QOpcUa::UaStatusCode statusCode);
-    void getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpoints, QOpcUa::UaStatusCode statusCode);
+    void findServersComplete(const QList<QOpcUaApplicationDescription> &servers,
+                             QOpcUa::UaStatusCode statusCode);
+    void getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpoints,
+                              QOpcUa::UaStatusCode statusCode);
     void clientConnected();
     void clientDisconnected();
     void namespacesArrayUpdated(const QStringList &namespaceArray);

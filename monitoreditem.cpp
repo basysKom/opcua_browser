@@ -4,16 +4,15 @@
 #include "opcuahelper.h"
 
 MonitoredItem::MonitoredItem(QOpcUaNode *node, QObject *parent)
-    : QObject(parent)
-    , mOpcNode(node)
-    , mNodeId(node->nodeId())
+    : QObject(parent), mOpcNode(node), mNodeId(node->nodeId())
 {
     Q_ASSERT(node);
 
     connect(mOpcNode.get(), &QOpcUaNode::attributeRead, this, &MonitoredItem::handleAttributes);
     connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this, &MonitoredItem::handleAttributes);
 
-    node->readAttributes(QOpcUa::NodeAttribute::BrowseName | QOpcUa::NodeAttribute::DisplayName | QOpcUa::NodeAttribute::Value);
+    node->readAttributes(QOpcUa::NodeAttribute::BrowseName | QOpcUa::NodeAttribute::DisplayName
+                         | QOpcUa::NodeAttribute::Value);
 
     QOpcUaMonitoringParameters p(100);
     node->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
@@ -38,11 +37,13 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
 {
     QString newDisplayName;
     if (attributes.testFlag(QOpcUa::NodeAttribute::DisplayName)) {
-        newDisplayName = QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::DisplayName);
+        newDisplayName =
+                QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::DisplayName);
     }
 
     if (newDisplayName.isEmpty() && attributes.testFlag(QOpcUa::NodeAttribute::BrowseName)) {
-        newDisplayName = QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::BrowseName);
+        newDisplayName =
+                QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::BrowseName);
     }
 
     if (!newDisplayName.isEmpty() && (newDisplayName != mDisplayName)) {
@@ -51,7 +52,8 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
     }
 
     if (attributes.testFlag(QOpcUa::NodeAttribute::Value)) {
-        const QString newValue = QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::Value);
+        const QString newValue =
+                QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::Value);
         if (newValue != mValue) {
             mValue = newValue;
             emit valueChanged();
