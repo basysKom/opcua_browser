@@ -195,12 +195,14 @@ void OpcUaModel::resetModel()
 void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
 {
     static int cntNodes = 0;
+    static QStringList knownNodeIds;
 
     auto deleteNode = [=](QOpcUaNode *n) {
         n->deleteLater();
         --cntNodes;
 
         if (0 == cntNodes) {
+            knownNodeIds.clear();
             // all reference type nodes have been read
             emit browsingForReferenceTypesFinished();
         }
@@ -246,6 +248,11 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
                         continue;
                     }
 
+                    if (knownNodeIds.contains(childNode->nodeId())) {
+                        childNode->deleteLater();
+                        continue;
+                    }
+
                     browseReferenceTypes(childNode);
                 }
 
@@ -258,6 +265,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
                 }
             });
 
+    knownNodeIds << node->nodeId();
     cntNodes++;
     // First step: browse for children
     if (!node->browseChildren(QOpcUa::ReferenceTypeId::HierarchicalReferences,
