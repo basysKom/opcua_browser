@@ -4,22 +4,26 @@ import QtQuick.Layouts
 
 Rectangle {
     id: root
+
     property alias attributes: attributeList.model
+
+    function maxDelegateWidth() {
+        var max = flickable.width
+        for (var child in attributeList.contentItem.children) {
+            max = Math.max(
+                        max,
+                        attributeList.contentItem.children[child].childrenRect.width)
+        }
+        return max
+    }
 
     color: "lightgray"
     opacity: attributeList.model ? 1 : 0.3
     clip: true
 
-    function maxDelegateWidth() {
-        var max = flickable.width;
-        for(var child in attributeList.contentItem.children) {
-            max = Math.max(max, attributeList.contentItem.children[child].childrenRect.width);
-        }
-        return max;
-    }
-
     Flickable {
         id: flickable
+
         anchors.fill: parent
         clip: true
 
@@ -27,15 +31,20 @@ Rectangle {
         contentHeight: attributeList.height
 
         boundsBehavior: Flickable.StopAtBounds
-        ScrollBar.horizontal: StyledScrollBar { }
+        ScrollBar.horizontal: StyledScrollBar {}
 
         ListView {
             id: attributeList
 
+            property bool wasOvershooted: false
+
             height: flickable.height
             width: contentItem.childrenRect.width
 
-            property bool wasOvershooted: false
+            model: root.attributes
+            //boundsBehavior: Flickable.StopAtBounds
+            ScrollBar.vertical: StyledScrollBar {}
+
             onVerticalOvershootChanged: {
                 // update attribute list on vertical overshoot
                 if (wasOvershooted && (verticalOvershoot >= 0)) {
@@ -44,17 +53,13 @@ Rectangle {
                 wasOvershooted = (verticalOvershoot < 0)
             }
 
-            model: root.attributes
-            //boundsBehavior: Flickable.StopAtBounds
-            ScrollBar.vertical: StyledScrollBar { }
-
             delegate: Rectangle {
                 id: listViewDelegate
+
                 readonly property real padding: 5
 
                 width: maxDelegateWidth()
                 implicitHeight: childrenRect.height
-
                 color: ((index % 2) == 0) ? "#9AE4E6" : "#9AE69A"
 
                 RowLayout {
@@ -63,6 +68,7 @@ Rectangle {
 
                     Text {
                         id: attribute
+
                         Layout.margins: 5
                         Layout.fillHeight: true
                         Layout.preferredWidth: root.width / 3
@@ -73,6 +79,7 @@ Rectangle {
 
                     Rectangle {
                         id: divider
+
                         Layout.fillHeight: true
                         width: 1
                         color: "black"
@@ -80,6 +87,7 @@ Rectangle {
 
                     Text {
                         id: valueLabel
+
                         Layout.margins: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true

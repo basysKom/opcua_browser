@@ -4,11 +4,13 @@ import QtQuick.Layouts
 
 Item {
     id: root
+
     property alias attributes: attributesTab.attributes
     property alias references: referencesTab.references
 
     TabBar {
         id: tabBar
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
@@ -20,12 +22,15 @@ Item {
 
         Repeater {
             model: ["Attributes", "References"]
-            StyledTabButton { text: modelData }
+            StyledTabButton {
+                text: modelData
+            }
         }
     }
 
     StackLayout {
         id: stackLayout
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: tabBar.bottom
@@ -34,9 +39,11 @@ Item {
         height: 200
 
         currentIndex: tabBar.currentIndex
+
         NodeAttributeList {
             id: attributesTab
         }
+
         NodeReferenceList {
             id: referencesTab
         }

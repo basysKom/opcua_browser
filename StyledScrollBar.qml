@@ -9,7 +9,8 @@ ScrollBar {
         implicitHeight: 10
         radius: 5
         color: "darkgray"
-        opacity: control.policy === ScrollBar.AlwaysOn || (control.active && control.size < 1.0) ? 0.75 : 0
+        opacity: (control.policy === ScrollBar.AlwaysOn)
+                 || (control.active && control.size < 1.0) ? 0.75 : 0
 
         // Animate the changes in opacity (default duration is 250 ms).
         Behavior on opacity {

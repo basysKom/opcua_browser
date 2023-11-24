@@ -4,22 +4,26 @@ import QtQuick.Layouts
 
 Rectangle {
     id: root
+
     property alias references: referenceList.model
+
+    function maxDelegateWidth() {
+        var max = flickable.width
+        for (var child in referenceList.contentItem.children) {
+            max = Math.max(
+                        max,
+                        referenceList.contentItem.children[child].childrenRect.width)
+        }
+        return max
+    }
 
     color: "lightgray"
     opacity: referenceList.model ? 1 : 0.3
     clip: true
 
-    function maxDelegateWidth() {
-        var max = flickable.width;
-        for(var child in referenceList.contentItem.children) {
-            max = Math.max(max, referenceList.contentItem.children[child].childrenRect.width);
-        }
-        return max;
-    }
-
     Flickable {
         id: flickable
+
         anchors.fill: parent
         clip: true
 
@@ -27,7 +31,7 @@ Rectangle {
         contentHeight: referenceList.height
 
         boundsBehavior: Flickable.StopAtBounds
-        ScrollBar.horizontal: StyledScrollBar { }
+        ScrollBar.horizontal: StyledScrollBar {}
 
         ListView {
             id: referenceList
@@ -36,17 +40,17 @@ Rectangle {
             width: contentItem.childrenRect.width
 
             //boundsBehavior: Flickable.StopAtBounds
-            ScrollBar.vertical: StyledScrollBar { }
+            ScrollBar.vertical: StyledScrollBar {}
 
             highlightFollowsCurrentItem: false
 
             delegate: Rectangle {
                 id: listViewDelegate
+
                 readonly property real padding: 5
 
                 width: maxDelegateWidth()
                 implicitHeight: childrenRect.height
-
                 color: ((index % 2) == 0) ? "#9AE4E6" : "#9AE69A"
 
                 RowLayout {

@@ -2,8 +2,9 @@ import QtQuick
 import QtQuick.Controls
 
 TabButton {
-    width: Math.max(100, implicitWidth)
     readonly property bool isCurrentTab: (TabBar.tabBar.currentIndex == TabBar.index)
+
+    width: Math.max(100, implicitWidth)
 
     background: Rectangle {
         color: "transparent"
@@ -14,6 +15,7 @@ TabButton {
             color: isCurrentTab ? "white" : "dimgray"
             radius: 10
         }
+
         Rectangle {
             anchors.left: parent.left
             anchors.right: parent.right

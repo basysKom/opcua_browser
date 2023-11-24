@@ -4,7 +4,6 @@ import QtQuick.Layouts
 
 Popup {
     id: contextMenu
-    modal: true
 
     property var currentTreeViewIndex
     property string currentNodeId
@@ -13,9 +12,11 @@ Popup {
     implicitWidth: contentItem.childrenRect.width
     implicitHeight: contentItem.childrenRect.height
     padding: 0
+    modal: true
 
     background: Rectangle {
         id: transparentBorderRect
+
         width: contextMenu.width
         height: contextMenu.height
         radius: 3
@@ -41,6 +42,7 @@ Popup {
 
         ListView {
             id: popupListView
+
             implicitWidth: contentItem.childrenRect.width
             implicitHeight: contentItem.childrenRect.height
             model: listModel
@@ -55,11 +57,13 @@ Popup {
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
+
                     onEntered: popupListView.currentIndex = index
                     onClicked: {
                         if (0 === model.index) {
                             // refresh pressed
-                            BackEnd.opcUaModel.refreshIndex(contextMenu.currentTreeViewIndex)
+                            BackEnd.opcUaModel.refreshIndex(
+                                        contextMenu.currentTreeViewIndex)
                         } else if (1 === model.index) {
                             // monitor pressed
                             BackEnd.monitorNode(contextMenu.currentNodeId)
@@ -92,7 +96,7 @@ Popup {
                         Layout.fillWidth: true
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHLeft
-                        text: model.name;
+                        text: model.name
                     }
                 }
             }

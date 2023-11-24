@@ -2,10 +2,12 @@ import QtQuick
 
 Rectangle {
     id: root
+
     color: "#FFBC42"
 
     NodesView {
         id: nodesView
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
@@ -14,6 +16,7 @@ Rectangle {
 
     Item {
         id: spacer
+
         anchors.left: parent.left
         anchors.right: parent.right
         y: root.height - 200 - height
@@ -29,6 +32,7 @@ Rectangle {
 
     NodeDetailView {
         id: nodeDetailView
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: spacer.bottom

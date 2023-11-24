@@ -5,6 +5,7 @@ import QtQuick.Layouts
 
 Window {
     id: window
+
     width: 480
     height: 640
     visible: true
@@ -27,6 +28,7 @@ Window {
 
     InputPanel {
         id: inputPanel
+
         z: 99
         x: 0
         y: window.height
@@ -40,6 +42,7 @@ Window {
                 y: window.height - inputPanel.height
             }
         }
+
         transitions: Transition {
             from: ""
             to: "visible"

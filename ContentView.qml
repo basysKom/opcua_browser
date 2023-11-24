@@ -2,9 +2,10 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-Item {    
+Item {
     TabBar {
         id: tabBar
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
@@ -15,13 +16,17 @@ Item {
         }
 
         Repeater {
-            model: ["Browser", "Dashboard"/*, "Log"*/]
-            StyledTabButton { text: modelData }
+            model: ["Browser", "Dashboard" /*, "Log"*/
+            ]
+            StyledTabButton {
+                text: modelData
+            }
         }
     }
 
     StackLayout {
         id: stackLayout
+
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: tabBar.bottom
@@ -29,9 +34,11 @@ Item {
         visible: tabBar.visible
 
         currentIndex: tabBar.currentIndex
+
         BrowserView {
             id: browserTab
         }
+
         DashboardView {
             id: dashboardTab
         }
