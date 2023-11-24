@@ -71,7 +71,7 @@ QVariant OpcUaModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    auto item = static_cast<TreeItem *>(index.internalPointer());
+    const TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
 
     switch (role) {
     case Qt::DisplayRole:

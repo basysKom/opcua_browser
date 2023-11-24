@@ -10,7 +10,7 @@ class MonitoredItem : public QObject
     Q_OBJECT
 
 public:
-    MonitoredItem(QOpcUaNode *node, QObject *parent = nullptr);
+    explicit MonitoredItem(QOpcUaNode *node, QObject *parent = nullptr);
 
     const QString &nodeId() const noexcept;
     const QString &displayName() const noexcept;

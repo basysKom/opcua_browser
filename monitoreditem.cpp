@@ -36,17 +36,17 @@ const QString &MonitoredItem::value() const noexcept
 
 void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
 {
-    QString displayName;
+    QString newDisplayName;
     if (attributes.testFlag(QOpcUa::NodeAttribute::DisplayName)) {
-        displayName = QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::DisplayName);
+        newDisplayName = QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::DisplayName);
     }
 
-    if (displayName.isEmpty() && attributes.testFlag(QOpcUa::NodeAttribute::BrowseName)) {
-        displayName = QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::BrowseName);
+    if (newDisplayName.isEmpty() && attributes.testFlag(QOpcUa::NodeAttribute::BrowseName)) {
+        newDisplayName = QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::BrowseName);
     }
 
-    if (!displayName.isEmpty() && (displayName != mDisplayName)) {
-        mDisplayName = displayName;
+    if (!newDisplayName.isEmpty() && (newDisplayName != mDisplayName)) {
+        mDisplayName = newDisplayName;
         emit displayNameChanged();
     }
 

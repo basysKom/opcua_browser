@@ -60,13 +60,6 @@ bool readNodeClassSpecificAttributes(QOpcUaNode *node, QOpcUa::NodeClass nodeCla
     return node->readAttributes(attributes);
 }
 
-TreeItem::TreeItem(OpcUaModel *model)
-    : QObject{nullptr}
-    , mModel(model)
-{
-
-}
-
 TreeItem::TreeItem(const QString &nodeId, OpcUaModel *model, QOpcUa::NodeClass nodeClass, TreeItem *parent)
     : QObject(parent)
     , mModel(model)

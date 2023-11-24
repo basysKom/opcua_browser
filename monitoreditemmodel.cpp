@@ -41,7 +41,7 @@ QVariant MonitoredItemModel::data(const QModelIndex &index, int role) const
 
 bool MonitoredItemModel::containsItem(const QString &nodeId) const noexcept
 {
-    auto it = std::find_if(mItems.begin(), mItems.end(), [&](MonitoredItem *item) { return (item->nodeId() == nodeId); });
+    auto it = std::find_if(mItems.begin(), mItems.end(), [&](const MonitoredItem *item) { return (item->nodeId() == nodeId); });
     return (it != mItems.end());
 }
 
@@ -73,7 +73,7 @@ void MonitoredItemModel::clearItems()
 QStringList MonitoredItemModel::getNodeIds() const
 {
     QStringList nodeIds;
-    for (const auto &item : mItems) {
+    for (const auto item : mItems) {
         nodeIds << item->nodeId();
     }
 

@@ -15,7 +15,6 @@ class TreeItem : public QObject
 {
     Q_OBJECT
 public:
-    explicit TreeItem(OpcUaModel *model);
     TreeItem(const QString &nodeId, OpcUaModel *model, QOpcUa::NodeClass nodeClass, TreeItem *parent);
     TreeItem(const QString &nodeId, OpcUaModel *model, const QOpcUaReferenceDescription &browsingData, TreeItem *parent);
     ~TreeItem();

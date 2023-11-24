@@ -41,7 +41,7 @@ QVariant AttributeModel::data(const QModelIndex &index, int role) const
 
 void AttributeModel::setAttribute(QOpcUa::NodeAttribute attribute, const QString &value)
 {
-    auto it = std::find_if(mAttributes.begin(), mAttributes.end(), [&](Attribute attr) { return (attr.attribute() == attribute); });
+    auto it = std::find_if(mAttributes.begin(), mAttributes.end(), [&](const Attribute &attr) { return (attr.attribute() == attribute); });
     if (it == mAttributes.end()) {
         int count = mAttributes.size();
         beginInsertRows(QModelIndex(), count, count);
