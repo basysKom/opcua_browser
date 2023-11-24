@@ -33,6 +33,7 @@ Window {
         x: 0
         y: window.height
         width: window.width
+        visible: active
 
         states: State {
             name: "visible"
