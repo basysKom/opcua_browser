@@ -93,7 +93,10 @@ TreeItem::TreeItem(const QString &nodeId, OpcUaModel *model,
                    const QOpcUaReferenceDescription &browsingData, TreeItem *parent)
     : TreeItem(nodeId, model, browsingData.nodeClass(), parent)
 {
-    mNodeBrowseName = browsingData.browseName().name();
+    mDisplayName = browsingData.displayName().text();
+    if (mDisplayName.isEmpty()) {
+        mDisplayName = browsingData.browseName().name();
+    }
 
     const QString type = model->getStringForRefTypeId(browsingData.refTypeId(), false);
     mReferenceModel->addReference(type, false, parent->displayName());
@@ -134,7 +137,7 @@ int TreeItem::childCount()
 
 const QString &TreeItem::displayName() const noexcept
 {
-    return mNodeBrowseName;
+    return mDisplayName;
 }
 
 const QColor &TreeItem::nodeClassColor() const noexcept
@@ -228,6 +231,8 @@ void TreeItem::refreshAttributes()
         return;
 
     connect(node, &QOpcUaNode::attributeRead, this, [=](const QOpcUa::NodeAttributes &attributes) {
+        QString displayName;
+        QString browseName;
         for (int i = 0; i <= 21; ++i) {
             const QOpcUa::NodeAttribute attr = static_cast<QOpcUa::NodeAttribute>(1 << i);
             if (!attributes.testFlag(attr))
@@ -238,12 +243,16 @@ void TreeItem::refreshAttributes()
 
             if (QOpcUa::NodeAttribute::NodeClass == attr) {
                 mNodeClass = node->attribute(attr).value<QOpcUa::NodeClass>();
+            } else if (QOpcUa::NodeAttribute::DisplayName == attr) {
+                displayName = QOpcUaHelper::getRawDisplayName(node);
             } else if (QOpcUa::NodeAttribute::BrowseName == attr) {
-                mNodeBrowseName = stringValue;
+                browseName = QOpcUaHelper::getRawBrowseName(node);
             } else if (QOpcUa::NodeAttribute::Value == attr) {
                 mValue = stringValue;
             }
         }
+
+        mDisplayName = displayName.isEmpty() ? browseName : displayName;
 
         emit mModel->dataChanged(mModel->createIndex(row(), 0, this),
                                  mModel->createIndex(row(), 0, this));

@@ -56,7 +56,7 @@ private:
     QSortFilterProxyModel *mSortedAttributeProxyModel;
     ReferenceModel *mReferenceModel;
     QSortFilterProxyModel *mSortedReferenceProxyModel;
-    QString mNodeBrowseName;
+    QString mDisplayName;
     QString mNodeId;
     QOpcUa::NodeClass mNodeClass = QOpcUa::NodeClass::Undefined;
     QString mValue;

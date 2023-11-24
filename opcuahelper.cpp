@@ -154,6 +154,16 @@ QString variantToString(const QVariant &value, const QString &typeNodeId)
     return QString();
 }
 
+QString QOpcUaHelper::getRawDisplayName(QOpcUaNode *node)
+{
+    return node->attribute(QOpcUa::NodeAttribute::DisplayName).value<QOpcUaLocalizedText>().text();
+}
+
+QString QOpcUaHelper::getRawBrowseName(QOpcUaNode *node)
+{
+    return node->attribute(QOpcUa::NodeAttribute::BrowseName).value<QOpcUaQualifiedName>().name();
+}
+
 QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr)
 {
     switch (attr) {
@@ -163,13 +173,17 @@ QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute 
         return metaEnum.valueToKey(int(nodeClass));
     }
     case QOpcUa::NodeAttribute::BrowseName:
-        return node->attribute(attr).value<QOpcUaQualifiedName>().name();
+        return QStringLiteral("%1:%2")
+                .arg(node->attribute(attr).value<QOpcUaQualifiedName>().namespaceIndex())
+                .arg(node->attribute(attr).value<QOpcUaQualifiedName>().name());
     case QOpcUa::NodeAttribute::DisplayName:
         Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::Description:
         Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::InverseName:
-        return node->attribute(attr).value<QOpcUaLocalizedText>().text();
+        return QStringLiteral("\"%1\", \"%2\"")
+                .arg(node->attribute(attr).value<QOpcUaLocalizedText>().locale(),
+                     node->attribute(attr).value<QOpcUaLocalizedText>().text());
     case QOpcUa::NodeAttribute::NodeId:
         Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::WriteMask:

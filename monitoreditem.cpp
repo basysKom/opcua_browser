@@ -37,13 +37,11 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
 {
     QString newDisplayName;
     if (attributes.testFlag(QOpcUa::NodeAttribute::DisplayName)) {
-        newDisplayName =
-                QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::DisplayName);
+        newDisplayName = QOpcUaHelper::getRawDisplayName(mOpcNode.get());
     }
 
     if (newDisplayName.isEmpty() && attributes.testFlag(QOpcUa::NodeAttribute::BrowseName)) {
-        newDisplayName =
-                QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::BrowseName);
+        newDisplayName = QOpcUaHelper::getRawBrowseName(mOpcNode.get());
     }
 
     if (!newDisplayName.isEmpty() && (newDisplayName != mDisplayName)) {
