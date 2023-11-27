@@ -19,6 +19,7 @@ public:
     QOpcUaClient *opcUaClient() const noexcept;
 
     QString getStringForRefTypeId(const QString &refTypeId, bool isForward) const;
+    QString getStringForDataTypeId(const QString &dataTypeId) const;
 
     virtual QHash<int, QByteArray> roleNames() const override;
     virtual QVariant data(const QModelIndex &index, int role) const override;
@@ -35,15 +36,22 @@ public:
 
 signals:
     void browsingForReferenceTypesFinished();
+    void browsingForDataTypesFinished();
 
 private:
     void resetModel();
     void browseReferenceTypes(QOpcUaNode *node);
+    void browseDataTypes(QOpcUaNode *node);
+
+    enum class EBrowseType { None = 0x00, ReferenceTypes = 0x01, DataTypes = 0x02 };
+    Q_DECLARE_FLAGS(BrowseTypes, EBrowseType)
 
     QOpcUaClient *mOpcUaClient = nullptr;
     std::unique_ptr<TreeItem> mRootItem;
     QModelIndex mCurrentIndex = QModelIndex();
+    BrowseTypes mBrowsedTypes = EBrowseType::None;
     QHash<QString, QPair<QString, QString>> mReferencesList;
+    QHash<QString, QString> mDataTypesList;
 
     friend class TreeItem;
 };

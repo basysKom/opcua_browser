@@ -239,7 +239,11 @@ void TreeItem::refreshAttributes()
                 continue;
 
             const QString stringValue = QOpcUaHelper::getFormattedAttributeValue(node, attr);
-            mAttributeModel->setAttribute(attr, stringValue);
+            if (QOpcUa::NodeAttribute::DataType == attr) {
+                mAttributeModel->setAttribute(attr, mModel->getStringForDataTypeId(stringValue));
+            } else {
+                mAttributeModel->setAttribute(attr, stringValue);
+            }
 
             if (QOpcUa::NodeAttribute::NodeClass == attr) {
                 mNodeClass = node->attribute(attr).value<QOpcUa::NodeClass>();
