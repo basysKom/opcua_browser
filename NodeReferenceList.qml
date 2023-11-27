@@ -37,7 +37,7 @@ Rectangle {
             id: referenceList
 
             height: flickable.height
-            width: contentItem.childrenRect.width
+            width: maxDelegateWidth()
 
             //boundsBehavior: Flickable.StopAtBounds
             ScrollBar.vertical: StyledScrollBar {}

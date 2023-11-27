@@ -39,7 +39,7 @@ Rectangle {
             property bool wasOvershooted: false
 
             height: flickable.height
-            width: contentItem.childrenRect.width
+            width: maxDelegateWidth()
 
             model: root.attributes
             //boundsBehavior: Flickable.StopAtBounds
