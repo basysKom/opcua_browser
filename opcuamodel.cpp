@@ -164,6 +164,21 @@ int OpcUaModel::columnCount(const QModelIndex &parent) const
     return 1;
 }
 
+void OpcUaModel::setCurrentNodeId(const QString &nodeId)
+{
+    if (nodeId.isEmpty())
+        return;
+
+    const auto indices =
+            match(index(0, 0), NodeIdRole, nodeId, 1, Qt::MatchExactly | Qt::MatchRecursive);
+
+    if (indices.isEmpty()) {
+        qWarning() << QStringLiteral("No index for node %1 found").arg(nodeId);
+    } else {
+        setCurrentIndex(indices.constFirst());
+    }
+}
+
 void OpcUaModel::setCurrentIndex(const QModelIndex &index)
 {
     if (!index.isValid() || (index == mCurrentIndex))
@@ -179,6 +194,8 @@ void OpcUaModel::setCurrentIndex(const QModelIndex &index)
     emit dataChanged(index, index, QList<int>() << SelectedRole);
     if (lastCurrentIndex.isValid())
         emit dataChanged(lastCurrentIndex, lastCurrentIndex, QList<int>() << SelectedRole);
+
+    emit currentIndexChanged(index);
 }
 
 void OpcUaModel::refreshIndex(const QModelIndex &index)
@@ -213,6 +230,10 @@ void OpcUaModel::resetModel()
                                      this, QOpcUa::NodeClass::Object, nullptr));
     }
     endResetModel();
+
+    if (nullptr != mRootItem.get()) {
+        setCurrentIndex(index(0, 0));
+    }
 }
 
 void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)

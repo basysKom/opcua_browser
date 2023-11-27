@@ -42,6 +42,7 @@ public:
     void refreshAttributes();
 
 private:
+    void addForwardItemToReferenceModel(const QOpcUaReferenceDescription &item);
     void startBrowsing();
     bool browseChildren();
     bool browseNonHierarchicalReferences();

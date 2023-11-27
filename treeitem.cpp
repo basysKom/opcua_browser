@@ -98,8 +98,9 @@ TreeItem::TreeItem(const QString &nodeId, OpcUaModel *model,
         mDisplayName = browsingData.browseName().name();
     }
 
-    const QString type = model->getStringForRefTypeId(browsingData.refTypeId(), false);
-    mReferenceModel->addReference(type, false, parent->displayName());
+    const QString typeNodeId = browsingData.refTypeId();
+    const QString type = model->getStringForRefTypeId(typeNodeId, false);
+    mReferenceModel->addReference(type, typeNodeId, false, parent->displayName(), parent->nodeId());
 }
 
 TreeItem::~TreeItem()
@@ -270,6 +271,14 @@ void TreeItem::refreshAttributes()
     }
 }
 
+void TreeItem::addForwardItemToReferenceModel(const QOpcUaReferenceDescription &item)
+{
+    const QString targetNodeId = item.targetNodeId().nodeId();
+    const QString typeNodeId = item.refTypeId();
+    const QString type = mModel->getStringForRefTypeId(typeNodeId, true);
+    mReferenceModel->addReference(type, typeNodeId, true, item.displayName().text(), targetNodeId);
+}
+
 bool TreeItem::browseChildren()
 {
     auto node = mModel->opcUaClient()->node(mNodeId);
@@ -288,8 +297,7 @@ bool TreeItem::browseChildren()
 
                 const auto index = mModel->createIndex(row(), 0, this);
                 for (const auto &item : children) {
-                    const QString type = mModel->getStringForRefTypeId(item.refTypeId(), true);
-                    mReferenceModel->addReference(type, true, item.displayName().text());
+                    addForwardItemToReferenceModel(item);
 
                     const QString nodeId = item.targetNodeId().nodeId();
                     if (hasChildNodeItem(nodeId))
@@ -331,8 +339,7 @@ bool TreeItem::browseNonHierarchicalReferences()
                 }
 
                 for (const auto &item : children) {
-                    const QString type = mModel->getStringForRefTypeId(item.refTypeId(), true);
-                    mReferenceModel->addReference(type, true, item.displayName().text());
+                    addForwardItemToReferenceModel(item);
                 }
 
                 const auto index = mModel->createIndex(row(), 0, this);

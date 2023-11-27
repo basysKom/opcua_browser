@@ -29,6 +29,7 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
+    Q_INVOKABLE void setCurrentNodeId(const QString &nodeId);
     Q_INVOKABLE void setCurrentIndex(const QModelIndex &index);
     Q_INVOKABLE void refreshIndex(const QModelIndex &index);
 
@@ -37,6 +38,7 @@ public:
 signals:
     void browsingForReferenceTypesFinished();
     void browsingForDataTypesFinished();
+    void currentIndexChanged(const QModelIndex &index);
 
 private:
     void resetModel();
