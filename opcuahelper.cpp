@@ -154,17 +154,7 @@ QString variantToString(const QVariant &value, const QString &typeNodeId)
     return QString();
 }
 
-QString QOpcUaHelper::getRawDisplayName(QOpcUaNode *node)
-{
-    return node->attribute(QOpcUa::NodeAttribute::DisplayName).value<QOpcUaLocalizedText>().text();
-}
-
-QString QOpcUaHelper::getRawBrowseName(QOpcUaNode *node)
-{
-    return node->attribute(QOpcUa::NodeAttribute::BrowseName).value<QOpcUaQualifiedName>().name();
-}
-
-QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr)
+QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr)
 {
     switch (attr) {
     case QOpcUa::NodeAttribute::NodeClass: {
@@ -172,6 +162,51 @@ QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute 
         const QMetaEnum metaEnum = QMetaEnum::fromType<QOpcUa::NodeClass>();
         return metaEnum.valueToKey(int(nodeClass));
     }
+    case QOpcUa::NodeAttribute::BrowseName:
+        return node->attribute(attr).value<QOpcUaQualifiedName>().name();
+    case QOpcUa::NodeAttribute::DisplayName:
+    case QOpcUa::NodeAttribute::Description:
+    case QOpcUa::NodeAttribute::InverseName:
+        return node->attribute(attr).value<QOpcUaLocalizedText>().text();
+    case QOpcUa::NodeAttribute::NodeId:
+    case QOpcUa::NodeAttribute::WriteMask:
+    case QOpcUa::NodeAttribute::UserWriteMask:
+    case QOpcUa::NodeAttribute::IsAbstract:
+    case QOpcUa::NodeAttribute::Symmetric:
+    case QOpcUa::NodeAttribute::ContainsNoLoops:
+    case QOpcUa::NodeAttribute::DataType:
+    case QOpcUa::NodeAttribute::Historizing:
+    case QOpcUa::NodeAttribute::Executable:
+    case QOpcUa::NodeAttribute::UserExecutable:
+        return node->attribute(attr).toString();
+    case QOpcUa::NodeAttribute::ValueRank:
+        return QString::number(node->attribute(attr).toInt());
+    case QOpcUa::NodeAttribute::ArrayDimensions:
+        return QString::number(node->attribute(attr).toUInt());
+    case QOpcUa::NodeAttribute::MinimumSamplingInterval:
+        return QString::number(node->attribute(attr).toDouble());
+    case QOpcUa::NodeAttribute::EventNotifier:
+    case QOpcUa::NodeAttribute::AccessLevel:
+    case QOpcUa::NodeAttribute::UserAccessLevel: {
+        const quint32 byte = node->attribute(attr).toUInt();
+        return QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
+    }
+    case QOpcUa::NodeAttribute::Value: {
+        const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();
+        const QVariant attrValue = node->attribute(attr);
+        return variantToString(attrValue, type);
+    }
+    case QOpcUa::NodeAttribute::None:
+        return QString();
+    }
+
+    Q_UNREACHABLE();
+    return QString();
+}
+
+QString QOpcUaHelper::getFormattedAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr)
+{
+    switch (attr) {
     case QOpcUa::NodeAttribute::BrowseName:
         return QStringLiteral("%1:%2")
                 .arg(node->attribute(attr).value<QOpcUaQualifiedName>().namespaceIndex())
@@ -184,47 +219,26 @@ QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute 
         return QStringLiteral("\"%1\", \"%2\"")
                 .arg(node->attribute(attr).value<QOpcUaLocalizedText>().locale(),
                      node->attribute(attr).value<QOpcUaLocalizedText>().text());
+    case QOpcUa::NodeAttribute::NodeClass:
     case QOpcUa::NodeAttribute::NodeId:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::WriteMask:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::UserWriteMask:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::IsAbstract:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::Symmetric:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::ContainsNoLoops:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::DataType:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::Historizing:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::Executable:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::UserExecutable:
-        return node->attribute(attr).toString();
     case QOpcUa::NodeAttribute::ValueRank:
-        return QString::number(node->attribute(attr).toInt());
     case QOpcUa::NodeAttribute::ArrayDimensions:
-        return QString::number(node->attribute(attr).toUInt());
     case QOpcUa::NodeAttribute::MinimumSamplingInterval:
-        return QString::number(node->attribute(attr).toDouble());
     case QOpcUa::NodeAttribute::EventNotifier:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::AccessLevel:
-        Q_FALLTHROUGH();
-    case QOpcUa::NodeAttribute::UserAccessLevel: {
-        const quint32 byte = node->attribute(attr).toUInt();
-        return QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
-    }
-    case QOpcUa::NodeAttribute::Value: {
-        const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();
-        const QVariant attrValue = node->attribute(attr);
-        return variantToString(attrValue, type);
-    }
+    case QOpcUa::NodeAttribute::UserAccessLevel:
+    case QOpcUa::NodeAttribute::Value:
     case QOpcUa::NodeAttribute::None:
-        return QString();
+        return getRawAttributeValue(node, attr);
     }
 
     Q_UNREACHABLE();

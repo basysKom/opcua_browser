@@ -238,15 +238,15 @@ void TreeItem::refreshAttributes()
             if (!attributes.testFlag(attr))
                 continue;
 
-            const QString stringValue = QOpcUaHelper::getAttributeValue(node, attr);
+            const QString stringValue = QOpcUaHelper::getFormattedAttributeValue(node, attr);
             mAttributeModel->setAttribute(attr, stringValue);
 
             if (QOpcUa::NodeAttribute::NodeClass == attr) {
                 mNodeClass = node->attribute(attr).value<QOpcUa::NodeClass>();
             } else if (QOpcUa::NodeAttribute::DisplayName == attr) {
-                displayName = QOpcUaHelper::getRawDisplayName(node);
+                displayName = QOpcUaHelper::getRawAttributeValue(node, attr);
             } else if (QOpcUa::NodeAttribute::BrowseName == attr) {
-                browseName = QOpcUaHelper::getRawBrowseName(node);
+                browseName = QOpcUaHelper::getRawAttributeValue(node, attr);
             } else if (QOpcUa::NodeAttribute::Value == attr) {
                 mValue = stringValue;
             }

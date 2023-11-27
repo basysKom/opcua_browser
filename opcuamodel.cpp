@@ -196,6 +196,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
 {
     static int cntNodes = 0;
     static QStringList knownNodeIds;
+    static const QString formattedReferenceString = QStringLiteral("%1 (%2)");
 
     auto deleteNode = [=](QOpcUaNode *n) {
         n->deleteLater();
@@ -211,17 +212,21 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
     connect(node, &QOpcUaNode::attributeRead, this, [=](const QOpcUa::NodeAttributes &attributes) {
         QString nodeId;
         if (attributes.testFlag(QOpcUa::NodeAttribute::NodeId)) {
-            nodeId = QOpcUaHelper::getAttributeValue(node, QOpcUa::NodeAttribute::NodeId);
+            nodeId = QOpcUaHelper::getRawAttributeValue(node, QOpcUa::NodeAttribute::NodeId);
         }
 
         QString displayName;
         if (attributes.testFlag(QOpcUa::NodeAttribute::DisplayName)) {
-            displayName = QOpcUaHelper::getAttributeValue(node, QOpcUa::NodeAttribute::DisplayName);
+            displayName = formattedReferenceString.arg(
+                    QOpcUaHelper::getRawAttributeValue(node, QOpcUa::NodeAttribute::DisplayName),
+                    nodeId);
         }
 
         QString inverseName;
         if (attributes.testFlag(QOpcUa::NodeAttribute::InverseName)) {
-            inverseName = QOpcUaHelper::getAttributeValue(node, QOpcUa::NodeAttribute::InverseName);
+            inverseName = formattedReferenceString.arg(
+                    QOpcUaHelper::getRawAttributeValue(node, QOpcUa::NodeAttribute::InverseName),
+                    nodeId);
         }
 
         if (!nodeId.isEmpty()) {
