@@ -97,10 +97,6 @@ TreeItem::TreeItem(const QString &nodeId, OpcUaModel *model,
     if (mDisplayName.isEmpty()) {
         mDisplayName = browsingData.browseName().name();
     }
-
-    const QString typeNodeId = browsingData.refTypeId();
-    const QString type = model->getStringForRefTypeId(typeNodeId, false);
-    mReferenceModel->addReference(type, typeNodeId, false, parent->displayName(), parent->nodeId());
 }
 
 TreeItem::~TreeItem()
@@ -271,12 +267,13 @@ void TreeItem::refreshAttributes()
     }
 }
 
-void TreeItem::addForwardItemToReferenceModel(const QOpcUaReferenceDescription &item)
+void TreeItem::addItemToReferenceModel(const QOpcUaReferenceDescription &item)
 {
     const QString targetNodeId = item.targetNodeId().nodeId();
     const QString typeNodeId = item.refTypeId();
     const QString type = mModel->getStringForRefTypeId(typeNodeId, true);
-    mReferenceModel->addReference(type, typeNodeId, true, item.displayName().text(), targetNodeId);
+    mReferenceModel->addReference(type, typeNodeId, item.isForwardReference(),
+                                  item.displayName().text(), targetNodeId);
 }
 
 bool TreeItem::browseChildren()
@@ -297,7 +294,9 @@ bool TreeItem::browseChildren()
 
                 const auto index = mModel->createIndex(row(), 0, this);
                 for (const auto &item : children) {
-                    addForwardItemToReferenceModel(item);
+                    addItemToReferenceModel(item);
+                    if (!item.isForwardReference())
+                        continue;
 
                     const QString nodeId = item.targetNodeId().nodeId();
                     if (hasChildNodeItem(nodeId))
@@ -313,7 +312,11 @@ bool TreeItem::browseChildren()
                 node->deleteLater();
             });
 
-    if (!node->browseChildren()) {
+    QOpcUaBrowseRequest request;
+    request.setBrowseDirection(QOpcUaBrowseRequest::BrowseDirection::Both);
+    request.setReferenceTypeId(QOpcUa::ReferenceTypeId::HierarchicalReferences);
+    request.setIncludeSubtypes(true);
+    if (!node->browse(request)) {
         qWarning() << "Browsing node" << node->nodeId() << "failed";
         node->deleteLater();
         return false;
@@ -339,7 +342,7 @@ bool TreeItem::browseNonHierarchicalReferences()
                 }
 
                 for (const auto &item : children) {
-                    addForwardItemToReferenceModel(item);
+                    addItemToReferenceModel(item);
                 }
 
                 const auto index = mModel->createIndex(row(), 0, this);
@@ -348,7 +351,11 @@ bool TreeItem::browseNonHierarchicalReferences()
                 node->deleteLater();
             });
 
-    if (!node->browseChildren(QOpcUa::ReferenceTypeId::NonHierarchicalReferences)) {
+    QOpcUaBrowseRequest request;
+    request.setBrowseDirection(QOpcUaBrowseRequest::BrowseDirection::Both);
+    request.setReferenceTypeId(QOpcUa::ReferenceTypeId::NonHierarchicalReferences);
+    request.setIncludeSubtypes(true);
+    if (!node->browse(request)) {
         qWarning() << "Browsing non hierarchical references of node" << node->nodeId() << "failed";
         node->deleteLater();
         return false;
