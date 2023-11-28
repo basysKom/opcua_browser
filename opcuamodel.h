@@ -18,6 +18,7 @@ public:
     void setOpcUaClient(QOpcUaClient *client);
     QOpcUaClient *opcUaClient() const noexcept;
 
+    bool isHierarchicalReference(const QString &refTypeId) const;
     QString getStringForRefTypeId(const QString &refTypeId, bool isForward) const;
     QString getStringForDataTypeId(const QString &dataTypeId) const;
 
@@ -42,17 +43,30 @@ signals:
 
 private:
     void resetModel();
-    void browseReferenceTypes(QOpcUaNode *node);
+    void browseReferenceTypes(QOpcUaNode *node, bool isHierachical = false);
     void browseDataTypes(QOpcUaNode *node);
 
     enum class EBrowseType { None = 0x00, ReferenceTypes = 0x01, DataTypes = 0x02 };
     Q_DECLARE_FLAGS(BrowseTypes, EBrowseType)
 
+    struct ReferenceType {
+        QString mDisplayName;
+        QString mInverseName;
+        bool mIsHierarchicalReference = false;
+
+        ReferenceType()
+        {}
+
+        ReferenceType(const QString &displayName, const QString &inverseName, bool isHierarchicalReference)
+            : mDisplayName(displayName), mInverseName(inverseName), mIsHierarchicalReference(isHierarchicalReference)
+        {}
+    };
+
     QOpcUaClient *mOpcUaClient = nullptr;
     std::unique_ptr<TreeItem> mRootItem;
     QModelIndex mCurrentIndex = QModelIndex();
     BrowseTypes mBrowsedTypes = EBrowseType::None;
-    QHash<QString, QPair<QString, QString>> mReferencesList;
+    QHash<QString, ReferenceType> mReferencesList;
     QHash<QString, QString> mDataTypesList;
 
     friend class TreeItem;

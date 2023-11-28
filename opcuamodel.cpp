@@ -71,6 +71,14 @@ QOpcUaClient *OpcUaModel::opcUaClient() const noexcept
     return mOpcUaClient;
 }
 
+bool OpcUaModel::isHierarchicalReference(const QString &refTypeId) const
+{
+    if (!mReferencesList.contains(refTypeId))
+        return false;
+
+    return mReferencesList[refTypeId].mIsHierarchicalReference;
+}
+
 QString OpcUaModel::getStringForRefTypeId(const QString &refTypeId, bool isForward) const
 {
     if (!mReferencesList.contains(refTypeId)) {
@@ -78,7 +86,7 @@ QString OpcUaModel::getStringForRefTypeId(const QString &refTypeId, bool isForwa
         return emptyString;
     }
 
-    return isForward ? mReferencesList[refTypeId].first : mReferencesList[refTypeId].second;
+    return isForward ? mReferencesList[refTypeId].mDisplayName : mReferencesList[refTypeId].mInverseName;
 }
 
 QString OpcUaModel::getStringForDataTypeId(const QString &dataTypeId) const
@@ -236,7 +244,7 @@ void OpcUaModel::resetModel()
     }
 }
 
-void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
+void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
 {
     static int cntNodes = 0;
     static QStringList knownNodeIds;
@@ -274,7 +282,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
         }
 
         if (!nodeId.isEmpty()) {
-            mReferencesList[nodeId] = std::make_pair(displayName, inverseName);
+            mReferencesList[nodeId] = std::move(ReferenceType(displayName, inverseName, isHierachical));
         }
 
         // Third step: delete node
@@ -302,7 +310,8 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node)
                         continue;
                     }
 
-                    browseReferenceTypes(childNode);
+                    const bool isHierarchicalReferencesNode = (childNode->nodeId() == nodeIdFromReferenceType(QOpcUa::ReferenceTypeId::HierarchicalReferences));
+                    browseReferenceTypes(childNode, isHierachical || isHierarchicalReferencesNode);
                 }
 
                 // Second step: read attributes
@@ -373,6 +382,9 @@ void OpcUaModel::browseDataTypes(QOpcUaNode *node)
                 }
 
                 for (const auto &item : children) {
+                    const QString nodeId = item.targetNodeId().nodeId();
+                    mDataTypesList[nodeId] = formattedDataString.arg(item.displayName().text(), nodeId);
+
                     auto childNode = mOpcUaClient->node(item.targetNodeId());
                     if (!childNode) {
                         qWarning() << "Failed to instantiate node:" << item.targetNodeId().nodeId();
@@ -387,12 +399,8 @@ void OpcUaModel::browseDataTypes(QOpcUaNode *node)
                     browseDataTypes(childNode);
                 }
 
-                // Second step: read attributes
-                if (!node->readAttributes(QOpcUa::NodeAttribute::NodeId
-                                          | QOpcUa::NodeAttribute::DisplayName)) {
-                    qWarning() << "Reading attributes" << node->nodeId() << "failed";
-                    deleteNode(node);
-                }
+                // Second step: delete node
+                deleteNode(node);
             });
 
     knownNodeIds << node->nodeId();

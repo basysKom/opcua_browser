@@ -44,8 +44,7 @@ public:
 private:
     void addItemToReferenceModel(const QOpcUaReferenceDescription &item);
     void startBrowsing();
-    bool browseChildren();
-    bool browseNonHierarchicalReferences();
+    bool browse();
 
     OpcUaModel *mModel = nullptr;
     bool mBrowseStarted = false;
