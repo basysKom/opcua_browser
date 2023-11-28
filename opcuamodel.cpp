@@ -1,4 +1,5 @@
 #include <QColor>
+#include <QTimer>
 
 #include <QOpcUaClient>
 #include <QOpcUaNode>
@@ -44,6 +45,36 @@ OpcUaModel::OpcUaModel(QObject *parent) : QAbstractItemModel{ parent }
             resetModel();
         }
     });
+
+    connect(this, &OpcUaModel::rowsInserted, this,
+            [=](const QModelIndex &parent, int first, int last) {
+                // if mSelectedNodeId is not empty refresh (browse) inverse nodes to find
+                // mSelectedNodeId
+                if (!parent.isValid() || mSelectedNodeId.isEmpty())
+                    return;
+
+                for (int i = first; i <= last; i++) {
+                    auto item = static_cast<TreeItem *>(parent.internalPointer())->child(i);
+                    if (item == nullptr)
+                        continue;
+
+                    const QString nodeId = item->nodeId();
+                    if (mSelectedNodeId == nodeId) {
+                        mSelectedNodeId = QString();
+                        mInverseNodeIds.clear();
+                        item->refresh();
+                        // Workaround, otherwise the item is displayed twice in the list
+                        QTimer::singleShot(10, this,
+                                           [=]() { setCurrentIndex(index(i, 0, parent)); });
+                        return;
+                    }
+
+                    if (mInverseNodeIds.contains(nodeId)) {
+                        mInverseNodeIds.removeAll(nodeId);
+                        item->refresh();
+                    }
+                }
+            });
 }
 
 void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
@@ -86,7 +117,8 @@ QString OpcUaModel::getStringForRefTypeId(const QString &refTypeId, bool isForwa
         return emptyString;
     }
 
-    return isForward ? mReferencesList[refTypeId].mDisplayName : mReferencesList[refTypeId].mInverseName;
+    return isForward ? mReferencesList[refTypeId].mDisplayName
+                     : mReferencesList[refTypeId].mInverseName;
 }
 
 QString OpcUaModel::getStringForDataTypeId(const QString &dataTypeId) const
@@ -181,7 +213,8 @@ void OpcUaModel::setCurrentNodeId(const QString &nodeId)
             match(index(0, 0), NodeIdRole, nodeId, 1, Qt::MatchExactly | Qt::MatchRecursive);
 
     if (indices.isEmpty()) {
-        qWarning() << QStringLiteral("No index for node %1 found").arg(nodeId);
+        mSelectedNodeId = nodeId;
+        collectInverseNodeIds(nodeId, true);
     } else {
         setCurrentIndex(indices.constFirst());
     }
@@ -244,6 +277,79 @@ void OpcUaModel::resetModel()
     }
 }
 
+void OpcUaModel::collectInverseNodeIds(const QString &nodeId, bool init)
+{
+    static bool foundKnownNode = false;
+    static QStringList browsedNodesIds;
+
+    if (init) {
+        foundKnownNode = false;
+        browsedNodesIds.clear();
+    }
+
+    auto node = opcUaClient()->node(nodeId);
+    if (nullptr == node)
+        return;
+
+    connect(node, &QOpcUaNode::browseFinished, this,
+            [=](const QList<QOpcUaReferenceDescription> &refNodes,
+                QOpcUa::UaStatusCode statusCode) {
+                // stop if node was found
+                if (foundKnownNode || mSelectedNodeId.isEmpty()) {
+                    node->deleteLater();
+                    return;
+                }
+
+                if (statusCode != QOpcUa::Good) {
+                    qWarning() << "Browsing node" << node->nodeId()
+                               << "finally failed:" << statusCode;
+                    node->deleteLater();
+                    return;
+                }
+
+                for (const auto &item : refNodes) {
+                    if (item.isForwardReference())
+                        continue;
+
+                    const QString refNodeId = item.targetNodeId().nodeId();
+                    if (browsedNodesIds.contains(refNodeId))
+                        continue;
+
+                    const auto indices = match(index(0, 0), NodeIdRole, refNodeId, 1,
+                                               Qt::MatchExactly | Qt::MatchRecursive);
+
+                    if (indices.isEmpty()) {
+                        collectInverseNodeIds(refNodeId);
+                    } else {
+                        const QModelIndex index = indices.constFirst();
+                        if (index.isValid()) {
+                            auto treeItem = static_cast<TreeItem *>(index.internalPointer());
+                            if (treeItem != nullptr) {
+                                foundKnownNode = true;
+                                browsedNodesIds.removeAll(treeItem->nodeId());
+                                mInverseNodeIds = browsedNodesIds;
+                                treeItem->refresh();
+                            }
+                        }
+                    }
+                }
+
+                node->deleteLater();
+            });
+
+    browsedNodesIds.push_front(node->nodeId());
+
+    QOpcUaBrowseRequest request;
+    request.setBrowseDirection(QOpcUaBrowseRequest::BrowseDirection::Inverse);
+    request.setReferenceTypeId(QOpcUa::ReferenceTypeId::HierarchicalReferences);
+    request.setIncludeSubtypes(true);
+    if (!node->browse(request)) {
+        qWarning() << "Browsing node" << node->nodeId() << "failed";
+        node->deleteLater();
+        return;
+    }
+}
+
 void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
 {
     static int cntNodes = 0;
@@ -282,7 +388,8 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
         }
 
         if (!nodeId.isEmpty()) {
-            mReferencesList[nodeId] = std::move(ReferenceType(displayName, inverseName, isHierachical));
+            mReferencesList[nodeId] =
+                    std::move(ReferenceType(displayName, inverseName, isHierachical));
         }
 
         // Third step: delete node
@@ -310,7 +417,10 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
                         continue;
                     }
 
-                    const bool isHierarchicalReferencesNode = (childNode->nodeId() == nodeIdFromReferenceType(QOpcUa::ReferenceTypeId::HierarchicalReferences));
+                    const bool isHierarchicalReferencesNode =
+                            (childNode->nodeId()
+                             == nodeIdFromReferenceType(
+                                     QOpcUa::ReferenceTypeId::HierarchicalReferences));
                     browseReferenceTypes(childNode, isHierachical || isHierarchicalReferencesNode);
                 }
 
@@ -383,7 +493,8 @@ void OpcUaModel::browseDataTypes(QOpcUaNode *node)
 
                 for (const auto &item : children) {
                     const QString nodeId = item.targetNodeId().nodeId();
-                    mDataTypesList[nodeId] = formattedDataString.arg(item.displayName().text(), nodeId);
+                    mDataTypesList[nodeId] =
+                            formattedDataString.arg(item.displayName().text(), nodeId);
 
                     auto childNode = mOpcUaClient->node(item.targetNodeId());
                     if (!childNode) {

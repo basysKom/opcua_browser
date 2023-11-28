@@ -43,23 +43,28 @@ signals:
 
 private:
     void resetModel();
+    void collectInverseNodeIds(const QString &nodeId, bool init = false);
     void browseReferenceTypes(QOpcUaNode *node, bool isHierachical = false);
     void browseDataTypes(QOpcUaNode *node);
 
     enum class EBrowseType { None = 0x00, ReferenceTypes = 0x01, DataTypes = 0x02 };
     Q_DECLARE_FLAGS(BrowseTypes, EBrowseType)
 
-    struct ReferenceType {
+    struct ReferenceType
+    {
         QString mDisplayName;
         QString mInverseName;
         bool mIsHierarchicalReference = false;
 
-        ReferenceType()
-        {}
+        ReferenceType() { }
 
-        ReferenceType(const QString &displayName, const QString &inverseName, bool isHierarchicalReference)
-            : mDisplayName(displayName), mInverseName(inverseName), mIsHierarchicalReference(isHierarchicalReference)
-        {}
+        ReferenceType(const QString &displayName, const QString &inverseName,
+                      bool isHierarchicalReference)
+            : mDisplayName(displayName),
+              mInverseName(inverseName),
+              mIsHierarchicalReference(isHierarchicalReference)
+        {
+        }
     };
 
     QOpcUaClient *mOpcUaClient = nullptr;
@@ -68,6 +73,9 @@ private:
     BrowseTypes mBrowsedTypes = EBrowseType::None;
     QHash<QString, ReferenceType> mReferencesList;
     QHash<QString, QString> mDataTypesList;
+
+    QString mSelectedNodeId;
+    QStringList mInverseNodeIds;
 
     friend class TreeItem;
 };

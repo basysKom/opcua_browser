@@ -113,6 +113,12 @@ Rectangle {
                         verticalAlignment: Qt.AlignVCenter
                         text: model.type
                         elide: Qt.ElideRight
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(
+                                           model.typeNodeId)
+                        }
                     }
 
                     Rectangle {
@@ -125,8 +131,15 @@ Rectangle {
                         Layout.margins: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        Layout.minimumWidth: root.width - x
                         verticalAlignment: Qt.AlignVCenter
                         text: model.target
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(
+                                           model.targetNodeId)
+                        }
                     }
                 }
             }

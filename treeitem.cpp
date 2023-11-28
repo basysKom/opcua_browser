@@ -295,7 +295,8 @@ bool TreeItem::browse()
                 const auto index = mModel->createIndex(row(), 0, this);
                 for (const auto &item : refNodes) {
                     addItemToReferenceModel(item);
-                    if (!item.isForwardReference() || !mModel->isHierarchicalReference(item.refTypeId()))
+                    if (!item.isForwardReference()
+                        || !mModel->isHierarchicalReference(item.refTypeId()))
                         continue;
 
                     const QString nodeId = item.targetNodeId().nodeId();
