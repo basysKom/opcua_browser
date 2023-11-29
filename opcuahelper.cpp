@@ -154,7 +154,7 @@ QString variantToString(const QVariant &value, const QString &typeNodeId)
     return QString();
 }
 
-QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr)
+QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr)
 {
     switch (attr) {
     case QOpcUa::NodeAttribute::NodeClass: {
@@ -165,29 +165,18 @@ QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute 
     case QOpcUa::NodeAttribute::BrowseName:
         return node->attribute(attr).value<QOpcUaQualifiedName>().name();
     case QOpcUa::NodeAttribute::DisplayName:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::Description:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::InverseName:
         return node->attribute(attr).value<QOpcUaLocalizedText>().text();
     case QOpcUa::NodeAttribute::NodeId:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::WriteMask:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::UserWriteMask:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::IsAbstract:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::Symmetric:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::ContainsNoLoops:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::DataType:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::Historizing:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::Executable:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::UserExecutable:
         return node->attribute(attr).toString();
     case QOpcUa::NodeAttribute::ValueRank:
@@ -197,9 +186,7 @@ QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute 
     case QOpcUa::NodeAttribute::MinimumSamplingInterval:
         return QString::number(node->attribute(attr).toDouble());
     case QOpcUa::NodeAttribute::EventNotifier:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::AccessLevel:
-        Q_FALLTHROUGH();
     case QOpcUa::NodeAttribute::UserAccessLevel: {
         const quint32 byte = node->attribute(attr).toUInt();
         return QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
@@ -211,6 +198,47 @@ QString QOpcUaHelper::getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute 
     }
     case QOpcUa::NodeAttribute::None:
         return QString();
+    }
+
+    Q_UNREACHABLE();
+    return QString();
+}
+
+QString QOpcUaHelper::getFormattedAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr)
+{
+    switch (attr) {
+    case QOpcUa::NodeAttribute::BrowseName:
+        return QStringLiteral("%1:%2")
+                .arg(node->attribute(attr).value<QOpcUaQualifiedName>().namespaceIndex())
+                .arg(node->attribute(attr).value<QOpcUaQualifiedName>().name());
+    case QOpcUa::NodeAttribute::DisplayName:
+        Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::Description:
+        Q_FALLTHROUGH();
+    case QOpcUa::NodeAttribute::InverseName:
+        return QStringLiteral("\"%1\", \"%2\"")
+                .arg(node->attribute(attr).value<QOpcUaLocalizedText>().locale(),
+                     node->attribute(attr).value<QOpcUaLocalizedText>().text());
+    case QOpcUa::NodeAttribute::NodeClass:
+    case QOpcUa::NodeAttribute::NodeId:
+    case QOpcUa::NodeAttribute::WriteMask:
+    case QOpcUa::NodeAttribute::UserWriteMask:
+    case QOpcUa::NodeAttribute::IsAbstract:
+    case QOpcUa::NodeAttribute::Symmetric:
+    case QOpcUa::NodeAttribute::ContainsNoLoops:
+    case QOpcUa::NodeAttribute::DataType:
+    case QOpcUa::NodeAttribute::Historizing:
+    case QOpcUa::NodeAttribute::Executable:
+    case QOpcUa::NodeAttribute::UserExecutable:
+    case QOpcUa::NodeAttribute::ValueRank:
+    case QOpcUa::NodeAttribute::ArrayDimensions:
+    case QOpcUa::NodeAttribute::MinimumSamplingInterval:
+    case QOpcUa::NodeAttribute::EventNotifier:
+    case QOpcUa::NodeAttribute::AccessLevel:
+    case QOpcUa::NodeAttribute::UserAccessLevel:
+    case QOpcUa::NodeAttribute::Value:
+    case QOpcUa::NodeAttribute::None:
+        return getRawAttributeValue(node, attr);
     }
 
     Q_UNREACHABLE();

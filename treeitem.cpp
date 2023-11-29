@@ -93,10 +93,10 @@ TreeItem::TreeItem(const QString &nodeId, OpcUaModel *model,
                    const QOpcUaReferenceDescription &browsingData, TreeItem *parent)
     : TreeItem(nodeId, model, browsingData.nodeClass(), parent)
 {
-    mNodeBrowseName = browsingData.browseName().name();
-
-    const QString type = model->getStringForRefTypeId(browsingData.refTypeId(), false);
-    mReferenceModel->addReference(type, false, parent->displayName());
+    mDisplayName = browsingData.displayName().text();
+    if (mDisplayName.isEmpty()) {
+        mDisplayName = browsingData.browseName().name();
+    }
 }
 
 TreeItem::~TreeItem()
@@ -134,7 +134,7 @@ int TreeItem::childCount()
 
 const QString &TreeItem::displayName() const noexcept
 {
-    return mNodeBrowseName;
+    return mDisplayName;
 }
 
 const QColor &TreeItem::nodeClassColor() const noexcept
@@ -228,22 +228,32 @@ void TreeItem::refreshAttributes()
         return;
 
     connect(node, &QOpcUaNode::attributeRead, this, [=](const QOpcUa::NodeAttributes &attributes) {
+        QString displayName;
+        QString browseName;
         for (int i = 0; i <= 21; ++i) {
             const QOpcUa::NodeAttribute attr = static_cast<QOpcUa::NodeAttribute>(1 << i);
             if (!attributes.testFlag(attr))
                 continue;
 
-            const QString stringValue = QOpcUaHelper::getAttributeValue(node, attr);
-            mAttributeModel->setAttribute(attr, stringValue);
+            const QString stringValue = QOpcUaHelper::getFormattedAttributeValue(node, attr);
+            if (QOpcUa::NodeAttribute::DataType == attr) {
+                mAttributeModel->setAttribute(attr, mModel->getStringForDataTypeId(stringValue));
+            } else {
+                mAttributeModel->setAttribute(attr, stringValue);
+            }
 
             if (QOpcUa::NodeAttribute::NodeClass == attr) {
                 mNodeClass = node->attribute(attr).value<QOpcUa::NodeClass>();
+            } else if (QOpcUa::NodeAttribute::DisplayName == attr) {
+                displayName = QOpcUaHelper::getRawAttributeValue(node, attr);
             } else if (QOpcUa::NodeAttribute::BrowseName == attr) {
-                mNodeBrowseName = stringValue;
+                browseName = QOpcUaHelper::getRawAttributeValue(node, attr);
             } else if (QOpcUa::NodeAttribute::Value == attr) {
                 mValue = stringValue;
             }
         }
+
+        mDisplayName = displayName.isEmpty() ? browseName : displayName;
 
         emit mModel->dataChanged(mModel->createIndex(row(), 0, this),
                                  mModel->createIndex(row(), 0, this));
@@ -257,14 +267,23 @@ void TreeItem::refreshAttributes()
     }
 }
 
-bool TreeItem::browseChildren()
+void TreeItem::addItemToReferenceModel(const QOpcUaReferenceDescription &item)
+{
+    const QString targetNodeId = item.targetNodeId().nodeId();
+    const QString typeNodeId = item.refTypeId();
+    const QString type = mModel->getStringForRefTypeId(typeNodeId, true);
+    mReferenceModel->addReference(type, typeNodeId, item.isForwardReference(),
+                                  item.displayName().text(), targetNodeId);
+}
+
+bool TreeItem::browse()
 {
     auto node = mModel->opcUaClient()->node(mNodeId);
     if (nullptr == node)
         return false;
 
     connect(node, &QOpcUaNode::browseFinished, this,
-            [=](const QList<QOpcUaReferenceDescription> &children,
+            [=](const QList<QOpcUaReferenceDescription> &refNodes,
                 QOpcUa::UaStatusCode statusCode) {
                 if (statusCode != QOpcUa::Good) {
                     qWarning() << "Browsing node" << node->nodeId()
@@ -274,9 +293,11 @@ bool TreeItem::browseChildren()
                 }
 
                 const auto index = mModel->createIndex(row(), 0, this);
-                for (const auto &item : children) {
-                    const QString type = mModel->getStringForRefTypeId(item.refTypeId(), true);
-                    mReferenceModel->addReference(type, true, item.displayName().text());
+                for (const auto &item : refNodes) {
+                    addItemToReferenceModel(item);
+                    if (!item.isForwardReference()
+                        || !mModel->isHierarchicalReference(item.refTypeId()))
+                        continue;
 
                     const QString nodeId = item.targetNodeId().nodeId();
                     if (hasChildNodeItem(nodeId))
@@ -292,44 +313,12 @@ bool TreeItem::browseChildren()
                 node->deleteLater();
             });
 
-    if (!node->browseChildren()) {
+    QOpcUaBrowseRequest request;
+    request.setBrowseDirection(QOpcUaBrowseRequest::BrowseDirection::Both);
+    request.setReferenceTypeId(QOpcUa::ReferenceTypeId::References);
+    request.setIncludeSubtypes(true);
+    if (!node->browse(request)) {
         qWarning() << "Browsing node" << node->nodeId() << "failed";
-        node->deleteLater();
-        return false;
-    }
-
-    return true;
-}
-
-bool TreeItem::browseNonHierarchicalReferences()
-{
-    auto node = mModel->opcUaClient()->node(mNodeId);
-    if (nullptr == node)
-        return false;
-
-    connect(node, &QOpcUaNode::browseFinished, this,
-            [=](const QList<QOpcUaReferenceDescription> &children,
-                QOpcUa::UaStatusCode statusCode) {
-                if (statusCode != QOpcUa::Good) {
-                    qWarning() << "Browsing node" << node->nodeId()
-                               << "finally failed:" << statusCode;
-                    node->deleteLater();
-                    return;
-                }
-
-                for (const auto &item : children) {
-                    const QString type = mModel->getStringForRefTypeId(item.refTypeId(), true);
-                    mReferenceModel->addReference(type, true, item.displayName().text());
-                }
-
-                const auto index = mModel->createIndex(row(), 0, this);
-                emit mModel->dataChanged(index, index);
-
-                node->deleteLater();
-            });
-
-    if (!node->browseChildren(QOpcUa::ReferenceTypeId::NonHierarchicalReferences)) {
-        qWarning() << "Browsing non hierarchical references of node" << node->nodeId() << "failed";
         node->deleteLater();
         return false;
     }
@@ -342,6 +331,5 @@ void TreeItem::startBrowsing()
     if (mBrowseStarted)
         return;
 
-    mBrowseStarted = browseChildren();
-    browseNonHierarchicalReferences();
+    mBrowseStarted = browse();
 }

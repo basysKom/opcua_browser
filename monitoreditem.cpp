@@ -37,13 +37,13 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
 {
     QString newDisplayName;
     if (attributes.testFlag(QOpcUa::NodeAttribute::DisplayName)) {
-        newDisplayName =
-                QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::DisplayName);
+        newDisplayName = QOpcUaHelper::getRawAttributeValue(mOpcNode.get(),
+                                                            QOpcUa::NodeAttribute::DisplayName);
     }
 
     if (newDisplayName.isEmpty() && attributes.testFlag(QOpcUa::NodeAttribute::BrowseName)) {
-        newDisplayName =
-                QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::BrowseName);
+        newDisplayName = QOpcUaHelper::getRawAttributeValue(mOpcNode.get(),
+                                                            QOpcUa::NodeAttribute::BrowseName);
     }
 
     if (!newDisplayName.isEmpty() && (newDisplayName != mDisplayName)) {
@@ -52,8 +52,8 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
     }
 
     if (attributes.testFlag(QOpcUa::NodeAttribute::Value)) {
-        const QString newValue =
-                QOpcUaHelper::getAttributeValue(mOpcNode.get(), QOpcUa::NodeAttribute::Value);
+        const QString newValue = QOpcUaHelper::getFormattedAttributeValue(
+                mOpcNode.get(), QOpcUa::NodeAttribute::Value);
         if (newValue != mValue) {
             mValue = newValue;
             emit valueChanged();

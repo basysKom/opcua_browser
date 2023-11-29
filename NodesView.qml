@@ -7,6 +7,15 @@ Item {
     property var attributes
     property var references
 
+    Connections {
+        target: BackEnd.opcUaModel
+        function onCurrentIndexChanged(index) {
+            treeView.expandToIndex(index)
+            treeView.forceLayout()
+            treeView.positionViewAtIndex(index, TableView.Visible)
+        }
+    }
+
     ContextMenu {
         id: contextMenu
     }
@@ -25,6 +34,7 @@ Item {
         delegate: Rectangle {
             id: treeDelegate
 
+            readonly property real isSelected: model.isSelected
             readonly property real indent: 20
             readonly property real padding: 5
 
@@ -35,10 +45,11 @@ Item {
             required property int hasChildren
             required property int depth
 
-            function setCurrentIndexToModel(index) {
-                root.attributes = model.attributes
-                root.references = model.references
-                BackEnd.opcUaModel.setCurrentIndex(index)
+            onIsSelectedChanged: {
+                if (isSelected) {
+                    root.attributes = model.attributes
+                    root.references = model.references
+                }
             }
 
             width: implicitWidth
@@ -46,19 +57,20 @@ Item {
                                root.width,
                                padding + label.x + label.implicitWidth + padding)
             implicitHeight: label.implicitHeight * 1.5
-            color: model.isSelected ? "#584b53" : "transparent"
+            color: isSelected ? "#584b53" : "transparent"
 
             TapHandler {
                 id: tapHandler
 
                 onTapped: {
                     treeView.toggleExpanded(row)
-                    setCurrentIndexToModel(treeView.index(row, column))
+                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(row,
+                                                                      column))
                 }
 
                 onLongPressed: {
                     var index = treeView.index(row, column)
-                    setCurrentIndexToModel(index)
+                    BackEnd.opcUaModel.setCurrentIndex(index)
 
                     var xPos = tapHandler.point.position.x + treeDelegate.x - treeView.contentX
                     var yPos = tapHandler.point.position.y + treeDelegate.y - treeView.contentY
@@ -89,7 +101,7 @@ Item {
                 anchors.verticalCenter: label.verticalCenter
                 text: "▸"
                 rotation: treeDelegate.expanded ? 90 : 0
-                color: model.isSelected ? "white" : "black"
+                color: isSelected ? "white" : "black"
             }
 
             Rectangle {

@@ -44,6 +44,8 @@ qt_add_resources(appOPC_UA_Browser "icons"
     PREFIX "/"
     FILES icons/delete.png
           icons/eye.png
+          icons/inverse.png
+          icons/forward.png
           icons/refresh.png)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

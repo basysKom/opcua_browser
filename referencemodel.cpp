@@ -1,6 +1,12 @@
 #include "referencemodel.h"
 
-enum Roles : int { TypeRole = Qt::DisplayRole, ForwardRole = Qt::UserRole, TargetRole };
+enum Roles : int {
+    TypeRole = Qt::DisplayRole,
+    TypeNodeIdRole = Qt::UserRole,
+    ForwardRole,
+    TargetRole,
+    TargetNodeIdRole
+};
 
 ReferenceModel::ReferenceModel(QObject *parent) : QAbstractListModel{ parent } { }
 
@@ -8,8 +14,10 @@ QHash<int, QByteArray> ReferenceModel::roleNames() const
 {
     return {
         { TypeRole, "type" },
+        { TypeNodeIdRole, "typeNodeId" },
         { ForwardRole, "isForward" },
         { TargetRole, "target" },
+        { TargetNodeIdRole, "targetNodeId" },
     };
 }
 
@@ -26,20 +34,25 @@ QVariant ReferenceModel::data(const QModelIndex &index, int role) const
     switch (role) {
     case TypeRole:
         return mReferences[index.row()].type();
+    case TypeNodeIdRole:
+        return mReferences[index.row()].typeNodeId();
     case ForwardRole:
         return mReferences[index.row()].isForward();
     case TargetRole:
         return mReferences[index.row()].target();
+    case TargetNodeIdRole:
+        return mReferences[index.row()].targetNodeId();
     }
 
     return QVariant();
 }
 
-void ReferenceModel::addReference(const QString &type, bool isForward, const QString &target)
+void ReferenceModel::addReference(const QString &type, const QString &typeNodeId, bool isForward,
+                                  const QString &target, const QString &targetNodeId)
 {
     int count = mReferences.size();
     beginInsertRows(QModelIndex(), count, count);
-    mReferences << Reference(type, isForward, target);
+    mReferences << Reference(type, typeNodeId, isForward, target, targetNodeId);
     endInsertRows();
 }
 

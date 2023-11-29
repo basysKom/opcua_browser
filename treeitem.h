@@ -42,9 +42,9 @@ public:
     void refreshAttributes();
 
 private:
+    void addItemToReferenceModel(const QOpcUaReferenceDescription &item);
     void startBrowsing();
-    bool browseChildren();
-    bool browseNonHierarchicalReferences();
+    bool browse();
 
     OpcUaModel *mModel = nullptr;
     bool mBrowseStarted = false;
@@ -56,7 +56,7 @@ private:
     QSortFilterProxyModel *mSortedAttributeProxyModel;
     ReferenceModel *mReferenceModel;
     QSortFilterProxyModel *mSortedReferenceProxyModel;
-    QString mNodeBrowseName;
+    QString mDisplayName;
     QString mNodeId;
     QOpcUa::NodeClass mNodeClass = QOpcUa::NodeClass::Undefined;
     QString mValue;

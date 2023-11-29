@@ -18,7 +18,9 @@ public:
     void setOpcUaClient(QOpcUaClient *client);
     QOpcUaClient *opcUaClient() const noexcept;
 
+    bool isHierarchicalReference(const QString &refTypeId) const;
     QString getStringForRefTypeId(const QString &refTypeId, bool isForward) const;
+    QString getStringForDataTypeId(const QString &dataTypeId) const;
 
     virtual QHash<int, QByteArray> roleNames() const override;
     virtual QVariant data(const QModelIndex &index, int role) const override;
@@ -28,6 +30,7 @@ public:
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
+    Q_INVOKABLE void setCurrentNodeId(const QString &nodeId);
     Q_INVOKABLE void setCurrentIndex(const QModelIndex &index);
     Q_INVOKABLE void refreshIndex(const QModelIndex &index);
 
@@ -35,15 +38,44 @@ public:
 
 signals:
     void browsingForReferenceTypesFinished();
+    void browsingForDataTypesFinished();
+    void currentIndexChanged(const QModelIndex &index);
 
 private:
     void resetModel();
-    void browseReferenceTypes(QOpcUaNode *node);
+    void collectInverseNodeIds(const QString &nodeId, bool init = false);
+    void browseReferenceTypes(QOpcUaNode *node, bool isHierachical = false);
+    void browseDataTypes(QOpcUaNode *node);
+
+    enum class EBrowseType { None = 0x00, ReferenceTypes = 0x01, DataTypes = 0x02 };
+    Q_DECLARE_FLAGS(BrowseTypes, EBrowseType)
+
+    struct ReferenceType
+    {
+        QString mDisplayName;
+        QString mInverseName;
+        bool mIsHierarchicalReference = false;
+
+        ReferenceType() { }
+
+        ReferenceType(const QString &displayName, const QString &inverseName,
+                      bool isHierarchicalReference)
+            : mDisplayName(displayName),
+              mInverseName(inverseName),
+              mIsHierarchicalReference(isHierarchicalReference)
+        {
+        }
+    };
 
     QOpcUaClient *mOpcUaClient = nullptr;
     std::unique_ptr<TreeItem> mRootItem;
     QModelIndex mCurrentIndex = QModelIndex();
-    QHash<QString, QPair<QString, QString>> mReferencesList;
+    BrowseTypes mBrowsedTypes = EBrowseType::None;
+    QHash<QString, ReferenceType> mReferencesList;
+    QHash<QString, QString> mDataTypesList;
+
+    QString mSelectedNodeId;
+    QStringList mInverseNodeIds;
 
     friend class TreeItem;
 };

@@ -10,7 +10,8 @@ class QOpcUaNode;
 class QOpcUaHelper
 {
 public:
-    static QString getAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr);
+    static QString getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr);
+    static QString getFormattedAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr);
 };
 
 #endif // OPCUAHELPER_H
