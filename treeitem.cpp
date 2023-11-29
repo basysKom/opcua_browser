@@ -271,7 +271,7 @@ void TreeItem::addItemToReferenceModel(const QOpcUaReferenceDescription &item)
 {
     const QString targetNodeId = item.targetNodeId().nodeId();
     const QString typeNodeId = item.refTypeId();
-    const QString type = mModel->getStringForRefTypeId(typeNodeId, true);
+    const QString type = mModel->getStringForRefTypeId(typeNodeId, item.isForwardReference());
     mReferenceModel->addReference(type, typeNodeId, item.isForwardReference(),
                                   item.displayName().text(), targetNodeId);
 }
