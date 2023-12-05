@@ -30,6 +30,7 @@ qt_add_qml_module(appOPC_UA_Browser
               NodeDetailView.qml
               NodeReferenceList.qml
               NodesView.qml
+              StyledButton.qml
               StyledScrollBar.qml
               StyledTabButton.qml
               qml/style/Style.qml

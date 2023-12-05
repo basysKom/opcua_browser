@@ -41,18 +41,14 @@ ApplicationWindow {
         }
     }
 
-    ColumnLayout {
+    ConnectionView {
         anchors.fill: parent
-        anchors.margins: 5
+        visible: !BackEnd.isConnected
+    }
 
-        ConnectionView {
-            Layout.fillWidth: true
-        }
-
-        ContentView {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-        }
+    ContentView {
+        anchors.fill: parent
+        visible: BackEnd.isConnected
     }
 
     InputPanel {

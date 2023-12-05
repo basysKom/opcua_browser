@@ -11,7 +11,6 @@ Item {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        visible: BackEnd.isConnected
         spacing: 0
 
         background: Rectangle {
