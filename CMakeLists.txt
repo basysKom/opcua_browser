@@ -67,7 +67,9 @@ qt_add_resources(appOPC_UA_Browser "icons"
           icons/eye.png
           icons/inverse.png
           icons/forward.png
-          icons/refresh.png)
+          icons/refresh.png
+          icons/menu.png
+          icons/logo_basyskom.svg)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
