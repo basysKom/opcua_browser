@@ -15,15 +15,19 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         visible: BackEnd.isConnected
+        spacing: 0
 
         background: Rectangle {
             color: "transparent"
         }
 
         Repeater {
-            model: ["Attributes", "References"]
+            id: repeater
+
+            model: [qsTr("Attributes"), qsTr("References")]
             StyledTabButton {
                 text: modelData
+                width: Math.max(100, root.width / repeater.count)
             }
         }
     }

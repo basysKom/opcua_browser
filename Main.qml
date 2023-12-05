@@ -9,7 +9,7 @@ Window {
     width: 480
     height: 640
     visible: true
-    color: "orange"
+    color: Style.mainWindow.background
     title: qsTr("OPC UA Browser")
 
     ColumnLayout {

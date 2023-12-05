@@ -3,7 +3,7 @@ import QtQuick
 Rectangle {
     id: root
 
-    color: "#FFBC42"
+    color: Style.browserView.background
 
     NodesView {
         id: nodesView

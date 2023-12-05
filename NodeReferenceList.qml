@@ -6,6 +6,7 @@ Rectangle {
     id: root
 
     property alias references: referenceList.model
+    readonly property color textColor: Style.listView.textColor
 
     function maxDelegateWidth() {
         var max = flickable.width
@@ -17,7 +18,7 @@ Rectangle {
         return max
     }
 
-    color: "lightgray"
+    color: Style.listView.background
     opacity: referenceList.model ? 1 : 0.3
     clip: true
 
@@ -51,7 +52,7 @@ Rectangle {
                 implicitHeight: childrenRect.height
                 z: 2
 
-                color: "lightblue"
+                color: Style.listView.headerBackground
 
                 RowLayout {
                     spacing: 0
@@ -65,12 +66,13 @@ Rectangle {
                         text: qsTr("Reference")
                         elide: Qt.ElideRight
                         font.bold: true
+                        color: root.textColor
                     }
 
                     Rectangle {
                         Layout.fillHeight: true
                         width: 1
-                        color: "black"
+                        color: root.textColor
                     }
 
                     Text {
@@ -81,6 +83,7 @@ Rectangle {
                         text: qsTr("Target")
                         elide: Qt.ElideRight
                         font.bold: true
+                        color: root.textColor
                     }
                 }
             }
@@ -92,18 +95,20 @@ Rectangle {
 
                 width: maxDelegateWidth()
                 implicitHeight: childrenRect.height
-                color: ((index % 2) == 0) ? "#9AE4E6" : "#9AE69A"
+                color: ((index % 2)
+                        == 0) ? Style.listView.color1 : Style.listView.color2
 
                 RowLayout {
                     spacing: 0
                     height: 30
 
-                    Image {
+                    IconImage {
                         Layout.leftMargin: 5
                         Layout.alignment: Qt.AlignVCenter
                         width: 15
                         height: width
                         source: model.isForward ? "qrc:/icons/forward.png" : "qrc:/icons/inverse.png"
+                        color: root.textColor
                     }
 
                     Text {
@@ -113,9 +118,11 @@ Rectangle {
                         verticalAlignment: Qt.AlignVCenter
                         text: model.type
                         elide: Qt.ElideRight
+                        color: root.textColor
 
                         MouseArea {
                             anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
                             onClicked: BackEnd.opcUaModel.setCurrentNodeId(
                                            model.typeNodeId)
                         }
@@ -124,7 +131,7 @@ Rectangle {
                     Rectangle {
                         Layout.fillHeight: true
                         width: 1
-                        color: "black"
+                        color: root.textColor
                     }
 
                     Text {
@@ -134,9 +141,11 @@ Rectangle {
                         Layout.minimumWidth: root.width - x
                         verticalAlignment: Qt.AlignVCenter
                         text: model.target
+                        color: root.textColor
 
                         MouseArea {
                             anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
                             onClicked: BackEnd.opcUaModel.setCurrentNodeId(
                                            model.targetNodeId)
                         }

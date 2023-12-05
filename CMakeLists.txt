@@ -13,6 +13,10 @@ qt_add_executable(appOPC_UA_Browser
     main.cpp
 )
 
+set_source_files_properties(qml/style/Style.qml PROPERTIES
+    QT_QML_SINGLETON_TYPE TRUE
+)
+
 qt_add_qml_module(appOPC_UA_Browser
     URI OPC_UA_Browser
     VERSION 1.0
@@ -28,6 +32,23 @@ qt_add_qml_module(appOPC_UA_Browser
               NodesView.qml
               StyledScrollBar.qml
               StyledTabButton.qml
+              qml/style/Style.qml
+              qml/style/StyleDefinitions.qml
+              qml/style/ThemeBright.qml
+              qml/style/ThemeBrowserView.qml
+              qml/style/ThemeButton.qml
+              qml/style/ThemeConnectionView.qml
+              qml/style/ThemeContextMenu.qml
+              qml/style/ThemeDark.qml
+              qml/style/ThemeDashboard.qml
+              qml/style/ThemeDashboardItem.qml
+              qml/style/ThemeDefault.qml
+              qml/style/ThemeHeader.qml
+              qml/style/ThemeListView.qml
+              qml/style/ThemeMainWindow.qml
+              qml/style/ThemeNodesView.qml
+              qml/style/ThemeScrollBar.qml
+              qml/style/ThemeTabButton.qml
     SOURCES attribute.h attribute.cpp
     SOURCES attributemodel.h attributemodel.cpp
     SOURCES backend.h backend.cpp

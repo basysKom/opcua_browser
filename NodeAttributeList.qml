@@ -17,7 +17,7 @@ Rectangle {
         return max
     }
 
-    color: "lightgray"
+    color: Style.listView.background
     opacity: attributeList.model ? 1 : 0.3
     clip: true
 
@@ -60,9 +60,49 @@ Rectangle {
 
                 width: maxDelegateWidth()
                 implicitHeight: childrenRect.height
-                color: ((index % 2) == 0) ? "#9AE4E6" : "#9AE69A"
+                color: ((index % 1)
+                        == 0) ? Style.listView.color1 : Style.listView.color2
 
-                RowLayout {
+                ColumnLayout {
+                    spacing: 0
+
+                    Rectangle {
+                        Layout.preferredWidth: flickable.width
+                        Layout.preferredHeight: 1
+                        visible: model.index > 0
+                        color: Style.listView.divider
+                    }
+
+                    Text {
+                        id: attribute
+
+                        Layout.topMargin: 5
+                        Layout.leftMargin: 5
+                        Layout.fillWidth: true
+                        verticalAlignment: Qt.AlignVCenter
+                        text: model.attribute
+                        elide: Qt.ElideRight
+                        color: Style.listView.textColor
+                        font {
+                            pointSize: 11
+                            bold: true
+                        }
+                    }
+
+                    Text {
+                        id: valueLabel
+
+                        Layout.leftMargin: 5
+                        Layout.bottomMargin: 5
+                        Layout.fillWidth: true
+                        verticalAlignment: Qt.AlignVCenter
+                        text: model.value
+                        color: attribute.color
+                    }
+                }
+
+
+                /*RowLayout {
                     spacing: 0
                     height: Math.max(30, valueLabel.implicitHeight)
 
@@ -75,6 +115,7 @@ Rectangle {
                         verticalAlignment: Qt.AlignVCenter
                         text: model.attribute
                         elide: Qt.ElideRight
+                        color: Style.listView.textColor
                     }
 
                     Rectangle {
@@ -82,7 +123,7 @@ Rectangle {
 
                         Layout.fillHeight: true
                         width: 1
-                        color: "black"
+                        color: attribute.color
                     }
 
                     Text {
@@ -93,8 +134,9 @@ Rectangle {
                         Layout.fillHeight: true
                         verticalAlignment: Qt.AlignVCenter
                         text: model.value
+                        color: attribute.color
                     }
-                }
+                }*/
             }
         }
     }

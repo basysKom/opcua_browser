@@ -12,6 +12,7 @@ Popup {
     implicitWidth: contentItem.childrenRect.width
     implicitHeight: contentItem.childrenRect.height
     padding: 0
+
     modal: true
 
     background: Rectangle {
@@ -20,7 +21,7 @@ Popup {
         width: contextMenu.width
         height: contextMenu.height
         radius: 3
-        color: "orange"
+        color: Style.contextMenu.background
     }
 
     contentItem: Item {
@@ -75,16 +76,16 @@ Popup {
 
                 Rectangle {
                     anchors.fill: parent
-                    radius: 3
-                    color: "lightgray"
-                    opacity: popupListView.currentIndex === index ? 0.5 : 0
+                    radius: transparentBorderRect.radius
+                    color: Style.contextMenu.backgroundSelected
+                    opacity: popupListView.currentIndex === index ? 0.8 : 0
                 }
 
                 RowLayout {
                     anchors.fill: parent
                     spacing: 15
 
-                    Image {
+                    IconImage {
                         Layout.leftMargin: 10
                         Layout.alignment: Qt.AlignVCenter
                         width: 20
@@ -96,6 +97,7 @@ Popup {
                         Layout.fillWidth: true
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHLeft
+                        color: Style.contextMenu.textColor
                         text: model.name
                     }
                 }

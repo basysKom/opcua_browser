@@ -17,6 +17,7 @@ ColumnLayout {
             Layout.preferredWidth: gridLayout.textColumnWidth
             Layout.preferredHeight: gridLayout.columnHeight
             verticalAlignment: Qt.AlignVCenter
+            color: Style.connectionView.textColor
             text: qsTr("State")
         }
 
@@ -24,6 +25,7 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: gridLayout.columnHeight
             verticalAlignment: Qt.AlignVCenter
+            color: Style.connectionView.textColor
             text: BackEnd.stateText
         }
 
@@ -31,6 +33,7 @@ ColumnLayout {
             Layout.preferredWidth: gridLayout.textColumnWidth
             Layout.preferredHeight: gridLayout.columnHeight
             verticalAlignment: Qt.AlignVCenter
+            color: Style.connectionView.textColor
             text: qsTr("Host")
         }
 
@@ -44,6 +47,10 @@ ColumnLayout {
             placeholderText: "opc.tcp://localhost:4080"
             enabled: !BackEnd.isConnected
 
+            background: Rectangle {
+                color: Style.connectionView.textFieldBackground
+            }
+
             onTextChanged: {
                 BackEnd.clearServerList()
                 BackEnd.clearEndpointList()
@@ -54,6 +61,7 @@ ColumnLayout {
             Layout.preferredWidth: gridLayout.textColumnWidth
             Layout.preferredHeight: gridLayout.columnHeight
             verticalAlignment: Qt.AlignVCenter
+            color: Style.connectionView.textColor
             text: qsTr("Server")
             visible: serverListBox.visible
         }
@@ -63,6 +71,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: gridLayout.columnHeight
+            palette.button: Style.connectionView.comboBoxBackground
             model: BackEnd.serverList
             visible: model.length > 0
             enabled: !BackEnd.isConnected
@@ -74,6 +83,7 @@ ColumnLayout {
             Layout.preferredWidth: gridLayout.textColumnWidth
             Layout.preferredHeight: gridLayout.columnHeight
             verticalAlignment: Qt.AlignVCenter
+            color: Style.connectionView.textColor
             text: qsTr("Endpoint")
             visible: endpointListBox.visible
         }
@@ -83,6 +93,7 @@ ColumnLayout {
 
             Layout.fillWidth: true
             Layout.preferredHeight: gridLayout.columnHeight
+            palette.button: Style.connectionView.comboBoxBackground
             model: BackEnd.endpointList
             visible: model.length > 0
             enabled: !BackEnd.isConnected
@@ -99,14 +110,22 @@ ColumnLayout {
                      && (endpointListBox.model.length > 0)
 
             radius: Layout.preferredWidth / 2
-            color: (2 === BackEnd.connectionState) ? "#4CAF50" : (1 === BackEnd.connectionState) ? "#F2C94C" : "#F44336"
+            color: (2 === BackEnd.connectionState) ? Style.connectionView.connected : (1 === BackEnd.connectionState) ? Style.connectionView.connecting : Style.connectionView.disconnected
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: Style.currentThemeIndex = ((Style.currentThemeIndex
+                                                       + 1) % Style.themes.length)
+            }
         }
 
         RoundButton {
             Layout.fillWidth: true
-            Layout.preferredHeight: 35
+            Layout.preferredHeight: BackEnd.isConnected ? 25 : 35
             radius: 5
             text: (serverListBox.model.length === 0) ? qsTr("Find server") : (endpointListBox.model.length === 0) ? qsTr("Get endpoints") : (BackEnd.isConnected) ? qsTr("Disconnect") : qsTr("Connect")
+
+            palette.button: Style.connectionView.buttonBackground
 
             onClicked: {
                 if (serverListBox.model.length === 0) {

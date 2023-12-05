@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 Item {
+    id: root
+
     TabBar {
         id: tabBar
 
@@ -10,16 +12,19 @@ Item {
         anchors.right: parent.right
         anchors.top: parent.top
         visible: BackEnd.isConnected
+        spacing: 0
 
         background: Rectangle {
             color: "transparent"
         }
 
         Repeater {
-            model: ["Browser", "Dashboard" /*, "Log"*/
-            ]
+            id: repeater
+
+            model: [qsTr("Browser"), qsTr("Dashboard")]
             StyledTabButton {
                 text: modelData
+                width: Math.max(100, root.width / repeater.count)
             }
         }
     }

@@ -57,7 +57,7 @@ Item {
                                root.width,
                                padding + label.x + label.implicitWidth + padding)
             implicitHeight: label.implicitHeight * 1.5
-            color: isSelected ? "#584b53" : "transparent"
+            color: isSelected ? Style.nodesView.backgroundSelected : "transparent"
 
             TapHandler {
                 id: tapHandler
@@ -101,7 +101,7 @@ Item {
                 anchors.verticalCenter: label.verticalCenter
                 text: "▸"
                 rotation: treeDelegate.expanded ? 90 : 0
-                color: isSelected ? "white" : "black"
+                color: label.color
             }
 
             Rectangle {
@@ -124,7 +124,7 @@ Item {
                 width: treeDelegate.width - treeDelegate.padding - x
                 clip: true
                 text: model.display
-                color: model.isSelected ? "white" : "black"
+                color: model.isSelected ? Style.nodesView.textColorSelected : Style.nodesView.textColor
             }
         }
     }

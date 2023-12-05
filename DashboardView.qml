@@ -5,7 +5,7 @@ import QtQuick.Layouts
 Rectangle {
     id: root
 
-    color: "#FFBC42"
+    color: Style.dashboard.background
 
     Component {
         id: dragDelegate
@@ -34,11 +34,10 @@ Rectangle {
                 Drag.hotSpot.x: width / 2
                 Drag.hotSpot.y: height / 2
 
-                implicitWidth: 150
+                implicitWidth: 200
                 implicitHeight: childrenRect.height
                 radius: 5
-                border.width: 1
-                color: dragArea.held ? "lightsteelblue" : "orange"
+                color: dragArea.held ? Style.dashboard.item.backgroundHeld : Style.dashboard.item.background
 
                 Behavior on color {
                     ColorAnimation {
@@ -72,19 +71,25 @@ Rectangle {
 
                         Text {
                             Layout.fillWidth: true
+                            color: Style.dashboard.item.textColor
                             text: dragArea.name
-                            font.bold: true
+                            font {
+                                pointSize: 11
+                                bold: true
+                            }
                             elide: Text.ElideRight
                         }
 
-                        Image {
+                        IconImage {
                             Layout.alignment: Qt.AlignVCenter
                             width: 20
                             height: 20
                             source: "qrc:/icons/delete.png"
+                            color: Style.dashboard.item.textColor
 
                             MouseArea {
                                 anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
                                 onClicked: BackEnd.monitoredItemModel.disableMonitoring(
                                                dragArea.index)
                             }
@@ -93,6 +98,8 @@ Rectangle {
 
                     Text {
                         width: parent.width - 2 * parent.padding
+                        font.pointSize: 10
+                        color: Style.dashboard.item.textColor
                         text: dragArea.value
                         elide: Text.ElideRight
                         clip: true
