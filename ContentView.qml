@@ -5,6 +5,7 @@ import QtQuick.Layouts
 Item {
     id: root
 
+    readonly property bool canSaveDashboard: dashboardTab.canSaveDashboard && (stackLayout.currentIndex === 1)
 
     /*TabBar {
         id: tabBar

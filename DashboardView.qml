@@ -5,6 +5,8 @@ import QtQuick.Layouts
 Rectangle {
     id: root
 
+    readonly property bool canSaveDashboard: repeater.count > 1
+
     color: Style.dashboard.background
 
     signal addMonitoredItems

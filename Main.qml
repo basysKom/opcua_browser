@@ -39,6 +39,25 @@ ApplicationWindow {
             fillMode: Image.PreserveAspectFit
             source: "qrc:/icons/logo_basyskom.svg"
         }
+
+        IconImage {
+            anchors.right: parent.right
+            anchors.rightMargin: 10
+            anchors.verticalCenter: parent.verticalCenter
+            height: 25
+            width: height
+            source: "qrc:/icons/save.png"
+            color: Style.mainWindow.header.iconColor
+            visible: contentView.canSaveDashboard
+
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                onClicked: {
+
+                }
+            }
+        }
     }
 
     ConnectionView {
@@ -47,6 +66,8 @@ ApplicationWindow {
     }
 
     ContentView {
+        id: contentView
+
         anchors.fill: parent
         visible: BackEnd.isConnected
     }
