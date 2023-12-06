@@ -3,17 +3,21 @@ import QtQuick.Controls
 import QtQuick.VirtualKeyboard
 import QtQuick.Layouts
 
+import OPC_UA_Browser
+
 ApplicationWindow {
     id: window
+
+    property ThemeMainWindow theme: Style.mainWindow
 
     width: 350
     height: 640
     visible: true
-    color: Style.mainWindow.background
+    color: theme.background
     title: qsTr("OPC UA Browser")
     header: Rectangle {
         height: 40
-        color: Style.mainWindow.header.background
+        color: theme.header.background
 
         IconImage {
             anchors.left: parent.left
@@ -22,7 +26,7 @@ ApplicationWindow {
             height: 25
             width: height
             source: "qrc:/icons/menu.png"
-            color: Style.mainWindow.header.iconColor
+            color: theme.header.iconColor
 
             MouseArea {
                 anchors.fill: parent
@@ -47,7 +51,7 @@ ApplicationWindow {
             height: 25
             width: height
             source: "qrc:/icons/save.png"
-            color: Style.mainWindow.header.iconColor
+            color: theme.header.iconColor
             visible: contentView.canSaveDashboard
 
             MouseArea {

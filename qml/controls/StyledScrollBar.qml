@@ -1,14 +1,18 @@
 import QtQuick
 import QtQuick.Controls
 
+import OPC_UA_Browser
+
 ScrollBar {
     id: control
+
+    property ThemeScrollBar theme: Style.scrollBar
 
     contentItem: Rectangle {
         implicitWidth: 10
         implicitHeight: 10
         radius: 5
-        color: Style.scrollBar.selector
+        color: theme.selector
         opacity: (control.policy === ScrollBar.AlwaysOn)
                  || (control.active && control.size < 1.0) ? 0.75 : 0
 
@@ -19,6 +23,6 @@ ScrollBar {
     }
 
     background: Rectangle {
-        color: Style.scrollBar.background
+        color: theme.background
     }
 }

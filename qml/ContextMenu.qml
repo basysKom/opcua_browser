@@ -2,12 +2,15 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import OPC_UA_Browser
+
 Popup {
     id: contextMenu
 
     property var currentTreeViewIndex
     property string currentNodeId
     property bool showMonitoringItem: false
+    property ThemeContextMenu theme: Style.contextMenu
 
     implicitWidth: contentItem.childrenRect.width
     implicitHeight: contentItem.childrenRect.height
@@ -21,7 +24,7 @@ Popup {
         width: contextMenu.width
         height: contextMenu.height
         radius: 3
-        color: Style.contextMenu.background
+        color: theme.background
     }
 
     contentItem: Item {
@@ -77,7 +80,7 @@ Popup {
                 Rectangle {
                     anchors.fill: parent
                     radius: transparentBorderRect.radius
-                    color: Style.contextMenu.backgroundSelected
+                    color: theme.backgroundSelected
                     opacity: popupListView.currentIndex === index ? 0.8 : 0
                 }
 
@@ -97,7 +100,7 @@ Popup {
                         Layout.fillWidth: true
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHLeft
-                        color: Style.contextMenu.textColor
+                        color: theme.textColor
                         text: model.name
                     }
                 }

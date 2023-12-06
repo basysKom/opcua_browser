@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 
+import OPC_UA_Browser
+
 Item {
     id: root
 
@@ -8,6 +10,7 @@ Item {
     property var references
     property bool canSelectVariables: false
     property bool canSelectEvents: false
+    property ThemeNodesView theme: Style.nodesView
 
     Connections {
         target: BackEnd.opcUaModel
@@ -59,7 +62,7 @@ Item {
                                root.width,
                                padding + label.x + label.implicitWidth + padding)
             implicitHeight: label.implicitHeight * 1.5
-            color: isCurrentItem ? Style.nodesView.backgroundSelected : "transparent"
+            color: isCurrentItem ? theme.backgroundSelected : "transparent"
 
             TapHandler {
                 id: tapHandler
@@ -126,7 +129,7 @@ Item {
                 width: treeDelegate.width - treeDelegate.padding - x
                 clip: true
                 text: model.display
-                color: model.isCurrentItem ? Style.nodesView.textColorSelected : Style.nodesView.textColor
+                color: model.isCurrentItem ? theme.textColorSelected : theme.textColor
             }
 
             StyledItemSelector {

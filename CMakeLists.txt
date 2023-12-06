@@ -20,21 +20,21 @@ set_source_files_properties(qml/style/Style.qml PROPERTIES
 qt_add_qml_module(appOPC_UA_Browser
     URI OPC_UA_Browser
     VERSION 1.0
-    QML_FILES Main.qml
-              BrowserView.qml
-              ConnectionView.qml
-              ContentView.qml
-              ContextMenu.qml
-              DashboardView.qml
-              NodeAttributeList.qml
-              NodeDetailView.qml
-              NodeReferenceList.qml
-              NodesView.qml
-              StyledButton.qml
-              StyledIconTabButton.qml
-              StyledItemSelector.qml
-              StyledScrollBar.qml
-              StyledTabButton.qml
+    QML_FILES qml/Main.qml
+              qml/BrowserView.qml
+              qml/ConnectionView.qml
+              qml/ContentView.qml
+              qml/ContextMenu.qml
+              qml/DashboardView.qml
+              qml/NodeAttributeList.qml
+              qml/NodeDetailView.qml
+              qml/NodeReferenceList.qml
+              qml/NodesView.qml
+              qml/controls/StyledButton.qml
+              qml/controls/StyledIconTabButton.qml
+              qml/controls/StyledItemSelector.qml
+              qml/controls/StyledScrollBar.qml
+              qml/controls/StyledTabButton.qml
               qml/style/Style.qml
               qml/style/StyleDefinitions.qml
               qml/style/ThemeBright.qml

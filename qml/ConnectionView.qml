@@ -2,7 +2,11 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import OPC_UA_Browser
+
 Item {
+    property ThemeConnectionView theme: Style.connectionView
+
     ColumnLayout {
         id: layout
 
@@ -15,7 +19,7 @@ Item {
         Text {
             Layout.preferredHeight: layout.textColumnHeight
             verticalAlignment: Qt.AlignVCenter
-            color: Style.connectionView.textColor
+            color: theme.textColor
             font.bold: true
             text: qsTr("Host")
         }
@@ -31,7 +35,7 @@ Item {
             enabled: !BackEnd.isConnected
 
             background: Rectangle {
-                color: Style.connectionView.textFieldBackground
+                color: theme.textFieldBackground
             }
 
             onTextChanged: {
@@ -43,7 +47,7 @@ Item {
         Text {
             Layout.preferredHeight: layout.textColumnHeight
             verticalAlignment: Qt.AlignVCenter
-            color: Style.connectionView.textColor
+            color: theme.textColor
             font.bold: true
             text: qsTr("Server")
             visible: serverListBox.visible
@@ -54,7 +58,7 @@ Item {
 
             Layout.fillWidth: true
             Layout.preferredHeight: layout.columnHeight
-            palette.button: Style.connectionView.comboBoxBackground
+            palette.button: theme.comboBoxBackground
             model: BackEnd.serverList
             visible: model.length > 0
             enabled: !BackEnd.isConnected
@@ -65,7 +69,7 @@ Item {
         Text {
             Layout.preferredHeight: layout.textColumnHeight
             verticalAlignment: Qt.AlignVCenter
-            color: Style.connectionView.textColor
+            color: theme.textColor
             font.bold: true
             text: qsTr("Endpoint")
             visible: endpointListBox.visible
@@ -76,7 +80,7 @@ Item {
 
             Layout.fillWidth: true
             Layout.preferredHeight: layout.columnHeight
-            palette.button: Style.connectionView.comboBoxBackground
+            palette.button: theme.comboBoxBackground
             model: BackEnd.endpointList
             visible: model.length > 0
             enabled: !BackEnd.isConnected
@@ -92,7 +96,7 @@ Item {
                          && (endpointListBox.model.length > 0)
 
                 radius: Layout.preferredWidth / 2
-                color: (2 === BackEnd.connectionState) ? Style.connectionView.connected : (1 === BackEnd.connectionState) ? Style.connectionView.connecting : Style.connectionView.disconnected
+                color: (2 === BackEnd.connectionState) ? theme.connected : (1 === BackEnd.connectionState) ? theme.connecting : theme.disconnected
 
                 MouseArea {
                     anchors.fill: parent

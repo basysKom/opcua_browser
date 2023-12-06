@@ -2,10 +2,14 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import OPC_UA_Browser
+
 TabButton {
     id: root
 
     readonly property bool isCurrentTab: (TabBar.tabBar.currentIndex == TabBar.index)
+
+    property ThemeIconTabButton theme: Style.iconTabButton
 
     enum Type {
         Item,
@@ -18,7 +22,7 @@ TabButton {
     width: 60
 
     background: Rectangle {
-        color: isCurrentTab ? Style.iconTabButton.backgroundSelected : Style.iconTabButton.background
+        color: isCurrentTab ? theme.backgroundSelected : theme.background
     }
 
     contentItem: ColumnLayout {
@@ -40,7 +44,7 @@ TabButton {
             horizontalAlignment: Text.AlignHCenter
             font.pointSize: 6
             text: root.text
-            color: isCurrentTab ? Style.iconTabButton.textColorSelected : Style.iconTabButton.textColor
+            color: isCurrentTab ? theme.textColorSelected : theme.textColor
             elide: Text.ElideRight
         }
     }

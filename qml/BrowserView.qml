@@ -1,5 +1,7 @@
 import QtQuick
 
+import OPC_UA_Browser
+
 Rectangle {
     id: root
 
@@ -10,8 +12,9 @@ Rectangle {
     }
 
     property int type: BrowserView.Type.ExpertMode
+    property ThemeBrowserView theme: Style.browserView
 
-    color: Style.browserView.background
+    color: theme.background
 
     signal selectionCancelled
     signal selectionAccepted

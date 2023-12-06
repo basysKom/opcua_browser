@@ -2,12 +2,16 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import OPC_UA_Browser
+
 Rectangle {
     id: root
 
     readonly property bool canSaveDashboard: repeater.count > 1
 
-    color: Style.dashboard.background
+    property ThemeDashboard theme: Style.dashboard
+
+    color: theme.background
 
     signal addMonitoredItems
 
@@ -48,7 +52,7 @@ Rectangle {
                 implicitWidth: 160
                 implicitHeight: Math.max(70, childrenRect.height)
                 radius: 5
-                color: dragArea.held ? Style.dashboard.item.backgroundHeld : Style.dashboard.item.background
+                color: dragArea.held ? theme.item.backgroundHeld : theme.item.background
 
                 Behavior on color {
                     ColorAnimation {
@@ -83,7 +87,7 @@ Rectangle {
 
                         Text {
                             Layout.fillWidth: true
-                            color: Style.dashboard.item.textColor
+                            color: theme.item.textColor
                             text: dragArea.name
                             font {
                                 pointSize: 10
@@ -97,7 +101,7 @@ Rectangle {
                             width: 20
                             height: 20
                             source: "qrc:/icons/delete.png"
-                            color: Style.dashboard.item.textColor
+                            color: theme.item.textColor
 
                             MouseArea {
                                 anchors.fill: parent
@@ -111,7 +115,7 @@ Rectangle {
                     Text {
                         width: parent.width - 2 * parent.padding
                         font.pointSize: 8
-                        color: Style.dashboard.item.textColor
+                        color: theme.item.textColor
                         text: dragArea.value
                         elide: Text.ElideRight
                         clip: true
@@ -124,7 +128,7 @@ Rectangle {
                     height: 30
                     visible: dragArea.isAddItem
                     source: "qrc:/icons/plus.png"
-                    color: Style.dashboard.item.textColor
+                    color: theme.item.textColor
                 }
             }
 

@@ -2,10 +2,13 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import OPC_UA_Browser
+
 Rectangle {
     id: root
 
     property alias attributes: attributeList.model
+    property ThemeListView theme: Style.listView
 
     function maxDelegateWidth() {
         var max = flickable.width
@@ -17,7 +20,7 @@ Rectangle {
         return max
     }
 
-    color: Style.listView.background
+    color: theme.background
     opacity: attributeList.model ? 1 : 0.3
     clip: true
 
@@ -60,8 +63,7 @@ Rectangle {
 
                 width: maxDelegateWidth()
                 implicitHeight: childrenRect.height
-                color: ((index % 1)
-                        == 0) ? Style.listView.color1 : Style.listView.color2
+                color: ((index % 1) == 0) ? theme.color1 : theme.color2
 
                 ColumnLayout {
                     spacing: 0
@@ -70,7 +72,7 @@ Rectangle {
                         Layout.preferredWidth: flickable.width
                         Layout.preferredHeight: 1
                         visible: model.index > 0
-                        color: Style.listView.divider
+                        color: theme.divider
                     }
 
                     Text {
@@ -82,7 +84,7 @@ Rectangle {
                         verticalAlignment: Qt.AlignVCenter
                         text: model.attribute
                         elide: Qt.ElideRight
-                        color: Style.listView.textColor
+                        color: theme.textColor
                         font {
                             pointSize: 11
                             bold: true
@@ -115,7 +117,7 @@ Rectangle {
                         verticalAlignment: Qt.AlignVCenter
                         text: model.attribute
                         elide: Qt.ElideRight
-                        color: Style.listView.textColor
+                        color: theme.textColor
                     }
 
                     Rectangle {

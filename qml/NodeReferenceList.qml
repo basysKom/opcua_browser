@@ -2,11 +2,14 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
+import OPC_UA_Browser
+
 Rectangle {
     id: root
 
     property alias references: referenceList.model
-    readonly property color textColor: Style.listView.textColor
+    property ThemeListView theme: Style.listView
+    readonly property color textColor: theme.textColor
 
     function maxDelegateWidth() {
         var max = flickable.width
@@ -18,7 +21,7 @@ Rectangle {
         return max
     }
 
-    color: Style.listView.background
+    color: theme.background
     opacity: referenceList.model ? 1 : 0.3
     clip: true
 
@@ -52,7 +55,7 @@ Rectangle {
                 implicitHeight: childrenRect.height
                 z: 2
 
-                color: Style.listView.headerBackground
+                color: theme.headerBackground
 
                 RowLayout {
                     spacing: 0
@@ -95,8 +98,7 @@ Rectangle {
 
                 width: maxDelegateWidth()
                 implicitHeight: childrenRect.height
-                color: ((index % 2)
-                        == 0) ? Style.listView.color1 : Style.listView.color2
+                color: ((index % 2) == 0) ? theme.color1 : theme.color2
 
                 RowLayout {
                     spacing: 0

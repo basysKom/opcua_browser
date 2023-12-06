@@ -1,13 +1,17 @@
 import QtQuick
 import QtQuick.Controls
 
+import OPC_UA_Browser
+
 TabButton {
     id: root
 
     readonly property bool isCurrentTab: (TabBar.tabBar.currentIndex == TabBar.index)
 
+    property ThemeTabButton theme: Style.tabButton
+
     background: Rectangle {
-        color: Style.tabButton.background
+        color: theme.background
 
         Rectangle {
             id: divider
@@ -15,7 +19,7 @@ TabButton {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: 4
-            color: Style.tabButton.dividerColor
+            color: theme.dividerColor
         }
 
         Rectangle {
@@ -23,7 +27,7 @@ TabButton {
             width: divider.width / 2
             height: 4
             visible: isCurrentTab
-            color: Style.tabButton.dividerColorSelected
+            color: theme.dividerColorSelected
         }
     }
 
@@ -34,7 +38,7 @@ TabButton {
             bold: true
             capitalization: Font.AllUppercase
         }
-        color: Style.tabButton.textColor
+        color: theme.textColor
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
