@@ -23,6 +23,7 @@ public:
     QString getStringForDataTypeId(const QString &dataTypeId) const;
 
     virtual QHash<int, QByteArray> roleNames() const override;
+    virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     virtual QVariant data(const QModelIndex &index, int role) const override;
     virtual QModelIndex index(int row, int column,
                               const QModelIndex &parent = QModelIndex()) const override;
@@ -35,6 +36,9 @@ public:
     Q_INVOKABLE void refreshIndex(const QModelIndex &index);
 
     Q_INVOKABLE void refreshAttributesForCurrentIndex();
+    Q_INVOKABLE void clearSelectionList();
+
+    const QStringList &selectedNodes() const noexcept;
 
 signals:
     void browsingForReferenceTypesFinished();
@@ -74,8 +78,9 @@ private:
     QHash<QString, ReferenceType> mReferencesList;
     QHash<QString, QString> mDataTypesList;
 
-    QString mSelectedNodeId;
+    QString mCurrentNodeId;
     QStringList mInverseNodeIds;
+    QStringList mSelectedNodeIds;
 
     friend class TreeItem;
 };

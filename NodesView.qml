@@ -6,6 +6,8 @@ Item {
 
     property var attributes
     property var references
+    property bool canSelectVariables: false
+    property bool canSelectEvents: false
 
     Connections {
         target: BackEnd.opcUaModel
@@ -34,7 +36,7 @@ Item {
         delegate: Rectangle {
             id: treeDelegate
 
-            readonly property real isSelected: model.isSelected
+            readonly property real isCurrentItem: model.isCurrentItem
             readonly property real indent: 20
             readonly property real padding: 5
 
@@ -45,8 +47,8 @@ Item {
             required property int hasChildren
             required property int depth
 
-            onIsSelectedChanged: {
-                if (isSelected) {
+            onIsCurrentItemChanged: {
+                if (isCurrentItem) {
                     root.attributes = model.attributes
                     root.references = model.references
                 }
@@ -57,7 +59,7 @@ Item {
                                root.width,
                                padding + label.x + label.implicitWidth + padding)
             implicitHeight: label.implicitHeight * 1.5
-            color: isSelected ? Style.nodesView.backgroundSelected : "transparent"
+            color: isCurrentItem ? Style.nodesView.backgroundSelected : "transparent"
 
             TapHandler {
                 id: tapHandler
@@ -124,7 +126,19 @@ Item {
                 width: treeDelegate.width - treeDelegate.padding - x
                 clip: true
                 text: model.display
-                color: model.isSelected ? Style.nodesView.textColorSelected : Style.nodesView.textColor
+                color: model.isCurrentItem ? Style.nodesView.textColorSelected : Style.nodesView.textColor
+            }
+
+            StyledItemSelector {
+                x: treeView.contentX + root.width - width - 15
+                anchors.verticalCenter: treeDelegate.verticalCenter
+                height: treeDelegate.height - 10
+                width: height
+                checkState: model.isSelected ? Qt.Checked : Qt.Unchecked
+                visible: (canSelectVariables && model.canMonitoring)
+                         || (canSelectEvents && model.hasEventNotifier)
+
+                onToggled: model.isSelected = !model.isSelected
             }
         }
     }

@@ -3,7 +3,18 @@ import QtQuick
 Rectangle {
     id: root
 
+    enum Type {
+        ExpertMode,
+        SelectMonitoredItem,
+        SelectEvents
+    }
+
+    property int type: BrowserView.Type.ExpertMode
+
     color: Style.browserView.background
+
+    signal selectionCancelled
+    signal selectionAccepted
 
     NodesView {
         id: nodesView
@@ -11,7 +22,11 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.bottom: spacer.top
+        anchors.bottom: (type === BrowserView.Type.ExpertMode) ? spacer.top : okButton.top
+        anchors.bottomMargin: 10
+
+        canSelectVariables: (type === BrowserView.Type.SelectMonitoredItem)
+        canSelectEvents: (type === BrowserView.Type.SelectEvents)
     }
 
     Item {
@@ -20,7 +35,7 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         y: root.height - 200 - height
-        height: 10
+        height: nodeDetailView.visible ? 10 : 0
 
         MouseArea {
             anchors.fill: parent
@@ -37,9 +52,45 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: spacer.bottom
         anchors.bottom: parent.bottom
-        visible: BackEnd.isConnected
+        visible: BackEnd.isConnected && (type === BrowserView.Type.ExpertMode)
 
         attributes: nodesView.attributes
         references: nodesView.references
+    }
+
+    StyledButton {
+        id: cancelButton
+
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: 10
+        height: 35
+        width: parent.width / 3
+        visible: (type !== BrowserView.Type.ExpertMode)
+        highlighted: false
+        text: qsTr("Cancel")
+
+        onClicked: {
+            BackEnd.opcUaModel.clearSelectionList()
+            selectionCancelled()
+        }
+    }
+
+    StyledButton {
+        id: okButton
+
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 10
+        height: 35
+        width: parent.width / 3
+        visible: (type !== BrowserView.Type.ExpertMode)
+        text: qsTr("Ok")
+
+        onClicked: {
+            BackEnd.monitorSelectedNodes()
+            BackEnd.opcUaModel.clearSelectionList()
+            selectionAccepted()
+        }
     }
 }

@@ -37,6 +37,7 @@ public:
     const QColor &nodeClassColor() const noexcept;
     const QString &value() const noexcept;
     bool canMonitored() const noexcept;
+    bool hasEventNotifier() const noexcept;
 
     void refresh();
     void refreshAttributes();
@@ -60,6 +61,7 @@ private:
     QString mNodeId;
     QOpcUa::NodeClass mNodeClass = QOpcUa::NodeClass::Undefined;
     QString mValue;
+    quint32 mEventNotifier = 0;
 };
 
 #endif // TREEITEM_H

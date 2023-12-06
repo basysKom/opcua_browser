@@ -31,6 +31,8 @@ qt_add_qml_module(appOPC_UA_Browser
               NodeReferenceList.qml
               NodesView.qml
               StyledButton.qml
+              StyledIconTabButton.qml
+              StyledItemSelector.qml
               StyledScrollBar.qml
               StyledTabButton.qml
               qml/style/Style.qml
@@ -45,6 +47,8 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/style/ThemeDashboardItem.qml
               qml/style/ThemeDefault.qml
               qml/style/ThemeHeader.qml
+              qml/style/ThemeIconTabButton.qml
+              qml/style/ThemeItemSelector.qml
               qml/style/ThemeListView.qml
               qml/style/ThemeMainWindow.qml
               qml/style/ThemeNodesView.qml
@@ -64,13 +68,18 @@ qt_add_qml_module(appOPC_UA_Browser
 
 qt_add_resources(appOPC_UA_Browser "icons"
     PREFIX "/"
-    FILES icons/delete.png
+    FILES icons/checkmark.svg
+          icons/dashboard.png
+          icons/delete.png
+          icons/event.png
           icons/eye.png
-          icons/inverse.png
           icons/forward.png
-          icons/refresh.png
+          icons/inverse.png
+          icons/logo_basyskom.svg
           icons/menu.png
-          icons/logo_basyskom.svg)
+          icons/plus.png
+          icons/refresh.png
+          icons/save.png)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

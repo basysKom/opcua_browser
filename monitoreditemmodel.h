@@ -15,6 +15,7 @@ class MonitoredItemModel : public QAbstractListModel
 
 public:
     explicit MonitoredItemModel(QObject *parent = nullptr);
+    ~MonitoredItemModel();
 
     QHash<int, QByteArray> roleNames() const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;

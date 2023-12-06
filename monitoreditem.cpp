@@ -3,19 +3,22 @@
 #include "monitoreditem.h"
 #include "opcuahelper.h"
 
-MonitoredItem::MonitoredItem(QOpcUaNode *node, QObject *parent)
-    : QObject(parent), mOpcNode(node), mNodeId(node->nodeId())
+MonitoredItem::MonitoredItem(QOpcUaNode *node, QObject *parent) : QObject(parent), mOpcNode(node)
 {
-    Q_ASSERT(node);
+    // Add item in dashboard has a null pointer
+    if (node != nullptr) {
+        mNodeId = node->nodeId();
 
-    connect(mOpcNode.get(), &QOpcUaNode::attributeRead, this, &MonitoredItem::handleAttributes);
-    connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this, &MonitoredItem::handleAttributes);
+        connect(mOpcNode.get(), &QOpcUaNode::attributeRead, this, &MonitoredItem::handleAttributes);
+        connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this,
+                &MonitoredItem::handleAttributes);
 
-    node->readAttributes(QOpcUa::NodeAttribute::BrowseName | QOpcUa::NodeAttribute::DisplayName
-                         | QOpcUa::NodeAttribute::Value);
+        node->readAttributes(QOpcUa::NodeAttribute::BrowseName | QOpcUa::NodeAttribute::DisplayName
+                             | QOpcUa::NodeAttribute::Value);
 
-    QOpcUaMonitoringParameters p(100);
-    node->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
+        QOpcUaMonitoringParameters p(100);
+        node->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
+    }
 }
 
 const QString &MonitoredItem::nodeId() const noexcept

@@ -7,6 +7,8 @@ Rectangle {
 
     color: Style.dashboard.background
 
+    signal addMonitoredItems
+
     Component {
         id: dragDelegate
 
@@ -16,15 +18,22 @@ Rectangle {
             property bool held: false
             required property string name
             required property string value
+            required property bool isAddItem
             required property int index
 
             height: content.height
             width: content.width
+            cursorShape: dragArea.isAddItem ? Qt.PointingHandCursor : Qt.ArrowCursor
 
             drag.target: held ? content : undefined
 
-            onPressAndHold: held = true
+            onPressAndHold: held = !dragArea.isAddItem
             onReleased: held = false
+            onClicked: {
+                if (dragArea.isAddItem) {
+                    addMonitoredItems()
+                }
+            }
 
             Rectangle {
                 id: content
@@ -34,8 +43,8 @@ Rectangle {
                 Drag.hotSpot.x: width / 2
                 Drag.hotSpot.y: height / 2
 
-                implicitWidth: 200
-                implicitHeight: childrenRect.height
+                implicitWidth: 160
+                implicitHeight: Math.max(70, childrenRect.height)
                 radius: 5
                 color: dragArea.held ? Style.dashboard.item.backgroundHeld : Style.dashboard.item.background
 
@@ -65,6 +74,7 @@ Rectangle {
                     width: parent.width
                     padding: 5
                     spacing: 5
+                    visible: !dragArea.isAddItem
 
                     RowLayout {
                         width: parent.width - 2 * parent.padding
@@ -74,7 +84,7 @@ Rectangle {
                             color: Style.dashboard.item.textColor
                             text: dragArea.name
                             font {
-                                pointSize: 11
+                                pointSize: 10
                                 bold: true
                             }
                             elide: Text.ElideRight
@@ -98,12 +108,21 @@ Rectangle {
 
                     Text {
                         width: parent.width - 2 * parent.padding
-                        font.pointSize: 10
+                        font.pointSize: 8
                         color: Style.dashboard.item.textColor
                         text: dragArea.value
                         elide: Text.ElideRight
                         clip: true
                     }
+                }
+
+                IconImage {
+                    anchors.centerIn: parent
+                    width: 30
+                    height: 30
+                    visible: dragArea.isAddItem
+                    source: "qrc:/icons/plus.png"
+                    color: Style.dashboard.item.textColor
                 }
             }
 
@@ -112,9 +131,11 @@ Rectangle {
                 anchors.margins: 10
 
                 onEntered: drag => {
-                               visualModel.items.move(
-                                   drag.source.DelegateModel.itemsIndex,
-                                   dragArea.DelegateModel.itemsIndex)
+                               if (!dragArea.isAddItem) {
+                                   visualModel.items.move(
+                                       drag.source.DelegateModel.itemsIndex,
+                                       dragArea.DelegateModel.itemsIndex)
+                               }
                            }
             }
         }
@@ -130,7 +151,10 @@ Rectangle {
     Flickable {
         id: flowListView
 
-        anchors.fill: parent
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.bottom: tabBar.top
         clip: true
 
         contentWidth: parent.width
@@ -149,6 +173,27 @@ Rectangle {
                 id: repeater
 
                 model: visualModel
+            }
+        }
+    }
+
+    TabBar {
+        id: tabBar
+
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        spacing: 5
+
+        background: Rectangle {
+            color: "transparent"
+        }
+
+        Repeater {
+            model: [qsTr("Dashboard 1"), qsTr("Dashboard 2"), qsTr(
+                    "Events 1"), qsTr("Add")]
+            StyledIconTabButton {
+                type: (index < 2) ? StyledIconTabButton.Type.Item : (index === 2) ? StyledIconTabButton.Type.Event : StyledIconTabButton.Type.Add
+                text: modelData
             }
         }
     }

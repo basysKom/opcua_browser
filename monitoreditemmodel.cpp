@@ -3,9 +3,16 @@
 enum Roles : int {
     DisplayNameRole = Qt::DisplayRole,
     ValueRole = Qt::UserRole,
+    IsAddItemRole,
 };
 
 MonitoredItemModel::MonitoredItemModel(QObject *parent) : QAbstractListModel{ parent }
+{
+    // Insert MonitoredItem without OPC UA node for Add item in dashboard
+    mItems.push_back(new MonitoredItem(nullptr));
+}
+
+MonitoredItemModel::~MonitoredItemModel()
 {
     qDeleteAll(mItems);
 }
@@ -15,6 +22,7 @@ QHash<int, QByteArray> MonitoredItemModel::roleNames() const
     return {
         { DisplayNameRole, "name" },
         { ValueRole, "value" },
+        { IsAddItemRole, "isAddItem" },
     };
 }
 
@@ -33,6 +41,8 @@ QVariant MonitoredItemModel::data(const QModelIndex &index, int role) const
         return mItems[index.row()]->displayName();
     case ValueRole:
         return mItems[index.row()]->value();
+    case IsAddItemRole:
+        return mItems[index.row()]->nodeId().isEmpty();
     }
 
     return QVariant();
@@ -47,17 +57,16 @@ bool MonitoredItemModel::containsItem(const QString &nodeId) const noexcept
 
 void MonitoredItemModel::addItem(QOpcUaNode *node)
 {
-    const int count = mItems.size();
+    const int pos = mItems.size() - 1;
     MonitoredItem *monitoredItem = new MonitoredItem(node);
-    connect(monitoredItem, &MonitoredItem::displayNameChanged, this, [=]() {
-        emit dataChanged(index(count), index(count), QList<int>() << DisplayNameRole);
-    });
+    connect(monitoredItem, &MonitoredItem::displayNameChanged, this,
+            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << DisplayNameRole); });
 
     connect(monitoredItem, &MonitoredItem::valueChanged, this,
-            [=]() { emit dataChanged(index(count), index(count), QList<int>() << ValueRole); });
+            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << ValueRole); });
 
-    beginInsertRows(QModelIndex(), count, count);
-    mItems.push_back(monitoredItem);
+    beginInsertRows(QModelIndex(), pos, pos);
+    mItems.insert(pos, monitoredItem);
     endInsertRows();
 }
 
@@ -66,6 +75,8 @@ void MonitoredItemModel::clearItems()
     beginResetModel();
     qDeleteAll(mItems);
     mItems.clear();
+    // Insert MonitoredItem without OPC UA node for Add item in dashboard
+    mItems.push_back(new MonitoredItem(nullptr));
     endResetModel();
 }
 
@@ -73,7 +84,10 @@ QStringList MonitoredItemModel::getNodeIds() const
 {
     QStringList nodeIds;
     for (const auto item : mItems) {
-        nodeIds << item->nodeId();
+        const QString nodeId = item->nodeId();
+        if (!nodeId.isEmpty()) {
+            nodeIds << item->nodeId();
+        }
     }
 
     return nodeIds;
@@ -81,6 +95,10 @@ QStringList MonitoredItemModel::getNodeIds() const
 
 void MonitoredItemModel::disableMonitoring(int index)
 {
+    // Add item is last item
+    if (index == mItems.size() - 1)
+        return;
+
     beginRemoveRows(QModelIndex(), index, index);
     auto item = mItems.takeAt(index);
     endRemoveRows();

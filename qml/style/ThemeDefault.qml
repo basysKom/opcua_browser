@@ -10,5 +10,7 @@ StyleDefinitions {
     property ThemeListView listView: ThemeListView {}
     property ThemeButton button: ThemeButton {}
     property ThemeTabButton tabButton: ThemeTabButton {}
+    property ThemeIconTabButton iconTabButton: ThemeIconTabButton {}
     property ThemeScrollBar scrollBar: ThemeScrollBar {}
+    property ThemeItemSelector itemSelector: ThemeItemSelector {}
 }

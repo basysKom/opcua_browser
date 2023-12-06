@@ -14,7 +14,9 @@ enum Roles : int {
     AttributesRole,
     ReferencesRole,
     SelectedRole,
-    CanMonitoringRole
+    CurrentItemRole,
+    CanMonitoringRole,
+    HasEventNotifierRole
 };
 
 QHash<int, QByteArray> OpcUaModel::roleNames() const
@@ -26,7 +28,9 @@ QHash<int, QByteArray> OpcUaModel::roleNames() const
     names[AttributesRole] = "attributes";
     names[ReferencesRole] = "references";
     names[SelectedRole] = "isSelected";
+    names[CurrentItemRole] = "isCurrentItem";
     names[CanMonitoringRole] = "canMonitoring";
+    names[HasEventNotifierRole] = "hasEventNotifier";
     return names;
 }
 
@@ -50,7 +54,7 @@ OpcUaModel::OpcUaModel(QObject *parent) : QAbstractItemModel{ parent }
             [=](const QModelIndex &parent, int first, int last) {
                 // if mSelectedNodeId is not empty refresh (browse) inverse nodes to find
                 // mSelectedNodeId
-                if (!parent.isValid() || mSelectedNodeId.isEmpty())
+                if (!parent.isValid() || mCurrentNodeId.isEmpty())
                     return;
 
                 for (int i = first; i <= last; i++) {
@@ -59,8 +63,8 @@ OpcUaModel::OpcUaModel(QObject *parent) : QAbstractItemModel{ parent }
                         continue;
 
                     const QString nodeId = item->nodeId();
-                    if (mSelectedNodeId == nodeId) {
-                        mSelectedNodeId = QString();
+                    if (mCurrentNodeId == nodeId) {
+                        mCurrentNodeId = QString();
                         mInverseNodeIds.clear();
                         item->refresh();
                         // Workaround, otherwise the item is displayed twice in the list
@@ -127,6 +131,27 @@ QString OpcUaModel::getStringForDataTypeId(const QString &dataTypeId) const
     return mDataTypesList.value(dataTypeId, emptyString);
 }
 
+bool OpcUaModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid() || (role != SelectedRole))
+        return false;
+
+    const TreeItem *item = static_cast<TreeItem *>(index.internalPointer());
+    if (item != nullptr) {
+        const QString nodeId = item->nodeId();
+        const bool isSelected = value.toBool();
+        if (isSelected && !mSelectedNodeIds.contains(nodeId)) {
+            mSelectedNodeIds << nodeId;
+            emit dataChanged(index, index, QList<int>() << SelectedRole);
+        } else if (!isSelected && mSelectedNodeIds.contains(nodeId)) {
+            mSelectedNodeIds.removeAll(nodeId);
+            emit dataChanged(index, index, QList<int>() << SelectedRole);
+        }
+    }
+
+    return true;
+}
+
 QVariant OpcUaModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
@@ -148,9 +173,13 @@ QVariant OpcUaModel::data(const QModelIndex &index, int role) const
     case ReferencesRole:
         return QVariant::fromValue<QObject *>(item->references());
     case SelectedRole:
+        return mSelectedNodeIds.contains(item->nodeId());
+    case CurrentItemRole:
         return (index == mCurrentIndex);
     case CanMonitoringRole:
         return item->canMonitored();
+    case HasEventNotifierRole:
+        return item->hasEventNotifier();
     default:
         break;
     }
@@ -213,7 +242,7 @@ void OpcUaModel::setCurrentNodeId(const QString &nodeId)
             match(index(0, 0), NodeIdRole, nodeId, 1, Qt::MatchExactly | Qt::MatchRecursive);
 
     if (indices.isEmpty()) {
-        mSelectedNodeId = nodeId;
+        mCurrentNodeId = nodeId;
         collectInverseNodeIds(nodeId, true);
     } else {
         setCurrentIndex(indices.constFirst());
@@ -232,9 +261,9 @@ void OpcUaModel::setCurrentIndex(const QModelIndex &index)
 
     const auto lastCurrentIndex = mCurrentIndex;
     mCurrentIndex = index;
-    emit dataChanged(index, index, QList<int>() << SelectedRole);
+    emit dataChanged(index, index, QList<int>() << CurrentItemRole);
     if (lastCurrentIndex.isValid())
-        emit dataChanged(lastCurrentIndex, lastCurrentIndex, QList<int>() << SelectedRole);
+        emit dataChanged(lastCurrentIndex, lastCurrentIndex, QList<int>() << CurrentItemRole);
 
     emit currentIndexChanged(index);
 }
@@ -261,8 +290,30 @@ void OpcUaModel::refreshAttributesForCurrentIndex()
     }
 }
 
+void OpcUaModel::clearSelectionList()
+{
+    const QStringList copyList = mSelectedNodeIds;
+    for (const auto &nodeId : copyList) {
+        const auto foundIndices =
+                match(index(0, 0), NodeIdRole, nodeId, 1, Qt::MatchExactly | Qt::MatchRecursive);
+        if (!foundIndices.isEmpty()) {
+            setData(foundIndices.constFirst(), false, SelectedRole);
+        }
+    }
+
+    // after resetting the selected nodes, the list mSelectedNodeIds should be empty
+    Q_ASSERT(mSelectedNodeIds.isEmpty());
+    mSelectedNodeIds.clear();
+}
+
+const QStringList &OpcUaModel::selectedNodes() const noexcept
+{
+    return mSelectedNodeIds;
+}
+
 void OpcUaModel::resetModel()
 {
+    mSelectedNodeIds.clear();
     beginResetModel();
     if (nullptr == mOpcUaClient) {
         mRootItem.reset();
@@ -295,7 +346,7 @@ void OpcUaModel::collectInverseNodeIds(const QString &nodeId, bool init)
             [=](const QList<QOpcUaReferenceDescription> &refNodes,
                 QOpcUa::UaStatusCode statusCode) {
                 // stop if node was found
-                if (foundKnownNode || mSelectedNodeId.isEmpty()) {
+                if (foundKnownNode || mCurrentNodeId.isEmpty()) {
                     node->deleteLater();
                     return;
                 }

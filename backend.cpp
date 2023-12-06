@@ -163,6 +163,14 @@ void BackEnd::monitorNode(const QString &nodeId)
     mMonitoredItemModel->addItem(node);
 }
 
+void BackEnd::monitorSelectedNodes()
+{
+    const QStringList nodeIdList = mOpcUaModel->selectedNodes();
+    for (const auto &nodeId : nodeIdList.toList()) {
+        monitorNode(nodeId);
+    }
+}
+
 void BackEnd::findServers(const QString &urlString)
 {
     QUrl url(urlString);

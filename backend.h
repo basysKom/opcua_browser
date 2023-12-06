@@ -48,6 +48,7 @@ public:
     Q_INVOKABLE void disconnectFromEndpoint();
 
     Q_INVOKABLE void monitorNode(const QString &nodeId);
+    Q_INVOKABLE void monitorSelectedNodes();
 
 signals:
     void serverListChanged();

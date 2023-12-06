@@ -48,6 +48,11 @@ ThemeDefault {
         divider: mediumDark
     }
 
+    button {
+        borderColor: anthrazite
+        textColor: anthrazite
+    }
+
     tabButton {
         background: light
         backgroundSelected: accent
@@ -56,8 +61,16 @@ ThemeDefault {
         textColor: anthrazite
     }
 
+    iconTabButton {
+        textColor: anthrazite
+    }
+
     scrollBar {
         background: "transparent"
         selector: medium
+    }
+
+    itemSelector {
+        background: mainWindow.background
     }
 }

@@ -165,7 +165,12 @@ const QString &TreeItem::value() const noexcept
 
 bool TreeItem::canMonitored() const noexcept
 {
-    return (QOpcUa::NodeClass::Variable == mNodeClass);
+    return (mNodeClass == QOpcUa::NodeClass::Variable);
+}
+
+bool TreeItem::hasEventNotifier() const noexcept
+{
+    return (mEventNotifier == 1);
 }
 
 int TreeItem::row() const
@@ -250,6 +255,8 @@ void TreeItem::refreshAttributes()
                 browseName = QOpcUaHelper::getRawAttributeValue(node, attr);
             } else if (QOpcUa::NodeAttribute::Value == attr) {
                 mValue = stringValue;
+            } else if (QOpcUa::NodeAttribute::EventNotifier == attr) {
+                mEventNotifier = node->attribute(attr).toUInt();
             }
         }
 
