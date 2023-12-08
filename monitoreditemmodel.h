@@ -3,11 +3,8 @@
 
 #include <QAbstractListModel>
 
-#include <QOpcUaNode>
-
-#include "monitoreditem.h"
-
-class TreeItem;
+class QOpcUaNode;
+class MonitoredItem;
 
 class MonitoredItemModel : public QAbstractListModel
 {

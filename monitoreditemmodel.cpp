@@ -1,3 +1,4 @@
+#include "monitoreditem.h"
 #include "monitoreditemmodel.h"
 
 enum Roles : int {

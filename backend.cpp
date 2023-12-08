@@ -6,6 +6,7 @@
 #include <QOpcUaAuthenticationInformation>
 
 #include "backend.h"
+#include "dashboarditemmodel.h"
 #include "monitoreditemmodel.h"
 #include "opcuamodel.h"
 
@@ -36,7 +37,7 @@ BackEnd::BackEnd(QObject *parent)
     : QObject{ parent },
       mOpcUaModel(new OpcUaModel(this)),
       mOpcUaProvider(new QOpcUaProvider(this)),
-      mMonitoredItemModel(new MonitoredItemModel(this))
+      mDashboardItemModel(new DashboardItemModel(this))
 {
 
     //! [Application Identity]
@@ -51,7 +52,7 @@ BackEnd::~BackEnd()
 {
     QSettings settings;
     if (isConnected()) {
-        settings.setValue("monitoredNodeIds", mMonitoredItemModel->getNodeIds());
+        // settings.setValue("monitoredNodeIds", mMonitoredItemModel->getNodeIds());
     } else {
         settings.setValue("monitoredNodeIds", mStoredMonitoredNodeIds);
     }
@@ -103,9 +104,9 @@ OpcUaModel *BackEnd::opcUaModel() const noexcept
     return mOpcUaModel;
 }
 
-QAbstractItemModel *BackEnd::monitoredItemModel() const noexcept
+QAbstractItemModel *BackEnd::dashboardItemModel() const noexcept
 {
-    return mMonitoredItemModel;
+    return mDashboardItemModel;
 }
 
 void BackEnd::clearServerList()
@@ -144,8 +145,10 @@ void BackEnd::disconnectFromEndpoint()
 
 void BackEnd::monitorNode(const QString &nodeId)
 {
-    Q_ASSERT(mMonitoredItemModel);
-    if (mMonitoredItemModel->containsItem(nodeId))
+    Q_ASSERT(mDashboardItemModel);
+
+    const auto monitoredItemModel = mDashboardItemModel->getCurrentMonitoredItemModel();
+    if ((monitoredItemModel == nullptr) || monitoredItemModel->containsItem(nodeId))
         return;
 
     if (nullptr == mOpcUaClient) {
@@ -160,7 +163,7 @@ void BackEnd::monitorNode(const QString &nodeId)
         return;
     }
 
-    mMonitoredItemModel->addItem(node);
+    monitoredItemModel->addItem(node);
 }
 
 void BackEnd::monitorSelectedNodes()
@@ -263,8 +266,10 @@ void BackEnd::clientDisconnected()
     mOpcUaClient = nullptr;
     mOpcUaModel->setOpcUaClient(nullptr);
 
-    mStoredMonitoredNodeIds = mMonitoredItemModel->getNodeIds();
-    mMonitoredItemModel->clearItems();
+    // mStoredMonitoredNodeIds = mMonitoredItemModel->getNodeIds();
+    // mMonitoredItemModel->clearItems();
+
+    mDashboardItemModel->clearItems();
 }
 
 void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)

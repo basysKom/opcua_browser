@@ -5,9 +5,10 @@ import QtQuick.Layouts
 import OPC_UA_Browser
 
 TabButton {
-    id: root
+    id: control
 
     readonly property bool isCurrentTab: (TabBar.tabBar.currentIndex == TabBar.index)
+                                         && (type !== StyledIconTabButton.Type.Add)
 
     property ThemeIconTabButton theme: Style.iconTabButton
 
@@ -26,10 +27,11 @@ TabButton {
     }
 
     contentItem: ColumnLayout {
-        width: root.width
+        width: control.width
         spacing: 0
 
         IconImage {
+            Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
             width: 30
             height: 30
@@ -40,10 +42,10 @@ TabButton {
         Text {
             id: label
 
-            Layout.preferredWidth: root.width
+            Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             font.pointSize: 6
-            text: root.text
+            text: control.text
             color: isCurrentTab ? theme.textColorSelected : theme.textColor
             elide: Text.ElideRight
         }

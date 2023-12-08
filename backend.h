@@ -10,7 +10,7 @@
 
 #include "opcuamodel.h"
 
-class MonitoredItemModel;
+class DashboardItemModel;
 
 class BackEnd : public QObject
 {
@@ -25,7 +25,7 @@ public:
     Q_PROPERTY(QVector<QString> serverList READ serverList NOTIFY serverListChanged FINAL)
     Q_PROPERTY(QVector<QString> endpointList READ endpointList NOTIFY endpointListChanged FINAL)
     Q_PROPERTY(QAbstractItemModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
-    Q_PROPERTY(QAbstractItemModel *monitoredItemModel READ monitoredItemModel NOTIFY
+    Q_PROPERTY(QAbstractItemModel *dashboardItemModel READ dashboardItemModel NOTIFY
                        opcUaModelChanged FINAL)
 
     explicit BackEnd(QObject *parent = nullptr);
@@ -37,7 +37,7 @@ public:
     QVector<QString> serverList() const noexcept;
     QVector<QString> endpointList() const;
     OpcUaModel *opcUaModel() const noexcept;
-    QAbstractItemModel *monitoredItemModel() const noexcept;
+    QAbstractItemModel *dashboardItemModel() const noexcept;
 
     Q_INVOKABLE void clearServerList();
     Q_INVOKABLE void clearEndpointList();
@@ -86,7 +86,7 @@ private:
     QVector<QString> mServerList;
     QList<QOpcUaEndpointDescription> mEndpointList;
     QOpcUaEndpointDescription mCurrentEndpoint;
-    MonitoredItemModel *mMonitoredItemModel = nullptr;
+    DashboardItemModel *mDashboardItemModel = nullptr;
     QStringList mStoredMonitoredNodeIds;
 };
 

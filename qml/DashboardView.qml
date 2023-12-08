@@ -106,7 +106,7 @@ Rectangle {
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: BackEnd.monitoredItemModel.disableMonitoring(
+                                onClicked: visualModel.model.disableMonitoring(
                                                dragArea.index)
                             }
                         }
@@ -150,7 +150,7 @@ Rectangle {
     DelegateModel {
         id: visualModel
 
-        model: BackEnd.monitoredItemModel
+        model: tabBar.currentItem.monitoringModel
         delegate: dragDelegate
     }
 
@@ -186,20 +186,42 @@ Rectangle {
     TabBar {
         id: tabBar
 
-        anchors.horizontalCenter: parent.horizontalCenter
+        property int lastCurrentIndex: 0
+
+        anchors.left: parent.left
+        anchors.right: parent.right
         anchors.bottom: parent.bottom
+        leftPadding: Math.max(15, (width - contentWidth) / 2)
         spacing: 5
 
         background: Rectangle {
             color: "transparent"
         }
 
+        onCurrentIndexChanged: {
+            if (tabRepeater.model.isAddItem(currentIndex)) {
+                tabBar.currentIndex = lastCurrentIndex
+            } else {
+                lastCurrentIndex = currentIndex
+                tabRepeater.model.setCurrentIndex(currentIndex)
+            }
+        }
+
         Repeater {
-            model: [qsTr("Dashboard 1"), qsTr("Dashboard 2"), qsTr(
-                    "Events 1"), qsTr("Add")]
+            id: tabRepeater
+            model: BackEnd.dashboardItemModel
+
             StyledIconTabButton {
-                type: (index < 2) ? StyledIconTabButton.Type.Item : (index === 2) ? StyledIconTabButton.Type.Event : StyledIconTabButton.Type.Add
-                text: modelData
+                type: model.type
+                text: model.name
+                property var monitoringModel: model.monitoringModel
+
+                onClicked: {
+                    if (type === StyledIconTabButton.Type.Add) {
+                        tabRepeater.model.addItem(0)
+                        tabBar.currentIndex = index - 1
+                    }
+                }
             }
         }
     }
