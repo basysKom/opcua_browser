@@ -1,3 +1,4 @@
+import QtCore
 import QtQuick
 import QtQuick.Controls
 import QtQuick.VirtualKeyboard
@@ -9,6 +10,16 @@ ApplicationWindow {
     id: window
 
     property ThemeMainWindow theme: Style.mainWindow
+    property int themeIndex: 0
+    onThemeIndexChanged: Style.currentThemeIndex = themeIndex
+
+    Settings {
+        property alias themeIndex: window.themeIndex
+    }
+
+    Component.onCompleted: {
+        Style.currentThemeIndex = window.themeIndex
+    }
 
     width: 350
     height: 640
@@ -20,19 +31,27 @@ ApplicationWindow {
         color: theme.header.background
 
         IconImage {
+            id: leftImage
+
+            readonly property alias showBackButton: contentView.showBackButtonInHeader
+
             anchors.left: parent.left
             anchors.leftMargin: 10
             anchors.verticalCenter: parent.verticalCenter
             height: 25
             width: height
-            source: "qrc:/icons/menu.png"
+            source: leftImage.showBackButton ? "qrc:/icons/back.png" : "qrc:/icons/menu.png"
             color: theme.header.iconColor
 
             MouseArea {
                 anchors.fill: parent
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-
+                    if (leftImage.showBackButton) {
+                        contentView.goBack()
+                    } else {
+                        sideMenu.open()
+                    }
                 }
             }
         }
@@ -62,6 +81,27 @@ ApplicationWindow {
                 }
             }
         }
+    }
+
+    SideMenu {
+        id: sideMenu
+
+        y: -header.height
+        menuHeight: parent.height + header.height
+        menuWidth: 0.8 * parent.width
+
+        onAddConnectionSelected: {
+            // ToDo: add new connection
+            BackEnd.disconnectFromEndpoint()
+            BackEnd.clearServerList()
+            BackEnd.clearEndpointList()
+        }
+
+        onCloseConnectionSelected: BackEnd.disconnectFromEndpoint()
+        onShowDashboardsSelected: contentView.showDashboardView()
+        onShowExpertModeSelected: contentView.showExpertBrowserView()
+        onShowImprintSelected: contentView.showImprintView()
+        onShowSettingsSelected: contentView.showSettingsView()
     }
 
     ConnectionView {

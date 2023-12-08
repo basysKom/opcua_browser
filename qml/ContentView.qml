@@ -5,32 +5,38 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    readonly property bool canSaveDashboard: dashboardTab.canSaveDashboard && (stackLayout.currentIndex === 1)
+    readonly property bool showBackButtonInHeader: (stackLayout.currentIndex === 2)
+                                                   || (stackLayout.currentIndex === 3)
+    readonly property bool canSaveDashboard: dashboard.canSaveDashboard
+                                             && (stackLayout.currentIndex === 1)
 
-    /*TabBar {
-        id: tabBar
+    function showDashboardView() {
+        stackLayout.currentIndex = 1
+    }
 
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        spacing: 0
+    function showExpertBrowserView() {
+        stackLayout.currentIndex = 0
+        browser.type = BrowserView.Type.ExpertMode
+    }
 
-        background: Rectangle {
-            color: "transparent"
-        }
+    function showImprintView() {
+        stackLayout.lastStoredViewIndex = stackLayout.currentIndex
+        stackLayout.currentIndex = 2
+    }
 
-        Repeater {
-            id: repeater
+    function showSettingsView() {
+        stackLayout.lastStoredViewIndex = stackLayout.currentIndex
+        stackLayout.currentIndex = 3
+    }
 
-            model: [qsTr("Browser"), qsTr("Dashboard")]
-            StyledTabButton {
-                text: modelData
-                width: Math.max(100, root.width / repeater.count)
-            }
-        }
-    }*/
+    function goBack() {
+        stackLayout.currentIndex = stackLayout.lastStoredViewIndex
+    }
+
     StackLayout {
         id: stackLayout
+
+        property int lastStoredViewIndex: 0
 
         anchors.fill: parent
         visible: true
@@ -38,19 +44,27 @@ Item {
         currentIndex: 1
 
         BrowserView {
-            id: browserTab
+            id: browser
 
             onSelectionCancelled: stackLayout.currentIndex = 1
             onSelectionAccepted: stackLayout.currentIndex = 1
         }
 
         DashboardView {
-            id: dashboardTab
+            id: dashboard
 
             onAddMonitoredItems: {
                 stackLayout.currentIndex = 0
-                browserTab.type = BrowserView.Type.SelectMonitoredItem
+                browser.type = BrowserView.Type.SelectMonitoredItem
             }
+        }
+
+        ImprintView {
+            id: imprint
+        }
+
+        SettingsView {
+            id: settings
         }
     }
 }

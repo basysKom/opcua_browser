@@ -11,16 +11,26 @@ ThemeDefault {
         }
     }
 
+    connectionView {
+        textColor: anthrazite
+        textFieldBackground: foreground
+        comboBoxBackground: mediumLight
+    }
+
+    imprintView {
+        background: light
+        textColor: anthrazite
+    }
+
     nodesView {
         backgroundSelected: mediumLight
         textColor: anthrazite
         textColorSelected: anthrazite
     }
 
-    connectionView {
+    settingsView {
+        background: light
         textColor: anthrazite
-        textFieldBackground: foreground
-        comboBoxBackground: mediumLight
     }
 
     dashboard {
@@ -37,6 +47,12 @@ ThemeDefault {
         background: foreground
         backgroundSelected: accent
         textColor: anthrazite
+    }
+
+    sideMenu {
+        background: light
+        textColor: anthrazite
+        iconColor: mediumDark
     }
 
     listView {

@@ -12,10 +12,13 @@ ThemeDefault {
 
     mainWindow: currentTheme.mainWindow
     browserView: currentTheme.browserView
-    nodesView: currentTheme.nodesView
     connectionView: currentTheme.connectionView
+    imprintView: currentTheme.imprintView
+    nodesView: currentTheme.nodesView
+    settingsView: currentTheme.settingsView
     dashboard: currentTheme.dashboard
     contextMenu: currentTheme.contextMenu
+    sideMenu: currentTheme.sideMenu
     listView: currentTheme.listView
     button: currentTheme.button
     tabButton: currentTheme.tabButton

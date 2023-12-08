@@ -26,13 +26,18 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/ContentView.qml
               qml/ContextMenu.qml
               qml/DashboardView.qml
+              qml/ImprintView.qml
               qml/NodeAttributeList.qml
               qml/NodeDetailView.qml
               qml/NodeReferenceList.qml
               qml/NodesView.qml
+              qml/SettingsView.qml
+              qml/controls/SideMenu.qml
               qml/controls/StyledButton.qml
               qml/controls/StyledIconTabButton.qml
               qml/controls/StyledItemSelector.qml
+              qml/controls/StyledMenuItem.qml
+              qml/controls/StyledMenuSeparator.qml
               qml/controls/StyledScrollBar.qml
               qml/controls/StyledTabButton.qml
               qml/style/Style.qml
@@ -48,11 +53,14 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/style/ThemeDefault.qml
               qml/style/ThemeHeader.qml
               qml/style/ThemeIconTabButton.qml
+              qml/style/ThemeImprintView.qml
               qml/style/ThemeItemSelector.qml
               qml/style/ThemeListView.qml
               qml/style/ThemeMainWindow.qml
               qml/style/ThemeNodesView.qml
               qml/style/ThemeScrollBar.qml
+              qml/style/ThemeSettingsView.qml
+              qml/style/ThemeSideMenu.qml
               qml/style/ThemeTabButton.qml
     SOURCES attribute.h attribute.cpp
     SOURCES attributemodel.h attributemodel.cpp
@@ -68,18 +76,24 @@ qt_add_qml_module(appOPC_UA_Browser
 
 qt_add_resources(appOPC_UA_Browser "icons"
     PREFIX "/"
-    FILES icons/checkmark.svg
+    FILES icons/back.png
+          icons/checkmark.svg
+          icons/connect.png
           icons/dashboard.png
           icons/delete.png
+          icons/disconnect.png
           icons/event.png
+          icons/expert.png
           icons/eye.png
           icons/forward.png
+          icons/info.png
           icons/inverse.png
           icons/logo_basyskom.svg
           icons/menu.png
           icons/plus.png
           icons/refresh.png
-          icons/save.png)
+          icons/save.png
+          icons/settings.png)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an

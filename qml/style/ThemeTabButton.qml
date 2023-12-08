@@ -5,5 +5,5 @@ StyleDefinitions {
     property color backgroundSelected: accent
     property color dividerColor: dark
     property color dividerColorSelected: accent
-    property color textColor: mediumLight
+    property color textColor: foreground
 }
