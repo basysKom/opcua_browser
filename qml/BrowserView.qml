@@ -73,10 +73,7 @@ Rectangle {
         highlighted: false
         text: qsTr("Cancel")
 
-        onClicked: {
-            BackEnd.opcUaModel.clearSelectionList()
-            selectionCancelled()
-        }
+        onClicked: selectionCancelled()
     }
 
     StyledButton {
@@ -90,10 +87,6 @@ Rectangle {
         visible: (type !== BrowserView.Type.ExpertMode)
         text: qsTr("Ok")
 
-        onClicked: {
-            BackEnd.monitorSelectedNodes()
-            BackEnd.opcUaModel.clearSelectionList()
-            selectionAccepted()
-        }
+        onClicked: selectionAccepted()
     }
 }

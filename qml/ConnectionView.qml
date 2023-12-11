@@ -15,75 +15,79 @@ Item {
 
         anchors.centerIn: parent
         width: parent.width - 20
+        spacing: 20
 
-        Text {
-            Layout.preferredHeight: layout.textColumnHeight
-            verticalAlignment: Qt.AlignVCenter
-            color: theme.textColor
-            font.bold: true
-            text: qsTr("Host")
-        }
-
-        TextField {
+        StyledTextField {
             id: hostUrl
 
-            Layout.fillWidth: true
-            Layout.preferredHeight: layout.columnHeight
-            verticalAlignment: Qt.AlignVCenter
+            enabled: !BackEnd.isConnected
+            visible: serverListBox.model.length === 0
+            captionText: qsTr("Host")
             text: "opc.tcp://localhost:43344"
             placeholderText: "opc.tcp://localhost:4080"
-            enabled: !BackEnd.isConnected
-
-            background: Rectangle {
-                color: theme.textFieldBackground
-            }
-
-            onTextChanged: {
-                BackEnd.clearServerList()
-                BackEnd.clearEndpointList()
-            }
         }
 
-        Text {
-            Layout.preferredHeight: layout.textColumnHeight
-            verticalAlignment: Qt.AlignVCenter
-            color: theme.textColor
-            font.bold: true
-            text: qsTr("Server")
-            visible: serverListBox.visible
-        }
-
-        ComboBox {
+        StyledComboBox {
             id: serverListBox
 
-            Layout.fillWidth: true
-            Layout.preferredHeight: layout.columnHeight
-            palette.button: theme.comboBoxBackground
-            model: BackEnd.serverList
-            visible: model.length > 0
             enabled: !BackEnd.isConnected
-
-            onCurrentIndexChanged: BackEnd.clearEndpointList()
+            visible: model.length > 0 && endpointListBox.model.length === 0
+            captionText: qsTr("Server")
+            model: BackEnd.serverList
         }
 
-        Text {
-            Layout.preferredHeight: layout.textColumnHeight
-            verticalAlignment: Qt.AlignVCenter
-            color: theme.textColor
-            font.bold: true
-            text: qsTr("Endpoint")
-            visible: endpointListBox.visible
-        }
-
-        ComboBox {
+        StyledComboBox {
             id: endpointListBox
 
-            Layout.fillWidth: true
-            Layout.preferredHeight: layout.columnHeight
-            palette.button: theme.comboBoxBackground
-            model: BackEnd.endpointList
-            visible: model.length > 0
             enabled: !BackEnd.isConnected
+            visible: model.length > 0
+            captionText: qsTr("Endpoint")
+            model: BackEnd.endpointList
+        }
+
+        StyledComboBox {
+            id: authenticationListBox
+
+            enabled: !BackEnd.isConnected
+            visible: endpointListBox.model.length > 0
+            captionText: qsTr("Authentication")
+            model: ["Anonymous", "Username", "Certificate"]
+        }
+
+        StyledTextField {
+            id: userName
+
+            enabled: authenticationListBox.enabled
+            visible: authenticationListBox.visible
+                     && authenticationListBox.currentIndex === 1
+            captionText: qsTr("Username")
+        }
+
+        StyledTextField {
+            id: password
+
+            enabled: authenticationListBox.enabled
+            visible: authenticationListBox.visible
+                     && authenticationListBox.currentIndex === 1
+            captionText: qsTr("Password")
+        }
+
+        StyledTextField {
+            id: certificate
+
+            enabled: authenticationListBox.enabled
+            visible: authenticationListBox.visible
+                     && authenticationListBox.currentIndex === 2
+            captionText: qsTr("Certificate")
+        }
+
+        StyledTextField {
+            id: privateKey
+
+            enabled: authenticationListBox.enabled
+            visible: authenticationListBox.visible
+                     && authenticationListBox.currentIndex === 2
+            captionText: qsTr("Private key")
         }
 
         RowLayout {
@@ -97,12 +101,6 @@ Item {
 
                 radius: Layout.preferredWidth / 2
                 color: (2 === BackEnd.connectionState) ? theme.connected : (1 === BackEnd.connectionState) ? theme.connecting : theme.disconnected
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: Style.currentThemeIndex
-                               = ((Style.currentThemeIndex + 1) % Style.themes.length)
-                }
             }
 
             StyledButton {
@@ -121,6 +119,25 @@ Item {
                         BackEnd.connectToEndpoint(serverListBox.currentIndex)
                     }
                 }
+            }
+        }
+    }
+
+    StyledButton {
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.margins: 10
+        visible: serverListBox.model.length > 0
+        height: 35
+        width: parent.width / 3
+        highlighted: false
+        text: qsTr("Back")
+
+        onClicked: {
+            if (endpointListBox.model.length === 0) {
+                BackEnd.clearServerList()
+            } else {
+                BackEnd.clearEndpointList()
             }
         }
     }

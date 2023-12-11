@@ -12,6 +12,8 @@ StyleDefinitions {
     property ThemeSideMenu sideMenu: ThemeSideMenu {}
     property ThemeListView listView: ThemeListView {}
     property ThemeButton button: ThemeButton {}
+    property ThemeComboBox comboBox: ThemeComboBox {}
+    property ThemeTextField textField: ThemeTextField {}
     property ThemeTabButton tabButton: ThemeTabButton {}
     property ThemeIconTabButton iconTabButton: ThemeIconTabButton {}
     property ThemeScrollBar scrollBar: ThemeScrollBar {}

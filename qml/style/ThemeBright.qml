@@ -11,12 +11,6 @@ ThemeDefault {
         }
     }
 
-    connectionView {
-        textColor: anthrazite
-        textFieldBackground: foreground
-        comboBoxBackground: mediumLight
-    }
-
     imprintView {
         background: light
         textColor: anthrazite
@@ -67,6 +61,16 @@ ThemeDefault {
     button {
         borderColor: anthrazite
         textColor: anthrazite
+    }
+
+    comboBox {
+        captionTextColor: anthrazite
+        background: mediumLight
+    }
+
+    textField {
+        captionTextColor: anthrazite
+        background: foreground
     }
 
     tabButton {

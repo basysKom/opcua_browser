@@ -95,25 +95,23 @@ ApplicationWindow {
             BackEnd.disconnectFromEndpoint()
             BackEnd.clearServerList()
             BackEnd.clearEndpointList()
+            contentView.showConnectionView()
         }
 
-        onCloseConnectionSelected: BackEnd.disconnectFromEndpoint()
+        onCloseConnectionSelected: {
+            BackEnd.disconnectFromEndpoint()
+            contentView.showConnectionView()
+        }
         onShowDashboardsSelected: contentView.showDashboardView()
         onShowExpertModeSelected: contentView.showExpertBrowserView()
         onShowImprintSelected: contentView.showImprintView()
         onShowSettingsSelected: contentView.showSettingsView()
     }
 
-    ConnectionView {
-        anchors.fill: parent
-        visible: !BackEnd.isConnected
-    }
-
     ContentView {
         id: contentView
 
         anchors.fill: parent
-        visible: BackEnd.isConnected
     }
 
     InputPanel {

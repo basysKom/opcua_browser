@@ -14,6 +14,18 @@ Rectangle {
     color: theme.background
 
     signal addMonitoredItems
+    signal addEvents
+    signal addNewDashboard
+
+    function addMonitoredItemsDashboard() {
+        tabRepeater.model.addItem(0)
+        tabBar.currentIndex = tabRepeater.count - 2
+    }
+
+    function addEventsDashboard() {
+        tabRepeater.model.addItem(1)
+        tabBar.currentIndex = tabRepeater.count - 2
+    }
 
     Component {
         id: dragDelegate
@@ -150,7 +162,7 @@ Rectangle {
     DelegateModel {
         id: visualModel
 
-        model: tabBar.currentItem.monitoringModel
+        model: (tabBar.currentItem === null) ? null : tabBar.currentItem.monitoringModel
         delegate: dragDelegate
     }
 
@@ -218,8 +230,7 @@ Rectangle {
 
                 onClicked: {
                     if (type === StyledIconTabButton.Type.Add) {
-                        tabRepeater.model.addItem(0)
-                        tabBar.currentIndex = index - 1
+                        addNewDashboard()
                     }
                 }
             }

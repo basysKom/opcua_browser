@@ -21,6 +21,8 @@ ThemeDefault {
     sideMenu: currentTheme.sideMenu
     listView: currentTheme.listView
     button: currentTheme.button
+    comboBox: currentTheme.comboBox
+    textField: currentTheme.textField
     tabButton: currentTheme.tabButton
     iconTabButton: currentTheme.iconTabButton
     scrollBar: currentTheme.scrollBar

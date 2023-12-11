@@ -25,6 +25,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/ConnectionView.qml
               qml/ContentView.qml
               qml/ContextMenu.qml
+              qml/DashboardConfigurationView.qml
               qml/DashboardView.qml
               qml/ImprintView.qml
               qml/NodeAttributeList.qml
@@ -34,17 +35,20 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/SettingsView.qml
               qml/controls/SideMenu.qml
               qml/controls/StyledButton.qml
+              qml/controls/StyledComboBox.qml
               qml/controls/StyledIconTabButton.qml
               qml/controls/StyledItemSelector.qml
               qml/controls/StyledMenuItem.qml
               qml/controls/StyledMenuSeparator.qml
               qml/controls/StyledScrollBar.qml
               qml/controls/StyledTabButton.qml
+              qml/controls/StyledTextField.qml
               qml/style/Style.qml
               qml/style/StyleDefinitions.qml
               qml/style/ThemeBright.qml
               qml/style/ThemeBrowserView.qml
               qml/style/ThemeButton.qml
+              qml/style/ThemeComboBox.qml
               qml/style/ThemeConnectionView.qml
               qml/style/ThemeContextMenu.qml
               qml/style/ThemeDark.qml
@@ -62,6 +66,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/style/ThemeSettingsView.qml
               qml/style/ThemeSideMenu.qml
               qml/style/ThemeTabButton.qml
+              qml/style/ThemeTextField.qml
     SOURCES attribute.h attribute.cpp
     SOURCES attributemodel.h attributemodel.cpp
     SOURCES backend.h backend.cpp
