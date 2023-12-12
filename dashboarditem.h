@@ -2,7 +2,10 @@
 #define DASHBOARDITEM_H
 
 #include <QObject>
+#include <QQmlEngine>
 #include <QString>
+
+#include "types.h"
 
 class MonitoredItemModel;
 class QAbstractListModel;
@@ -10,21 +13,18 @@ class QAbstractListModel;
 class DashboardItem : public QObject
 {
 public:
-    enum class Type { Variables, Events, Add };
-
-    explicit DashboardItem(Type type, const QString &name = QString());
-    DashboardItem(const DashboardItem &item);
+    explicit DashboardItem(Types::DashboardType type, const QString &name = QString());
     ~DashboardItem();
 
     const QString &name() const noexcept;
     void setName(const QString &name);
 
-    Type type() const noexcept;
+    Types::DashboardType type() const noexcept;
     QAbstractListModel *monitoredItemModel() const noexcept;
 
 private:
     QString mName;
-    Type mType;
+    Types::DashboardType mType;
     MonitoredItemModel *mMonitoredItemModel = nullptr;
 };
 

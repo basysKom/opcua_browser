@@ -12,7 +12,9 @@ ColumnLayout {
     property alias enabled: comboBox.enabled
     property alias captionText: caption.text
     property alias model: comboBox.model
+    property alias textRole: comboBox.textRole
     property alias currentIndex: comboBox.currentIndex
+    property alias currentText: comboBox.currentText
     property ThemeComboBox theme: Style.comboBox
 
     Text {

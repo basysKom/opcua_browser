@@ -27,58 +27,133 @@ ApplicationWindow {
     color: theme.background
     title: qsTr("OPC UA Browser")
     header: Rectangle {
-        height: 40
+        id: headerItem
+
+        property bool isSaveMode: false
+
+        height: childrenRect.height
         color: theme.header.background
+        clip: true
 
-        IconImage {
-            id: leftImage
+        Behavior on height {
+            PropertyAnimation {}
+        }
 
-            readonly property alias showBackButton: contentView.showBackButtonInHeader
+        ColumnLayout {
+            width: parent.width
 
-            anchors.left: parent.left
-            anchors.leftMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            height: 25
-            width: height
-            source: leftImage.showBackButton ? "qrc:/icons/back.png" : "qrc:/icons/menu.png"
-            color: theme.header.iconColor
+            Item {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 40
 
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
-                    if (leftImage.showBackButton) {
-                        contentView.goBack()
-                    } else {
-                        sideMenu.open()
+                IconImage {
+                    id: leftImage
+
+                    readonly property alias showBackButton: contentView.showBackButtonInHeader
+
+                    anchors.left: parent.left
+                    anchors.leftMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 25
+                    width: height
+                    source: leftImage.showBackButton ? "qrc:/icons/back.png" : "qrc:/icons/menu.png"
+                    color: theme.header.iconColor
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            if (leftImage.showBackButton) {
+                                contentView.goBack()
+                            } else {
+                                sideMenu.open()
+                            }
+                        }
+                    }
+                }
+
+                Image {
+                    anchors.centerIn: parent
+                    height: parent.height - 10
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/icons/logo_basyskom.svg"
+                }
+
+                IconImage {
+                    anchors.right: parent.right
+                    anchors.rightMargin: 10
+                    anchors.verticalCenter: parent.verticalCenter
+                    height: 25
+                    width: height
+                    source: "qrc:/icons/save.png"
+                    color: theme.header.iconColor
+                    visible: contentView.canSaveDashboard
+                             && !headerItem.isSaveMode
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: headerItem.isSaveMode = true
                     }
                 }
             }
-        }
 
-        Image {
-            anchors.centerIn: parent
-            height: parent.height - 10
-            fillMode: Image.PreserveAspectFit
-            source: "qrc:/icons/logo_basyskom.svg"
-        }
+            StyledTextField {
+                id: name
 
-        IconImage {
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            height: 25
-            width: height
-            source: "qrc:/icons/save.png"
-            color: theme.header.iconColor
-            visible: contentView.canSaveDashboard
+                visible: headerItem.isSaveMode
+                Layout.fillWidth: true
+                Layout.preferredHeight: implicitHeight
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                captionText: qsTr("Name")
+                text: contentView.currentDashboardName
+            }
 
-            MouseArea {
-                anchors.fill: parent
-                cursorShape: Qt.PointingHandCursor
-                onClicked: {
+            Item {
+                visible: headerItem.isSaveMode
+                Layout.fillWidth: true
+                Layout.preferredHeight: childrenRect.height
+                Layout.leftMargin: 10
+                Layout.rightMargin: 10
+                Layout.topMargin: 5
+                Layout.bottomMargin: 5
 
+                StyledButton {
+                    anchors.left: parent.left
+                    height: 35
+                    width: parent.width / 2 - 5
+                    highlighted: false
+                    text: qsTr("Cancel")
+
+                    onClicked: {
+                        name.text = contentView.currentDashboardName
+                        headerItem.isSaveMode = false
+                    }
                 }
+
+                StyledButton {
+                    anchors.right: parent.right
+                    height: 35
+                    width: parent.width / 2 - 5
+                    text: qsTr("Ok")
+                    visible: name.text.length > 0
+
+                    onClicked: {
+                        BackEnd.saveCurrentDashboard(name.text)
+                        headerItem.isSaveMode = false
+                    }
+                }
+            }
+
+            Rectangle {
+                id: rect
+                visible: headerItem.isSaveMode
+                Layout.fillWidth: true
+                Layout.preferredHeight: 2
+                Layout.leftMargin: 5
+                Layout.rightMargin: 5
+                color: theme.header.dividerColor
             }
         }
     }

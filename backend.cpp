@@ -33,11 +33,26 @@ static bool copyDirRecursively(const QString &from, const QString &to)
     return true;
 }
 
+static void addItemToStringListModel(QStringListModel *model, const QString &name)
+{
+    QStringList keys = model->stringList();
+    if (keys.contains(name))
+        return;
+
+    keys << name;
+    keys.sort(Qt::CaseInsensitive);
+    model->setStringList(keys);
+}
+
 BackEnd::BackEnd(QObject *parent)
     : QObject{ parent },
       mOpcUaModel(new OpcUaModel(this)),
       mOpcUaProvider(new QOpcUaProvider(this)),
-      mDashboardItemModel(new DashboardItemModel(this))
+      mDashboardItemModel(new DashboardItemModel(this)),
+      mDefaultVariableDashboardsModel(new QStringListModel(this)),
+      mDefaultEventDashboardsModel(new QStringListModel(this)),
+      mSavedVariableDashboardsModel(new QStringListModel(this)),
+      mSavedEventDashboardsModel(new QStringListModel(this))
 {
 
     //! [Application Identity]
@@ -45,7 +60,17 @@ BackEnd::BackEnd(QObject *parent)
     //! [Application Identity]
 
     QSettings settings;
-    mStoredMonitoredNodeIds = settings.value("monitoredNodeIds").toStringList();
+    settings.beginGroup("dashboards/variables");
+    QStringList keys = settings.childKeys();
+    settings.endGroup();
+    keys.sort(Qt::CaseInsensitive);
+    mSavedVariableDashboardsModel->setStringList(keys);
+
+    settings.beginGroup("dashboards/events");
+    keys = settings.childKeys();
+    settings.endGroup();
+    keys.sort(Qt::CaseInsensitive);
+    mSavedEventDashboardsModel->setStringList(keys);
 }
 
 BackEnd::~BackEnd()
@@ -54,7 +79,7 @@ BackEnd::~BackEnd()
     if (isConnected()) {
         // settings.setValue("monitoredNodeIds", mMonitoredItemModel->getNodeIds());
     } else {
-        settings.setValue("monitoredNodeIds", mStoredMonitoredNodeIds);
+        // settings.setValue("monitoredNodeIds", mStoredMonitoredNodeIds);
     }
 }
 
@@ -107,6 +132,26 @@ OpcUaModel *BackEnd::opcUaModel() const noexcept
 QAbstractItemModel *BackEnd::dashboardItemModel() const noexcept
 {
     return mDashboardItemModel;
+}
+
+QStringListModel *BackEnd::defaultVariableDashboards() const noexcept
+{
+    return mDefaultVariableDashboardsModel;
+}
+
+QStringListModel *BackEnd::defaultEventDashboards() const noexcept
+{
+    return mDefaultEventDashboardsModel;
+}
+
+QStringListModel *BackEnd::savedVariableDashboards() const noexcept
+{
+    return mSavedVariableDashboardsModel;
+}
+
+QStringListModel *BackEnd::savedEventDashboards() const noexcept
+{
+    return mSavedEventDashboardsModel;
 }
 
 void BackEnd::clearServerList()
@@ -170,6 +215,48 @@ void BackEnd::monitorSelectedNodes()
 {
     const QStringList nodeIdList = mOpcUaModel->selectedNodes();
     for (const auto &nodeId : nodeIdList.toList()) {
+        monitorNode(nodeId);
+    }
+}
+
+void BackEnd::saveCurrentDashboard(const QString &name)
+{
+    Q_ASSERT(mDashboardItemModel);
+
+    if (name.isEmpty())
+        return;
+
+    const auto monitoredItemModel = mDashboardItemModel->getCurrentMonitoredItemModel();
+    if (monitoredItemModel == nullptr)
+        return;
+
+    const QStringList nodeIds = monitoredItemModel->getNodeIds();
+    if (nodeIds.isEmpty())
+        return;
+
+    mDashboardItemModel->setCurrentDashboardName(name);
+
+    QSettings settings;
+    switch (mDashboardItemModel->getCurrentDashboardType()) {
+    case Types::DashboardType::Variables:
+        settings.setValue("dashboards/variables/" % name, nodeIds);
+        addItemToStringListModel(mSavedVariableDashboardsModel, name);
+        break;
+    case Types::DashboardType::Events:
+        settings.setValue("dashboards/events/" % name, nodeIds);
+        addItemToStringListModel(mSavedEventDashboardsModel, name);
+        break;
+    default:
+        Q_UNREACHABLE();
+        break;
+    }
+}
+
+void BackEnd::loadDashboard(const QString &name)
+{
+    QSettings settings;
+    const QStringList nodeIds = settings.value("dashboards/variables/" % name).toStringList();
+    for (const auto &nodeId : nodeIds) {
         monitorNode(nodeId);
     }
 }
@@ -379,7 +466,7 @@ void BackEnd::setState(const QString &state)
 
 void BackEnd::restoreMonitoredNodeIds()
 {
-    for (const auto &nodeId : mStoredMonitoredNodeIds) {
-        monitorNode(nodeId);
-    }
+    // for (const auto &nodeId : mStoredMonitoredNodeIds) {
+    //     monitorNode(nodeId);
+    // }
 }

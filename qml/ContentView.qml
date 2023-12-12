@@ -15,6 +15,7 @@ Item {
     readonly property bool canSaveDashboard: dashboard.canSaveDashboard
                                              && (stackLayout.currentIndex
                                                  === dashboard.StackLayout.index)
+    readonly property alias currentDashboardName: dashboard.currentDashboardName
 
     function showConnectionView() {
         stackLayout.currentIndex = connection.StackLayout.index
@@ -88,6 +89,24 @@ Item {
                 browser.type = BrowserView.Type.SelectEvents
             }
 
+            onAddSavedVariableDashboard: function (name) {
+                // Add new variables dashboard
+                dashboard.addMonitoredItemsDashboard(name)
+                // Load node IDs for saved dashboard name to current dashboard
+                BackEnd.loadDashboard(name)
+                // Go to dashboard view
+                stackLayout.currentIndex = dashboard.StackLayout.index
+            }
+
+            onAddSavedEventDashboard: function (name) {
+                // Add new event dashboard
+                dashboard.addEventsDashboard(name)
+                // Load node IDs for saved dashboard name to current dashboard
+                BackEnd.loadDashboard(name)
+                // Go to dashboard view
+                stackLayout.currentIndex = dashboard.StackLayout.index
+            }
+
             onViewCanceled: {
                 // Go back to dashboard view
                 stackLayout.currentIndex = dashboard.StackLayout.index
@@ -109,9 +128,9 @@ Item {
                 // Add new dashboard if necessary
                 if (addDashboardOnAccepted) {
                     if (browser.type === BrowserView.Type.SelectMonitoredItem) {
-                        dashboard.addMonitoredItemsDashboard()
+                        dashboard.addMonitoredItemsDashboard("")
                     } else if (browser.type === BrowserView.Type.SelectEvents) {
-                        dashboard.addEventsDashboard()
+                        dashboard.addEventsDashboard("")
                     }
                 }
 

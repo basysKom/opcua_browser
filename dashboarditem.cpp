@@ -3,28 +3,31 @@
 #include "dashboarditem.h"
 #include "monitoreditemmodel.h"
 
-QString getDefaultNameForType(DashboardItem::Type type)
+QString getDefaultNameForType(Types::DashboardType type)
 {
     switch (type) {
-    case DashboardItem::Type::Variables:
+    case Types::DashboardType::Variables:
         return QCoreApplication::translate("OpcUaBrowser", "Dashboard");
-    case DashboardItem::Type::Events:
+    case Types::DashboardType::Events:
         return QCoreApplication::translate("OpcUaBrowser", "Event");
-    case DashboardItem::Type::Add:
+    case Types::DashboardType::Add:
         return QCoreApplication::translate("OpcUaBrowser", "Add");
+    default:
+        break;
     }
 
     Q_UNREACHABLE();
     return QString();
 }
 
-DashboardItem::DashboardItem(Type type, const QString &name) : mName(name), mType(type)
+DashboardItem::DashboardItem(Types::DashboardType type, const QString &name)
+    : mName(name), mType(type)
 {
     if (mName.isEmpty()) {
         mName = getDefaultNameForType(type);
     }
 
-    if (type != Type::Add) {
+    if (type != Types::DashboardType::Add) {
         mMonitoredItemModel = new MonitoredItemModel();
     }
 }
@@ -48,7 +51,7 @@ void DashboardItem::setName(const QString &name)
     }
 }
 
-DashboardItem::Type DashboardItem::type() const noexcept
+Types::DashboardType DashboardItem::type() const noexcept
 {
     return mType;
 }

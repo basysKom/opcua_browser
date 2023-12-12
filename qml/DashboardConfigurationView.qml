@@ -23,6 +23,9 @@ Item {
     signal addEvents
     signal viewCanceled
 
+    signal addSavedVariableDashboard(string name)
+    signal addSavedEventDashboard(string name)
+
     ColumnLayout {
         id: selection
 
@@ -48,8 +51,8 @@ Item {
             text: qsTr("Add data dashboard")
 
             onClicked: {
-                if (!defaultDashboardListBox.visible
-                        && !savedDashboardListBox.visible) {
+                if ((BackEnd.defaultVariableDashboards.rowCount() === 0)
+                        && (BackEnd.savedVariableDashboards.rowCount() === 0)) {
                     addMonitoredItems()
                 } else {
                     view.type = DashboardConfigurationView.Type.SelectVariables
@@ -63,8 +66,8 @@ Item {
             text: qsTr("Add event dashboard")
 
             onClicked: {
-                if (!defaultDashboardListBox.visible
-                        && !savedDashboardListBox.visible) {
+                if ((BackEnd.defaultEventDashboards.rowCount() === 0)
+                        && (BackEnd.savedEventDashboards.rowCount() === 0)) {
                     addEvents()
                 } else {
                     view.type = DashboardConfigurationView.Type.SelectEvents
@@ -106,19 +109,20 @@ Item {
         }
 
         ColumnLayout {
+            visible: (defaultDashboardListBox.model !== undefined)
+                     && (defaultDashboardListBox.model.rowCount() > 0)
+
             StyledComboBox {
                 id: defaultDashboardListBox
 
-                visible: (model !== undefined) && (model.length > 0)
                 captionText: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTr("Default data dashboards") : qsTr("Default event dashboards")
-                //model: (view.type === DashboardConfigurationView.Type.SelectVariables) ? modelA : modelB
+                model: (view.type === DashboardConfigurationView.Type.SelectVariables) ? BackEnd.defaultVariableDashboards : BackEnd.defaultEventDashboards
             }
 
             StyledButton {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 35
                 text: qsTr("Add dashboard")
-                visible: defaultDashboardListBox.visible
 
                 onClicked: {
 
@@ -127,22 +131,30 @@ Item {
         }
 
         ColumnLayout {
+            visible: (savedDashboardListBox.model !== undefined)
+                     && (savedDashboardListBox.model.rowCount() > 0)
+
             StyledComboBox {
                 id: savedDashboardListBox
 
-                visible: (model !== undefined) && (model.length > 0)
                 captionText: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTr("Saved data dashboards") : qsTr("Saved event dashboards")
-                //model: (view.type === DashboardConfigurationView.Type.SelectVariables) ? modelA : modelB
+                model: (view.type === DashboardConfigurationView.Type.SelectVariables) ? BackEnd.savedVariableDashboards : BackEnd.savedEventDashboards
+                textRole: "display"
             }
 
             StyledButton {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 35
                 text: qsTr("Add dashboard")
-                visible: savedDashboardListBox.visible
 
                 onClicked: {
-
+                    if (view.type === DashboardConfigurationView.Type.SelectVariables) {
+                        addSavedVariableDashboard(
+                                    savedDashboardListBox.currentText)
+                    } else {
+                        addSavedEventDashboard(
+                                    savedDashboardListBox.currentText)
+                    }
                 }
             }
         }

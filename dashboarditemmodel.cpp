@@ -11,7 +11,7 @@ enum Roles : int {
 DashboardItemModel::DashboardItemModel(QObject *parent) : QAbstractListModel{ parent }
 {
     // Insert Add item
-    mItems.push_back(new DashboardItem(DashboardItem::Type::Add));
+    mItems.push_back(new DashboardItem(Types::DashboardType::Add));
 }
 
 DashboardItemModel::~DashboardItemModel()
@@ -50,7 +50,7 @@ QVariant DashboardItemModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void DashboardItemModel::addItem(DashboardItem::Type type, const QString &name)
+void DashboardItemModel::addItem(Types::DashboardType type, const QString &name)
 {
     const int pos = mItems.size() - 1;
     DashboardItem *item = new DashboardItem(type, name);
@@ -78,12 +78,31 @@ MonitoredItemModel *DashboardItemModel::getCurrentMonitoredItemModel() const
     return dynamic_cast<MonitoredItemModel *>(mItems[mCurrentIndex]->monitoredItemModel());
 }
 
+Types::DashboardType DashboardItemModel::getCurrentDashboardType() const
+{
+    if (mCurrentIndex >= mItems.size())
+        return Types::DashboardType::Unknown;
+
+    return mItems[mCurrentIndex]->type();
+}
+
+void DashboardItemModel::setCurrentDashboardName(const QString &name)
+{
+    if (mCurrentIndex >= mItems.size())
+        return;
+
+    mItems[mCurrentIndex]->setName(name);
+
+    const QModelIndex index = createIndex(mCurrentIndex, 0);
+    emit dataChanged(index, index, QList<int>() << DisplayNameRole);
+}
+
 bool DashboardItemModel::isAddItem(uint index) const
 {
     if (index >= mItems.size())
         return false;
 
-    return (mItems.at(index)->type() == DashboardItem::Type::Add);
+    return (mItems.at(index)->type() == Types::DashboardType::Add);
 }
 
 void DashboardItemModel::setCurrentIndex(uint index)

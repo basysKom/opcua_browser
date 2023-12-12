@@ -3,11 +3,13 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import OPC_UA_Browser
+import Types
 
 Rectangle {
-    id: root
+    id: view
 
     readonly property bool canSaveDashboard: repeater.count > 1
+    readonly property string currentDashboardName: tabBar.currentItem.text
 
     property ThemeDashboard theme: Style.dashboard
 
@@ -17,13 +19,13 @@ Rectangle {
     signal addEvents
     signal addNewDashboard
 
-    function addMonitoredItemsDashboard() {
-        tabRepeater.model.addItem(0)
+    function addMonitoredItemsDashboard(name) {
+        tabRepeater.model.addItem(DashboardType.Variables, name)
         tabBar.currentIndex = tabRepeater.count - 2
     }
 
-    function addEventsDashboard() {
-        tabRepeater.model.addItem(1)
+    function addEventsDashboard(name) {
+        tabRepeater.model.addItem(DashboardType.Events, name)
         tabBar.currentIndex = tabRepeater.count - 2
     }
 
@@ -77,7 +79,7 @@ Rectangle {
 
                     ParentChange {
                         target: content
-                        parent: root
+                        parent: view
                     }
                     AnchorChanges {
                         target: content
@@ -229,7 +231,7 @@ Rectangle {
                 property var monitoringModel: model.monitoringModel
 
                 onClicked: {
-                    if (type === StyledIconTabButton.Type.Add) {
+                    if (type === DashboardType.Add) {
                         addNewDashboard()
                     }
                 }

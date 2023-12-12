@@ -8,6 +8,7 @@ ThemeDefault {
 
         header {
             iconColor: anthrazite
+            dividerColor: foreground
         }
     }
 

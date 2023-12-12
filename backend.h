@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QQmlEngine>
+#include <QStringListModel>
 
 #include <QOpcUaClient>
 #include <QOpcUaProvider>
@@ -27,6 +28,14 @@ public:
     Q_PROPERTY(QAbstractItemModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
     Q_PROPERTY(QAbstractItemModel *dashboardItemModel READ dashboardItemModel NOTIFY
                        opcUaModelChanged FINAL)
+    Q_PROPERTY(QStringListModel *defaultVariableDashboards READ defaultVariableDashboards NOTIFY
+                       defaultVariableDashboardsChanged FINAL)
+    Q_PROPERTY(QStringListModel *defaultEventDashboards READ defaultEventDashboards NOTIFY
+                       defaultEventDashboardsChanged FINAL)
+    Q_PROPERTY(QStringListModel *savedVariableDashboards READ savedVariableDashboards NOTIFY
+                       savedVariableDashboardsChanged FINAL)
+    Q_PROPERTY(QStringListModel *savedEventDashboards READ savedEventDashboards NOTIFY
+                       savedEventDashboardsChanged FINAL)
 
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
@@ -38,6 +47,10 @@ public:
     QVector<QString> endpointList() const;
     OpcUaModel *opcUaModel() const noexcept;
     QAbstractItemModel *dashboardItemModel() const noexcept;
+    QStringListModel *defaultVariableDashboards() const noexcept;
+    QStringListModel *defaultEventDashboards() const noexcept;
+    QStringListModel *savedVariableDashboards() const noexcept;
+    QStringListModel *savedEventDashboards() const noexcept;
 
     Q_INVOKABLE void clearServerList();
     Q_INVOKABLE void clearEndpointList();
@@ -50,12 +63,19 @@ public:
     Q_INVOKABLE void monitorNode(const QString &nodeId);
     Q_INVOKABLE void monitorSelectedNodes();
 
+    Q_INVOKABLE void saveCurrentDashboard(const QString &name);
+    Q_INVOKABLE void loadDashboard(const QString &name);
+
 signals:
     void serverListChanged();
     void endpointListChanged();
     void stateTextChanged();
     void connectionStateChanged();
     void opcUaModelChanged();
+    void defaultVariableDashboardsChanged();
+    void defaultEventDashboardsChanged();
+    void savedVariableDashboardsChanged();
+    void savedEventDashboardsChanged();
 
 private slots:
     void findServersComplete(const QList<QOpcUaApplicationDescription> &servers,
@@ -87,7 +107,11 @@ private:
     QList<QOpcUaEndpointDescription> mEndpointList;
     QOpcUaEndpointDescription mCurrentEndpoint;
     DashboardItemModel *mDashboardItemModel = nullptr;
-    QStringList mStoredMonitoredNodeIds;
+
+    QStringListModel *mDefaultVariableDashboardsModel;
+    QStringListModel *mDefaultEventDashboardsModel;
+    QStringListModel *mSavedVariableDashboardsModel;
+    QStringListModel *mSavedEventDashboardsModel;
 };
 
 #endif // BACKEND_H
