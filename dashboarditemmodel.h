@@ -18,6 +18,7 @@ public:
 
     bool containsItem(const QString &name) const noexcept;
     Q_INVOKABLE void addItem(Types::DashboardType type, const QString &name = QString());
+    Q_INVOKABLE void removeItem(int index);
     void clearItems();
 
     MonitoredItemModel *getCurrentMonitoredItemModel() const;

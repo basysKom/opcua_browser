@@ -23,6 +23,20 @@ Item {
 
     ContextMenu {
         id: contextMenu
+
+        listModel: ListModel {
+            ListElement {
+                imageSource: "qrc:/icons/refresh.png"
+                name: qsTr("Refresh")
+            }
+        }
+
+        onListItemClicked: function (index) {
+            if (index === 0) {
+                // refresh pressed
+                BackEnd.opcUaModel.refreshCurrentIndex()
+            }
+        }
     }
 
     TreeView {
@@ -74,8 +88,8 @@ Item {
                 }
 
                 onLongPressed: {
-                    var index = treeView.index(row, column)
-                    BackEnd.opcUaModel.setCurrentIndex(index)
+                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(row,
+                                                                      column))
 
                     var xPos = tapHandler.point.position.x + treeDelegate.x - treeView.contentX
                     var yPos = tapHandler.point.position.y + treeDelegate.y - treeView.contentY
@@ -91,9 +105,6 @@ Item {
                         contextMenu.y = yPos
                     }
 
-                    contextMenu.currentTreeViewIndex = index
-                    contextMenu.currentNodeId = model.nodeId
-                    contextMenu.showMonitoringItem = model.canMonitoring
                     contextMenu.open()
                 }
             }

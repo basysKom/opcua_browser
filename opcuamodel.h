@@ -33,7 +33,7 @@ public:
 
     Q_INVOKABLE void setCurrentNodeId(const QString &nodeId);
     Q_INVOKABLE void setCurrentIndex(const QModelIndex &index);
-    Q_INVOKABLE void refreshIndex(const QModelIndex &index);
+    Q_INVOKABLE void refreshCurrentIndex();
 
     Q_INVOKABLE void refreshAttributesForCurrentIndex();
     Q_INVOKABLE void clearSelectionList();

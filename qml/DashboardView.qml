@@ -29,6 +29,33 @@ Rectangle {
         tabBar.currentIndex = tabRepeater.count - 2
     }
 
+    ContextMenu {
+        id: contextMenu
+
+        property int selectedIndex
+
+        listModel: ListModel {
+            ListElement {
+                imageSource: "qrc:/icons/delete.png"
+                name: qsTr("Delete")
+            }
+        }
+
+        onListItemClicked: function (index) {
+            if (index === 0) {
+                // delete pressed
+                if (tabBar.currentIndex === selectedIndex) {
+                    // allow selecting add item to force the change of the current item
+                    tabBar.allowSelectingAddItem = true
+                    tabBar.currentIndex = (selectedIndex > 0) ? 0 : 1
+                    tabBar.allowSelectingAddItem = false
+                }
+
+                tabRepeater.model.removeItem(selectedIndex)
+            }
+        }
+    }
+
     Component {
         id: dragDelegate
 
@@ -201,6 +228,7 @@ Rectangle {
         id: tabBar
 
         property int lastCurrentIndex: 0
+        property bool allowSelectingAddItem: false
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -213,7 +241,9 @@ Rectangle {
         }
 
         onCurrentIndexChanged: {
-            if (tabRepeater.model.isAddItem(currentIndex)) {
+            if (tabRepeater.model.isAddItem(currentIndex)
+                    && (tabRepeater.count > 1)
+                    && !tabBar.allowSelectingAddItem) {
                 tabBar.currentIndex = lastCurrentIndex
             } else {
                 lastCurrentIndex = currentIndex
@@ -226,6 +256,8 @@ Rectangle {
             model: BackEnd.dashboardItemModel
 
             StyledIconTabButton {
+                id: tabButton
+
                 type: model.type
                 text: model.name
                 property var monitoringModel: model.monitoringModel
@@ -234,6 +266,22 @@ Rectangle {
                     if (type === DashboardType.Add) {
                         addNewDashboard()
                     }
+                }
+
+                onPressAndHold: {
+                    if (type === DashboardType.Add)
+                        return
+
+                    var pressedPoint = mapToItem(view, tabButton.pressX,
+                                                 tabButton.pressY)
+                    var xPos = pressedPoint.x - contextMenu.width / 2
+                    contextMenu.x = Math.max(
+                                0, Math.min(xPos,
+                                            view.width - contextMenu.width))
+                    contextMenu.y = pressedPoint.y - contextMenu.height
+
+                    contextMenu.selectedIndex = index
+                    contextMenu.open()
                 }
             }
         }

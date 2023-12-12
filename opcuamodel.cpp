@@ -268,12 +268,12 @@ void OpcUaModel::setCurrentIndex(const QModelIndex &index)
     emit currentIndexChanged(index);
 }
 
-void OpcUaModel::refreshIndex(const QModelIndex &index)
+void OpcUaModel::refreshCurrentIndex()
 {
-    if (!index.isValid())
+    if (!mCurrentIndex.isValid())
         return;
 
-    auto treeItem = static_cast<TreeItem *>(index.internalPointer());
+    auto treeItem = static_cast<TreeItem *>(mCurrentIndex.internalPointer());
     if (nullptr != treeItem) {
         treeItem->refresh();
     }

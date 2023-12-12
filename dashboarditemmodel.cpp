@@ -60,13 +60,26 @@ void DashboardItemModel::addItem(Types::DashboardType type, const QString &name)
     endInsertRows();
 }
 
+void DashboardItemModel::removeItem(int index)
+{
+    // Add item is last item
+    if (index == mItems.size() - 1)
+        return;
+
+    beginRemoveRows(QModelIndex(), index, index);
+    auto item = mItems.takeAt(index);
+    endRemoveRows();
+
+    item->deleteLater();
+}
+
 void DashboardItemModel::clearItems()
 {
     beginResetModel();
     qDeleteAll(mItems);
     mItems.clear();
     // Insert Add item
-    mItems.push_back(new DashboardItem(DashboardItem::Type::Add));
+    mItems.push_back(new DashboardItem(Types::DashboardType::Add));
     endResetModel();
 }
 

@@ -7,9 +7,7 @@ import OPC_UA_Browser
 Popup {
     id: contextMenu
 
-    property var currentTreeViewIndex
-    property string currentNodeId
-    property bool showMonitoringItem: false
+    property alias listModel: popupListView.model
     property ThemeContextMenu theme: Style.contextMenu
 
     implicitWidth: contentItem.childrenRect.width
@@ -17,6 +15,8 @@ Popup {
     padding: 0
 
     modal: true
+
+    signal listItemClicked(int index)
 
     background: Rectangle {
         id: transparentBorderRect
@@ -31,32 +31,16 @@ Popup {
         implicitWidth: popupListView.contentWidth
         implicitHeight: popupListView.contentHeight
 
-        ListModel {
-            id: listModel
-
-            ListElement {
-                imageSource: "qrc:/icons/refresh.png"
-                name: qsTr("Refresh")
-            }
-            ListElement {
-                imageSource: "qrc:/icons/eye.png"
-                name: qsTr("Monitor")
-            }
-        }
-
         ListView {
             id: popupListView
 
             implicitWidth: contentItem.childrenRect.width
             implicitHeight: contentItem.childrenRect.height
-            model: listModel
             clip: true
 
             delegate: Item {
-                height: visible ? 30 : 0
-                width: 200
-                // hide Monitor item, if monitoring is not supported for node class
-                visible: contextMenu.showMonitoringItem || (1 !== index)
+                height: 30
+                width: 150
 
                 MouseArea {
                     anchors.fill: parent
@@ -64,15 +48,7 @@ Popup {
 
                     onEntered: popupListView.currentIndex = index
                     onClicked: {
-                        if (0 === model.index) {
-                            // refresh pressed
-                            BackEnd.opcUaModel.refreshIndex(
-                                        contextMenu.currentTreeViewIndex)
-                        } else if (1 === model.index) {
-                            // monitor pressed
-                            BackEnd.monitorNode(contextMenu.currentNodeId)
-                        }
-
+                        listItemClicked(index)
                         contextMenu.close()
                     }
                 }
