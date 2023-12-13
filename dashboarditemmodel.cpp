@@ -136,17 +136,18 @@ void DashboardItemModel::setCurrentIndex(uint index)
 
 void DashboardItemModel::saveDashboardsToSettings() const
 {
-    static const QString dashboardKey = QStringLiteral("lastDashboards/%1/%2");
-
     QSettings settings;
     settings.remove("lastDashboards");
-    for (int i = 0; i < mItems.count(); i++) {
+
+    settings.beginWriteArray("lastDashboards");
+    for (qsizetype i = 0; i < mItems.count(); ++i) {
         if (mItems[i]->type() == Types::DashboardType::Add)
             continue;
 
-        const QString key = dashboardKey.arg(i);
-        settings.setValue(key.arg("name"), mItems[i]->name());
-        settings.setValue(key.arg("type"), (int)mItems[i]->type());
-        settings.setValue(key.arg("nodeIDs"), mItems[i]->getMonitoredNodeIds());
+        settings.setArrayIndex(i);
+        settings.setValue("name", mItems[i]->name());
+        settings.setValue("type", (int)mItems[i]->type());
+        settings.setValue("nodeIDs", mItems[i]->getMonitoredNodeIds());
     }
+    settings.endArray();
 }

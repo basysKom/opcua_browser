@@ -480,9 +480,9 @@ void BackEnd::loadLastDashboardsFromSettings()
     Q_ASSERT(mDashboardItemModel);
 
     QSettings settings;
-    settings.beginGroup("lastDashboards");
-    for (const auto &group : settings.childGroups()) {
-        settings.beginGroup(group);
+    int size = settings.beginReadArray("lastDashboards");
+    for (int i = 0; i < size; ++i) {
+        settings.setArrayIndex(i);
         const QString name = settings.value("name").toString();
         const Types::DashboardType type =
                 static_cast<Types::DashboardType>(settings.value("type", 0).toInt());
