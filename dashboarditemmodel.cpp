@@ -1,3 +1,5 @@
+#include <QSettings>
+
 #include "dashboarditem.h"
 #include "dashboarditemmodel.h"
 #include "monitoreditemmodel.h"
@@ -50,7 +52,7 @@ QVariant DashboardItemModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-void DashboardItemModel::addItem(Types::DashboardType type, const QString &name)
+int DashboardItemModel::addItem(Types::DashboardType type, const QString &name)
 {
     const int pos = mItems.size() - 1;
     DashboardItem *item = new DashboardItem(type, name);
@@ -58,6 +60,8 @@ void DashboardItemModel::addItem(Types::DashboardType type, const QString &name)
     beginInsertRows(QModelIndex(), pos, pos);
     mItems.insert(pos, item);
     endInsertRows();
+
+    return pos;
 }
 
 void DashboardItemModel::removeItem(int index)
@@ -83,12 +87,17 @@ void DashboardItemModel::clearItems()
     endResetModel();
 }
 
-MonitoredItemModel *DashboardItemModel::getCurrentMonitoredItemModel() const
+MonitoredItemModel *DashboardItemModel::getMonitoredItemModel(int index) const
 {
-    if (mCurrentIndex >= mItems.size())
+    if (index >= mItems.size())
         return nullptr;
 
-    return dynamic_cast<MonitoredItemModel *>(mItems[mCurrentIndex]->monitoredItemModel());
+    return dynamic_cast<MonitoredItemModel *>(mItems[index]->monitoredItemModel());
+}
+
+MonitoredItemModel *DashboardItemModel::getCurrentMonitoredItemModel() const
+{
+    return getMonitoredItemModel(mCurrentIndex);
 }
 
 Types::DashboardType DashboardItemModel::getCurrentDashboardType() const
@@ -122,5 +131,22 @@ void DashboardItemModel::setCurrentIndex(uint index)
 {
     if (index < mItems.size()) {
         mCurrentIndex = index;
+    }
+}
+
+void DashboardItemModel::saveDashboardsToSettings() const
+{
+    static const QString dashboardKey = QStringLiteral("lastDashboards/%1/%2");
+
+    QSettings settings;
+    settings.remove("lastDashboards");
+    for (int i = 0; i < mItems.count(); i++) {
+        if (mItems[i]->type() == Types::DashboardType::Add)
+            continue;
+
+        const QString key = dashboardKey.arg(i);
+        settings.setValue(key.arg("name"), mItems[i]->name());
+        settings.setValue(key.arg("type"), (int)mItems[i]->type());
+        settings.setValue(key.arg("nodeIDs"), mItems[i]->getMonitoredNodeIds());
     }
 }

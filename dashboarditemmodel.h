@@ -17,16 +17,19 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
     bool containsItem(const QString &name) const noexcept;
-    Q_INVOKABLE void addItem(Types::DashboardType type, const QString &name = QString());
+    Q_INVOKABLE int addItem(Types::DashboardType type, const QString &name = QString());
     Q_INVOKABLE void removeItem(int index);
     void clearItems();
 
+    MonitoredItemModel *getMonitoredItemModel(int index) const;
     MonitoredItemModel *getCurrentMonitoredItemModel() const;
     Types::DashboardType getCurrentDashboardType() const;
     void setCurrentDashboardName(const QString &name);
 
     Q_INVOKABLE bool isAddItem(uint index) const;
     Q_INVOKABLE void setCurrentIndex(uint index);
+
+    void saveDashboardsToSettings() const;
 
 private:
     QList<DashboardItem *> mItems;

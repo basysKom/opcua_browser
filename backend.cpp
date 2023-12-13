@@ -71,15 +71,15 @@ BackEnd::BackEnd(QObject *parent)
     settings.endGroup();
     keys.sort(Qt::CaseInsensitive);
     mSavedEventDashboardsModel->setStringList(keys);
+
+    const QStringList childGroups = settings.childGroups();
+    mHasLastDashboards = childGroups.contains("lastDashboards");
 }
 
 BackEnd::~BackEnd()
 {
-    QSettings settings;
     if (isConnected()) {
-        // settings.setValue("monitoredNodeIds", mMonitoredItemModel->getNodeIds());
-    } else {
-        // settings.setValue("monitoredNodeIds", mStoredMonitoredNodeIds);
+        saveLastDashboards();
     }
 }
 
@@ -154,6 +154,11 @@ QStringListModel *BackEnd::savedEventDashboards() const noexcept
     return mSavedEventDashboardsModel;
 }
 
+bool BackEnd::hasLastDashboards() const noexcept
+{
+    return mHasLastDashboards;
+}
+
 void BackEnd::clearServerList()
 {
     mServerList.clear();
@@ -188,12 +193,9 @@ void BackEnd::disconnectFromEndpoint()
     mOpcUaClient->disconnectFromEndpoint();
 }
 
-void BackEnd::monitorNode(const QString &nodeId)
+void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId)
 {
-    Q_ASSERT(mDashboardItemModel);
-
-    const auto monitoredItemModel = mDashboardItemModel->getCurrentMonitoredItemModel();
-    if ((monitoredItemModel == nullptr) || monitoredItemModel->containsItem(nodeId))
+    if ((model == nullptr) || model->containsItem(nodeId))
         return;
 
     if (nullptr == mOpcUaClient) {
@@ -208,14 +210,20 @@ void BackEnd::monitorNode(const QString &nodeId)
         return;
     }
 
-    monitoredItemModel->addItem(node);
+    model->addItem(node);
 }
 
 void BackEnd::monitorSelectedNodes()
 {
+    Q_ASSERT(mDashboardItemModel);
+
+    const auto monitoredItemModel = mDashboardItemModel->getCurrentMonitoredItemModel();
+    if (monitoredItemModel == nullptr)
+        return;
+
     const QStringList nodeIdList = mOpcUaModel->selectedNodes();
     for (const auto &nodeId : nodeIdList.toList()) {
-        monitorNode(nodeId);
+        monitorNode(monitoredItemModel, nodeId);
     }
 }
 
@@ -254,10 +262,16 @@ void BackEnd::saveCurrentDashboard(const QString &name)
 
 void BackEnd::loadDashboard(const QString &name)
 {
+    Q_ASSERT(mDashboardItemModel);
+
+    const auto monitoredItemModel = mDashboardItemModel->getCurrentMonitoredItemModel();
+    if (monitoredItemModel == nullptr)
+        return;
+
     QSettings settings;
     const QStringList nodeIds = settings.value("dashboards/variables/" % name).toStringList();
     for (const auto &nodeId : nodeIds) {
-        monitorNode(nodeId);
+        monitorNode(monitoredItemModel, nodeId);
     }
 }
 
@@ -341,7 +355,6 @@ void BackEnd::clientConnected()
     connect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this,
             &BackEnd::namespacesArrayUpdated);
     mOpcUaClient->updateNamespaceArray();
-    restoreMonitoredNodeIds();
 }
 
 void BackEnd::clientDisconnected()
@@ -353,9 +366,7 @@ void BackEnd::clientDisconnected()
     mOpcUaClient = nullptr;
     mOpcUaModel->setOpcUaClient(nullptr);
 
-    // mStoredMonitoredNodeIds = mMonitoredItemModel->getNodeIds();
-    // mMonitoredItemModel->clearItems();
-
+    saveLastDashboards();
     mDashboardItemModel->clearItems();
 }
 
@@ -464,9 +475,33 @@ void BackEnd::setState(const QString &state)
     }
 }
 
-void BackEnd::restoreMonitoredNodeIds()
+void BackEnd::loadLastDashboardsFromSettings()
 {
-    // for (const auto &nodeId : mStoredMonitoredNodeIds) {
-    //     monitorNode(nodeId);
-    // }
+    Q_ASSERT(mDashboardItemModel);
+
+    QSettings settings;
+    settings.beginGroup("lastDashboards");
+    for (const auto &group : settings.childGroups()) {
+        settings.beginGroup(group);
+        const QString name = settings.value("name").toString();
+        const Types::DashboardType type =
+                static_cast<Types::DashboardType>(settings.value("type", 0).toInt());
+
+        const int index = mDashboardItemModel->addItem(type, name);
+        auto model = mDashboardItemModel->getMonitoredItemModel(index);
+        if (model != nullptr) {
+            const QStringList nodeIds = settings.value("nodeIDs").toStringList();
+            for (const auto &nodeId : nodeIds) {
+                monitorNode(model, nodeId);
+            }
+        }
+
+        settings.endGroup();
+    }
+}
+
+void BackEnd::saveLastDashboards()
+{
+    Q_ASSERT(mDashboardItemModel);
+    mDashboardItemModel->saveDashboardsToSettings();
 }

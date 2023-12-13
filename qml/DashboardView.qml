@@ -9,7 +9,8 @@ Rectangle {
     id: view
 
     readonly property bool canSaveDashboard: repeater.count > 1
-    readonly property string currentDashboardName: tabBar.currentItem.text
+    readonly property string currentDashboardName: (tabBar.currentItem
+                                                    === null) ? "" : tabBar.currentItem.text
 
     property ThemeDashboard theme: Style.dashboard
 

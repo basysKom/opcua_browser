@@ -12,6 +12,7 @@
 #include "opcuamodel.h"
 
 class DashboardItemModel;
+class MonitoredItemModel;
 
 class BackEnd : public QObject
 {
@@ -36,6 +37,7 @@ public:
                        savedVariableDashboardsChanged FINAL)
     Q_PROPERTY(QStringListModel *savedEventDashboards READ savedEventDashboards NOTIFY
                        savedEventDashboardsChanged FINAL)
+    Q_PROPERTY(bool hasLastDashboards READ hasLastDashboards CONSTANT FINAL)
 
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
@@ -51,6 +53,7 @@ public:
     QStringListModel *defaultEventDashboards() const noexcept;
     QStringListModel *savedVariableDashboards() const noexcept;
     QStringListModel *savedEventDashboards() const noexcept;
+    bool hasLastDashboards() const noexcept;
 
     Q_INVOKABLE void clearServerList();
     Q_INVOKABLE void clearEndpointList();
@@ -60,11 +63,12 @@ public:
     Q_INVOKABLE void connectToEndpoint(int endpointIndex);
     Q_INVOKABLE void disconnectFromEndpoint();
 
-    Q_INVOKABLE void monitorNode(const QString &nodeId);
     Q_INVOKABLE void monitorSelectedNodes();
 
     Q_INVOKABLE void saveCurrentDashboard(const QString &name);
     Q_INVOKABLE void loadDashboard(const QString &name);
+
+    Q_INVOKABLE void loadLastDashboardsFromSettings();
 
 signals:
     void serverListChanged();
@@ -94,7 +98,9 @@ private:
     void setupPkiConfiguration();
     void setState(const QString &state);
 
-    void restoreMonitoredNodeIds();
+    void monitorNode(MonitoredItemModel *model, const QString &nodeId);
+
+    void saveLastDashboards();
 
     OpcUaModel *mOpcUaModel;
     QOpcUaProvider *mOpcUaProvider;
@@ -112,6 +118,8 @@ private:
     QStringListModel *mDefaultEventDashboardsModel;
     QStringListModel *mSavedVariableDashboardsModel;
     QStringListModel *mSavedEventDashboardsModel;
+
+    bool mHasLastDashboards = false;
 };
 
 #endif // BACKEND_H

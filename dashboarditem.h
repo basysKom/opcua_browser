@@ -21,6 +21,7 @@ public:
 
     Types::DashboardType type() const noexcept;
     QAbstractListModel *monitoredItemModel() const noexcept;
+    QStringList getMonitoredNodeIds() const;
 
 private:
     QString mName;

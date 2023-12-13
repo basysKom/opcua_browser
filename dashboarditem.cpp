@@ -60,3 +60,11 @@ QAbstractListModel *DashboardItem::monitoredItemModel() const noexcept
 {
     return mMonitoredItemModel;
 }
+
+QStringList DashboardItem::getMonitoredNodeIds() const
+{
+    if (mMonitoredItemModel == nullptr)
+        return QStringList();
+
+    return mMonitoredItemModel->getNodeIds();
+}

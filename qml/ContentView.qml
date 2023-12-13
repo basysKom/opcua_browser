@@ -71,6 +71,13 @@ Item {
         DashboardConfigurationView {
             id: dashboardConfiguration
 
+            onUseLastSession: {
+                // Load last dashboards from settings
+                BackEnd.loadLastDashboardsFromSettings()
+                // Go to dashboard view
+                stackLayout.currentIndex = dashboard.StackLayout.index
+            }
+
             onAddMonitoredItems: {
                 // Store index of dashboardConfiguration to return to it when cancelling
                 stackLayout.lastStoredViewIndex = dashboardConfiguration.StackLayout.index

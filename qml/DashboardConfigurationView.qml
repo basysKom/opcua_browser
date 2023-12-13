@@ -19,6 +19,7 @@ Item {
     property bool showLastSessionButton: true
     property bool showCancelButton: false
 
+    signal useLastSession
     signal addMonitoredItems
     signal addEvents
     signal viewCanceled
@@ -38,11 +39,9 @@ Item {
             Layout.fillWidth: true
             Layout.preferredHeight: 35
             text: qsTr("Use last session")
-            visible: view.showLastSessionButton
+            visible: view.showLastSessionButton && BackEnd.hasLastDashboards
 
-            onClicked: {
-
-            }
+            onClicked: useLastSession()
         }
 
         StyledButton {
