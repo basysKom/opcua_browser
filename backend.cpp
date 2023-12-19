@@ -495,9 +495,8 @@ void BackEnd::loadLastDashboardsFromSettings()
                 monitorNode(model, nodeId);
             }
         }
-
-        settings.endGroup();
     }
+    settings.endArray();
 }
 
 void BackEnd::saveLastDashboards()
