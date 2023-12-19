@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
+include(FetchContent)
 
 project(OPC_UA_Browser VERSION 0.1 LANGUAGES CXX)
 
@@ -12,6 +13,18 @@ qt_standard_project_setup(REQUIRES 6.5)
 qt_add_executable(appOPC_UA_Browser
     main.cpp
 )
+
+if (ANDROID)
+    FetchContent_Declare(
+      android_openssl
+      DOWNLOAD_EXTRACT_TIMESTAMP true
+      URL      https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
+    )
+    FetchContent_MakeAvailable(android_openssl)
+    include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
+
+    add_android_openssl_libraries(appOPC_UA_Browser)
+endif()
 
 set_source_files_properties(qml/style/Style.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE
