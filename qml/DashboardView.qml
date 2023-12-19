@@ -11,6 +11,15 @@ Rectangle {
     readonly property bool canSaveDashboard: repeater.count > 1
     readonly property string currentDashboardName: (tabBar.currentItem
                                                     === null) ? "" : tabBar.currentItem.text
+    readonly property int itemWidth: {
+        // Calculate content width of flow
+        var contentWidth = flow.width - flow.leftPadding - flow.rightPadding
+        // Calculate number of items with minimum width 150 for content width
+        var itemCnt = Math.max(1,
+                               Math.floor(contentWidth / (150 + flow.spacing)))
+        // Calculate item width without additional space at the end of the row
+        return (contentWidth - flow.spacing * (itemCnt - 1)) / itemCnt
+    }
 
     property ThemeDashboard theme: Style.dashboard
 
@@ -91,7 +100,7 @@ Rectangle {
                 Drag.hotSpot.x: width / 2
                 Drag.hotSpot.y: height / 2
 
-                implicitWidth: 160
+                width: view.itemWidth
                 implicitHeight: Math.max(70, childrenRect.height)
                 radius: 5
                 color: dragArea.held ? theme.item.backgroundHeld : theme.item.background
@@ -108,6 +117,7 @@ Rectangle {
                     ParentChange {
                         target: content
                         parent: view
+                        width: view.itemWidth
                     }
                     AnchorChanges {
                         target: content
