@@ -12,8 +12,6 @@ static constexpr auto FontSwanseaBold = "://font/SwanseaBold.ttf";
 
 int main(int argc, char *argv[])
 {
-    qputenv("QT_IM_MODULE", QByteArray("qtvirtualkeyboard"));
-
     QGuiApplication app(argc, argv);
 
     // initialize global settings

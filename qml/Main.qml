@@ -1,7 +1,6 @@
 import QtCore
 import QtQuick
 import QtQuick.Controls
-import QtQuick.VirtualKeyboard
 import QtQuick.Layouts
 
 import OPC_UA_Browser
@@ -187,37 +186,5 @@ ApplicationWindow {
         id: contentView
 
         anchors.fill: parent
-    }
-
-    InputPanel {
-        id: inputPanel
-
-        z: 99
-        x: 0
-        y: window.height
-        width: window.width
-        visible: active
-
-        states: State {
-            name: "visible"
-            when: inputPanel.active
-            PropertyChanges {
-                target: inputPanel
-                y: window.height - inputPanel.height
-            }
-        }
-
-        transitions: Transition {
-            from: ""
-            to: "visible"
-            reversible: true
-            ParallelAnimation {
-                NumberAnimation {
-                    properties: "y"
-                    duration: 250
-                    easing.type: Easing.InOutQuad
-                }
-            }
-        }
     }
 }
