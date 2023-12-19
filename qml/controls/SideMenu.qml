@@ -46,6 +46,7 @@ Menu {
     }
 
     Text {
+        topPadding: 10
         font.pointSize: 20
         font.bold: true
         color: theme.textColor
@@ -57,28 +58,28 @@ Menu {
     StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Close connection")
-        iconSource: "qrc:/icons/disconnect.png"
+        iconSource: "qrc:/icons/disconnect.svg"
         onTriggered: closeConnectionSelected()
     }
 
     StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Add connection")
-        iconSource: "qrc:/icons/connect.png"
+        iconSource: "qrc:/icons/connect.svg"
         onTriggered: addConnectionSelected()
     }
 
     StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Expert mode")
-        iconSource: "qrc:/icons/expert.png"
+        iconSource: "qrc:/icons/expert.svg"
         onTriggered: showExpertModeSelected()
     }
 
     StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Dashboards")
-        iconSource: "qrc:/icons/dashboard.png"
+        iconSource: "qrc:/icons/dashboard.svg"
         onTriggered: showDashboardsSelected()
     }
 
@@ -88,13 +89,13 @@ Menu {
 
     StyledMenuItem {
         text: qsTr("Settings")
-        iconSource: "qrc:/icons/settings.png"
+        iconSource: "qrc:/icons/settings.svg"
         onTriggered: showSettingsSelected()
     }
 
     StyledMenuItem {
         text: qsTr("Imprint")
-        iconSource: "qrc:/icons/info.png"
+        iconSource: "qrc:/icons/info.svg"
         onTriggered: showImprintSelected()
     }
 

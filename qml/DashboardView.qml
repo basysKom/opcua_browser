@@ -37,7 +37,7 @@ Rectangle {
 
         listModel: ListModel {
             ListElement {
-                imageSource: "qrc:/icons/delete.png"
+                imageSource: "qrc:/icons/delete.svg"
                 name: qsTr("Delete")
             }
         }
@@ -140,9 +140,9 @@ Rectangle {
 
                         IconImage {
                             Layout.alignment: Qt.AlignVCenter
-                            width: 20
-                            height: 20
-                            source: "qrc:/icons/delete.png"
+                            sourceSize.width: 20
+                            sourceSize.height: 20
+                            source: "qrc:/icons/delete.svg"
                             color: theme.item.textColor
 
                             MouseArea {
@@ -166,10 +166,10 @@ Rectangle {
 
                 IconImage {
                     anchors.centerIn: parent
-                    width: 30
-                    height: 30
+                    sourceSize.width: 40
+                    sourceSize.height: 40
                     visible: dragArea.isAddItem
-                    source: "qrc:/icons/plus.png"
+                    source: "qrc:/icons/plus.svg"
                     color: theme.item.textColor
                 }
             }

@@ -67,8 +67,8 @@ Popup {
                     IconImage {
                         Layout.leftMargin: 10
                         Layout.alignment: Qt.AlignVCenter
-                        width: 20
-                        height: 20
+                        sourceSize.width: 20
+                        sourceSize.height: 20
                         source: model.imageSource
                     }
                     Text {

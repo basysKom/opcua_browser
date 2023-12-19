@@ -26,7 +26,7 @@ Item {
 
         listModel: ListModel {
             ListElement {
-                imageSource: "qrc:/icons/refresh.png"
+                imageSource: "qrc:/icons/refresh.svg"
                 name: qsTr("Refresh")
             }
         }
@@ -109,13 +109,15 @@ Item {
                 }
             }
 
-            Text {
+            IconImage {
                 id: indicator
 
+                source: "qrc:/icons/arrow_right.svg"
+                sourceSize.width: 20
+                sourceSize.height: 20
                 visible: treeDelegate.isTreeNode && treeDelegate.hasChildren
                 x: treeDelegate.padding + (treeDelegate.depth * treeDelegate.indent)
                 anchors.verticalCenter: label.verticalCenter
-                text: "▸"
                 rotation: treeDelegate.expanded ? 90 : 0
                 color: label.color
             }

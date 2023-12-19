@@ -107,9 +107,9 @@ Rectangle {
                     IconImage {
                         Layout.leftMargin: 5
                         Layout.alignment: Qt.AlignVCenter
-                        width: 15
-                        height: width
-                        source: model.isForward ? "qrc:/icons/forward.png" : "qrc:/icons/inverse.png"
+                        sourceSize.width: 15
+                        sourceSize.height: 15
+                        source: model.isForward ? "qrc:/icons/forward.svg" : "qrc:/icons/inverse.svg"
                         color: root.textColor
                     }
 

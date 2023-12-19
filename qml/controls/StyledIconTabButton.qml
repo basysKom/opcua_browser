@@ -28,9 +28,9 @@ TabButton {
         IconImage {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
-            width: 30
-            height: 30
-            source: (DashboardType.Add === type) ? "qrc:/icons/plus.png" : (DashboardType.Events === type) ? "qrc:/icons/event.png" : "qrc:/icons/dashboard.png"
+            sourceSize.width: 30
+            sourceSize.height: 30
+            source: (DashboardType.Add === type) ? "qrc:/icons/plus.svg" : (DashboardType.Events === type) ? "qrc:/icons/event.svg" : "qrc:/icons/dashboard.svg"
             color: label.color
         }
 

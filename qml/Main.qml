@@ -53,9 +53,9 @@ ApplicationWindow {
                     anchors.left: parent.left
                     anchors.leftMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 25
-                    width: height
-                    source: leftImage.showBackButton ? "qrc:/icons/back.png" : "qrc:/icons/menu.png"
+                    sourceSize.width: 25
+                    sourceSize.height: 25
+                    source: leftImage.showBackButton ? "qrc:/icons/back.svg" : "qrc:/icons/menu.svg"
                     color: theme.header.iconColor
 
                     MouseArea {
@@ -82,9 +82,9 @@ ApplicationWindow {
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
-                    height: 25
-                    width: height
-                    source: "qrc:/icons/save.png"
+                    sourceSize.width: 25
+                    sourceSize.height: 25
+                    source: "qrc:/icons/save.svg"
                     color: theme.header.iconColor
                     visible: contentView.canSaveDashboard
                              && !headerItem.isSaveMode

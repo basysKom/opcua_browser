@@ -30,8 +30,8 @@ CheckBox {
             fillMode: Image.PreserveAspectFit
             anchors.centerIn: parent
             source: "qrc:/icons/checkmark.svg"
-            height: parent.height * 0.65
-            width: parent.width * 0.65
+            sourceSize.width: parent.height * 0.65
+            sourceSize.height: parent.width * 0.65
             color: theme.checkMarkColor
             visible: (checkState === Qt.Checked)
         }
