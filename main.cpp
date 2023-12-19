@@ -1,9 +1,14 @@
+#include <QFile>
+#include <QFontDatabase>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
 
 #include "types.h"
+
+static constexpr auto FontSwansea = "://font/Swansea.ttf";
+static constexpr auto FontSwanseaBold = "://font/SwanseaBold.ttf";
 
 int main(int argc, char *argv[])
 {
@@ -17,6 +22,14 @@ int main(int argc, char *argv[])
     app.setApplicationVersion("0.1.0");
 
     QQuickStyle::setStyle("Basic");
+
+    Q_ASSERT(QFile::exists(FontSwanseaBold));
+    Q_ASSERT(QFile::exists(FontSwansea));
+    QFontDatabase::addApplicationFont(FontSwanseaBold);
+    QFontDatabase::addApplicationFont(FontSwansea);
+
+    // Set application font
+    QGuiApplication::setFont(QFont("Swansea"));
 
     QQmlApplicationEngine engine;
     QObject::connect(

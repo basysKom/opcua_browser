@@ -84,24 +84,26 @@ qt_add_qml_module(appOPC_UA_Browser
 
 qt_add_resources(appOPC_UA_Browser "icons"
     PREFIX "/"
-    FILES icons/back.png
+    FILES font/Swansea.ttf
+          font/SwanseaBold.ttf
+          icons/arrow_right.svg
+          icons/back.svg
           icons/checkmark.svg
-          icons/connect.png
-          icons/dashboard.png
-          icons/delete.png
-          icons/disconnect.png
-          icons/event.png
-          icons/expert.png
-          icons/eye.png
-          icons/forward.png
-          icons/info.png
-          icons/inverse.png
+          icons/connect.svg
+          icons/dashboard.svg
+          icons/delete.svg
+          icons/disconnect.svg
+          icons/event.svg
+          icons/expert.svg
+          icons/forward.svg
+          icons/info.svg
+          icons/inverse.svg
           icons/logo_basyskom.svg
-          icons/menu.png
-          icons/plus.png
-          icons/refresh.png
-          icons/save.png
-          icons/settings.png)
+          icons/menu.svg
+          icons/plus.svg
+          icons/refresh.svg
+          icons/save.svg
+          icons/settings.svg)
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
