@@ -43,7 +43,7 @@ ApplicationWindow {
 
             Item {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 40
+                Layout.preferredHeight: 48
 
                 IconImage {
                     id: leftImage
@@ -53,8 +53,8 @@ ApplicationWindow {
                     anchors.left: parent.left
                     anchors.leftMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
-                    sourceSize.width: 25
-                    sourceSize.height: 25
+                    sourceSize.width: 24
+                    sourceSize.height: 24
                     source: leftImage.showBackButton ? "qrc:/icons/back.svg" : "qrc:/icons/menu.svg"
                     color: theme.header.iconColor
 
@@ -82,8 +82,8 @@ ApplicationWindow {
                     anchors.right: parent.right
                     anchors.rightMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
-                    sourceSize.width: 25
-                    sourceSize.height: 25
+                    sourceSize.width: 24
+                    sourceSize.height: 24
                     source: "qrc:/icons/save.svg"
                     color: theme.header.iconColor
                     visible: contentView.canSaveDashboard
@@ -120,7 +120,6 @@ ApplicationWindow {
 
                 StyledButton {
                     anchors.left: parent.left
-                    height: 35
                     width: parent.width / 2 - 5
                     highlighted: false
                     text: qsTr("Cancel")
@@ -133,7 +132,6 @@ ApplicationWindow {
 
                 StyledButton {
                     anchors.right: parent.right
-                    height: 35
                     width: parent.width / 2 - 5
                     text: qsTr("Ok")
                     visible: name.text.length > 0

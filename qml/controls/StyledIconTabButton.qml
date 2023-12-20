@@ -15,7 +15,7 @@ TabButton {
 
     property int type: DashboardType.Variables
 
-    width: 60
+    width: 80
 
     background: Rectangle {
         color: isCurrentTab ? theme.backgroundSelected : theme.background
@@ -23,13 +23,13 @@ TabButton {
 
     contentItem: ColumnLayout {
         width: control.width
-        spacing: 0
+        spacing: 5
 
         IconImage {
             Layout.fillWidth: true
             Layout.alignment: Qt.AlignCenter
-            sourceSize.width: 30
-            sourceSize.height: 30
+            sourceSize.width: 40
+            sourceSize.height: 40
             source: (DashboardType.Add === type) ? "qrc:/icons/plus.svg" : (DashboardType.Events === type) ? "qrc:/icons/event.svg" : "qrc:/icons/dashboard.svg"
             color: label.color
         }
@@ -39,7 +39,7 @@ TabButton {
 
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
-            font.pointSize: 6
+            font.pointSize: 8
             text: control.text
             color: isCurrentTab ? theme.textColorSelected : theme.textColor
             elide: Text.ElideRight

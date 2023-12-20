@@ -17,30 +17,74 @@ Item {
         width: parent.width - 20
         spacing: 20
 
-        StyledTextField {
-            id: hostUrl
-
-            enabled: !BackEnd.isConnected
-            visible: serverListBox.model.length === 0
-            captionText: qsTr("Host")
-            text: "opc.tcp://localhost:43344"
-            placeholderText: "opc.tcp://localhost:4080"
+        Text {
+            Layout.fillWidth: true
+            text: BackEnd.stateText
+            color: Style.accent
         }
 
-        StyledComboBox {
-            id: serverListBox
+        ColumnLayout {
+            visible: hostUrl.visible && (recentConnections.model !== undefined)
+                     && (recentConnections.model.rowCount() > 0)
 
-            enabled: !BackEnd.isConnected
-            visible: model.length > 0 && endpointListBox.model.length === 0
-            captionText: qsTr("Server")
-            model: BackEnd.serverList
+            StyledComboBox {
+                id: recentConnections
+
+                captionText: qsTr("Recent connections")
+                model: BackEnd.recentConnections
+                textRole: "display"
+            }
+
+            StyledButton {
+                Layout.fillWidth: true
+                text: qsTr("Connect")
+            }
+        }
+
+        ColumnLayout {
+            visible: serverListBox.model.length === 0
+
+            StyledTextField {
+                id: hostUrl
+
+                captionText: qsTr("Host")
+                //text: "opc.tcp://192.168.178.25:43344"
+                text: "opc.tcp://localhost:43344"
+                placeholderText: "opc.tcp://localhost:4080"
+            }
+
+            StyledButton {
+                Layout.fillWidth: true
+                text: qsTr("Discover")
+
+                onClicked: BackEnd.findServers(hostUrl.text)
+            }
+        }
+
+        ColumnLayout {
+            visible: serverListBox.model.length > 0
+                     && endpointListBox.model.length === 0
+
+            StyledComboBox {
+                id: serverListBox
+
+                captionText: qsTr("Server")
+                model: BackEnd.serverList
+            }
+
+            StyledButton {
+                Layout.fillWidth: true
+                text: qsTr("Browse")
+
+                onClicked: BackEnd.getEndpoints(serverListBox.currentIndex)
+            }
         }
 
         StyledComboBox {
             id: endpointListBox
 
             enabled: !BackEnd.isConnected
-            visible: model.length > 0
+            visible: endpointListBox.model.length > 0
             captionText: qsTr("Endpoint")
             model: BackEnd.endpointList
         }
@@ -49,7 +93,7 @@ Item {
             id: authenticationListBox
 
             enabled: !BackEnd.isConnected
-            visible: endpointListBox.model.length > 0
+            visible: endpointListBox.visible
             captionText: qsTr("Authentication")
             model: ["Anonymous", "Username", "Certificate"]
         }
@@ -92,12 +136,11 @@ Item {
 
         RowLayout {
             Layout.fillWidth: true
+            visible: endpointListBox.visible
 
             Rectangle {
                 Layout.preferredWidth: 15
                 Layout.preferredHeight: Layout.preferredWidth
-                visible: (serverListBox.model.length > 0)
-                         && (endpointListBox.model.length > 0)
 
                 radius: Layout.preferredWidth / 2
                 color: (2 === BackEnd.connectionState) ? theme.connected : (1 === BackEnd.connectionState) ? theme.connecting : theme.disconnected
@@ -105,15 +148,10 @@ Item {
 
             StyledButton {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 35
-                text: (serverListBox.model.length === 0) ? qsTr("Discover") : (endpointListBox.model.length === 0) ? qsTr("Browse") : (BackEnd.isConnected) ? qsTr("Disconnect") : qsTr("Connect")
+                text: BackEnd.isConnected ? qsTr("Disconnect") : qsTr("Connect")
 
                 onClicked: {
-                    if (serverListBox.model.length === 0) {
-                        BackEnd.findServers(hostUrl.text)
-                    } else if (endpointListBox.model.length === 0) {
-                        BackEnd.getEndpoints(serverListBox.currentIndex)
-                    } else if (BackEnd.isConnected) {
+                    if (BackEnd.isConnected) {
                         BackEnd.disconnectFromEndpoint()
                     } else {
                         BackEnd.connectToEndpoint(serverListBox.currentIndex)
@@ -128,7 +166,6 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         visible: serverListBox.model.length > 0
-        height: 35
         width: parent.width / 3
         highlighted: false
         text: qsTr("Back")

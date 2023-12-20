@@ -67,7 +67,6 @@ Rectangle {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         anchors.margins: 10
-        height: 35
         width: parent.width / 3
         visible: (type !== BrowserView.Type.ExpertMode)
         highlighted: false
@@ -82,7 +81,6 @@ Rectangle {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: 10
-        height: 35
         width: parent.width / 3
         visible: (type !== BrowserView.Type.ExpertMode)
         text: qsTr("Ok")

@@ -12,6 +12,7 @@ static constexpr auto FontSwanseaBold = "://font/SwanseaBold.ttf";
 
 int main(int argc, char *argv[])
 {
+    QGuiApplication::setAttribute(Qt::AA_Use96Dpi);
     QGuiApplication app(argc, argv);
 
     // initialize global settings

@@ -39,8 +39,8 @@ Popup {
             clip: true
 
             delegate: Item {
-                height: 30
-                width: 150
+                height: 36
+                width: 200
 
                 MouseArea {
                     anchors.fill: parent
@@ -67,9 +67,10 @@ Popup {
                     IconImage {
                         Layout.leftMargin: 10
                         Layout.alignment: Qt.AlignVCenter
-                        sourceSize.width: 20
-                        sourceSize.height: 20
+                        sourceSize.width: 24
+                        sourceSize.height: 24
                         source: model.imageSource
+                        color: theme.textColor
                     }
                     Text {
                         Layout.fillHeight: true
@@ -77,6 +78,7 @@ Popup {
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHLeft
                         color: theme.textColor
+                        font.pointSize: 12
                         text: model.name
                     }
                 }

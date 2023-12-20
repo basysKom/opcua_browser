@@ -37,7 +37,7 @@ Rectangle {
         Text {
             color: theme.textColor
             font {
-                pointSize: 12
+                pointSize: 14
                 bold: true
             }
             text: qsTr("Theme")
@@ -49,15 +49,16 @@ Rectangle {
             StyledItemSelector {
                 id: darkItemSelector
 
-                height: 15
+                height: 24
                 width: height
                 checkState: (Style.currentThemeIndex === 0) ? Qt.Checked : Qt.Unchecked
                 onToggled: setTheme(0)
             }
 
             Text {
+                anchors.verticalCenter: darkItemSelector.verticalCenter
                 color: theme.textColor
-                font.pointSize: 10
+                font.pointSize: 12
                 text: qsTr("Dark")
             }
 
@@ -69,15 +70,16 @@ Rectangle {
             StyledItemSelector {
                 id: brightItemSelector
 
-                height: 15
+                height: 24
                 width: height
                 checkState: (Style.currentThemeIndex === 1) ? Qt.Checked : Qt.Unchecked
                 onToggled: setTheme(1)
             }
 
             Text {
+                anchors.verticalCenter: brightItemSelector.verticalCenter
                 color: theme.textColor
-                font.pointSize: 10
+                font.pointSize: 12
                 text: qsTr("Bright")
             }
         }

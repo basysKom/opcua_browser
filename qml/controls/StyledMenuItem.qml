@@ -9,15 +9,15 @@ MenuItem {
     property alias iconSource: control.icon.source
     property ThemeSideMenu theme: Style.sideMenu
 
-    height: enabled ? implicitHeight : 0
+    height: enabled ? 40 : 0
     width: implicitWidth
-    font.pointSize: 12
+    font.pointSize: 14
     palette.windowText: theme.textColor
 
     icon {
         color: theme.iconColor
-        height: 20
-        width: 20
+        height: 24
+        width: 24
     }
 
     background: Rectangle {

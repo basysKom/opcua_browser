@@ -37,7 +37,6 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            Layout.preferredHeight: 35
             text: qsTr("Use last session")
             visible: view.showLastSessionButton && BackEnd.hasLastDashboards
 
@@ -46,7 +45,6 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            Layout.preferredHeight: 35
             text: qsTr("Add data dashboard")
 
             onClicked: {
@@ -61,7 +59,6 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            Layout.preferredHeight: 35
             text: qsTr("Add event dashboard")
 
             onClicked: {
@@ -76,7 +73,6 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            Layout.preferredHeight: 35
             text: qsTr("Add alarms and conditions dashboard")
             // ToDo: Add alarms and conditons handling
             visible: false
@@ -95,7 +91,6 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            Layout.preferredHeight: 35
             text: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTr("Select monitored variables manually") : qsTr("Select events manually")
 
             onClicked: {
@@ -120,7 +115,6 @@ Item {
 
             StyledButton {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 35
                 text: qsTr("Add dashboard")
 
                 onClicked: {
@@ -143,7 +137,6 @@ Item {
 
             StyledButton {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 35
                 text: qsTr("Add dashboard")
 
                 onClicked: {
@@ -164,7 +157,6 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         visible: !selection.visible && !showCancelButton
-        height: 35
         width: parent.width / 3
         highlighted: false
         text: qsTr("Back")
@@ -177,7 +169,6 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         visible: showCancelButton
-        height: 35
         width: parent.width / 3
         highlighted: false
         text: qsTr("Cancel")

@@ -5,6 +5,7 @@ import OPC_UA_Browser
 
 Button {
     highlighted: true
+    height: 36
 
     property ThemeButton theme: Style.button
 

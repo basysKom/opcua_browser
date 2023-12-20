@@ -54,7 +54,7 @@ Item {
             id: treeDelegate
 
             readonly property real isCurrentItem: model.isCurrentItem
-            readonly property real indent: 20
+            readonly property real indent: 25
             readonly property real padding: 5
 
             // Assigned to by TreeView:
@@ -75,7 +75,7 @@ Item {
             implicitWidth: Math.max(
                                root.width,
                                padding + label.x + label.implicitWidth + padding)
-            implicitHeight: label.implicitHeight * 1.5
+            implicitHeight: 34
             color: isCurrentItem ? theme.backgroundSelected : "transparent"
 
             TapHandler {
@@ -113,8 +113,8 @@ Item {
                 id: indicator
 
                 source: "qrc:/icons/arrow_right.svg"
-                sourceSize.width: 20
-                sourceSize.height: 20
+                sourceSize.width: 25
+                sourceSize.height: 25
                 visible: treeDelegate.isTreeNode && treeDelegate.hasChildren
                 x: treeDelegate.padding + (treeDelegate.depth * treeDelegate.indent)
                 anchors.verticalCenter: label.verticalCenter
@@ -142,6 +142,7 @@ Item {
                 width: treeDelegate.width - treeDelegate.padding - x
                 clip: true
                 text: model.display
+                font.pointSize: 12
                 color: model.isCurrentItem ? theme.textColorSelected : theme.textColor
             }
 

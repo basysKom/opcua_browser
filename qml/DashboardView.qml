@@ -101,7 +101,7 @@ Rectangle {
                 Drag.hotSpot.y: height / 2
 
                 width: view.itemWidth
-                implicitHeight: Math.max(70, childrenRect.height)
+                implicitHeight: Math.max(80, childrenRect.height)
                 radius: 5
                 color: dragArea.held ? theme.item.backgroundHeld : theme.item.background
 
@@ -142,7 +142,7 @@ Rectangle {
                             color: theme.item.textColor
                             text: dragArea.name
                             font {
-                                pointSize: 10
+                                pointSize: 12
                                 bold: true
                             }
                             elide: Text.ElideRight
@@ -150,8 +150,8 @@ Rectangle {
 
                         IconImage {
                             Layout.alignment: Qt.AlignVCenter
-                            sourceSize.width: 20
-                            sourceSize.height: 20
+                            sourceSize.width: 24
+                            sourceSize.height: 24
                             source: "qrc:/icons/delete.svg"
                             color: theme.item.textColor
 
@@ -166,7 +166,7 @@ Rectangle {
 
                     Text {
                         width: parent.width - 2 * parent.padding
-                        font.pointSize: 8
+                        font.pointSize: 10
                         color: theme.item.textColor
                         text: dragArea.value
                         elide: Text.ElideRight
@@ -176,8 +176,8 @@ Rectangle {
 
                 IconImage {
                     anchors.centerIn: parent
-                    sourceSize.width: 40
-                    sourceSize.height: 40
+                    sourceSize.width: 48
+                    sourceSize.height: 48
                     visible: dragArea.isAddItem
                     source: "qrc:/icons/plus.svg"
                     color: theme.item.textColor
