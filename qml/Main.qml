@@ -164,7 +164,7 @@ ApplicationWindow {
 
         y: -header.height
         menuHeight: parent.height + header.height
-        menuWidth: 0.8 * parent.width
+        menuWidth: Math.min(310, 0.8 * parent.width)
 
         onAddConnectionSelected: {
             // ToDo: add new connection
