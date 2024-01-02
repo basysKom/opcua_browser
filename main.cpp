@@ -1,6 +1,7 @@
 #include <QFile>
 #include <QFontDatabase>
 #include <QGuiApplication>
+#include <QLoggingCategory>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
@@ -29,6 +30,8 @@ int main(int argc, char *argv[])
 
     // Set application font
     QGuiApplication::setFont(QFont("Swansea"));
+
+    QLoggingCategory::setFilterRules(QStringLiteral("qt.qml.binding.removal.info=true"));
 
     QQmlApplicationEngine engine;
     QObject::connect(
