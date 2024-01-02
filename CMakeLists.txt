@@ -30,6 +30,10 @@ set_source_files_properties(qml/style/Style.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE
 )
 
+set_property(TARGET appOPC_UA_Browser APPEND PROPERTY
+    QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android
+)
+
 qt_add_qml_module(appOPC_UA_Browser
     URI OPC_UA_Browser
     VERSION 1.0
