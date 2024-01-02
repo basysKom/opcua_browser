@@ -6,7 +6,7 @@ project(OPC_UA_Browser VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE STRING "" FORCE)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Quick QuickControls2 OpcUa)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Quick QuickControls2 OpcUa)
 
 qt_standard_project_setup(REQUIRES 6.5)
 
@@ -97,6 +97,7 @@ qt_add_qml_module(appOPC_UA_Browser
     SOURCES referencemodel.h referencemodel.cpp
     SOURCES treeitem.h treeitem.cpp
     SOURCES types.h
+    SOURCES uisettings.h uisettings.cpp
 )
 
 qt_add_resources(appOPC_UA_Browser "icons"
@@ -134,7 +135,7 @@ set_target_properties(appOPC_UA_Browser PROPERTIES
 )
 
 target_link_libraries(appOPC_UA_Browser
-    PRIVATE Qt6::Quick Qt6::QuickControls2 Qt::OpcUa
+    PRIVATE Qt6::Core Qt6::Quick Qt6::QuickControls2 Qt::OpcUa
 )
 
 include(GNUInstallDirs)

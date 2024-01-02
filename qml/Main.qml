@@ -10,7 +10,10 @@ ApplicationWindow {
 
     property ThemeMainWindow theme: Style.mainWindow
     property int themeIndex: 0
-    onThemeIndexChanged: Style.currentThemeIndex = themeIndex
+    onThemeIndexChanged: {
+        Style.currentThemeIndex = themeIndex
+        UiSettings.setStatusAndNavigationBarColor(theme.background)
+    }
 
     Settings {
         property alias themeIndex: window.themeIndex
@@ -18,6 +21,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         Style.currentThemeIndex = window.themeIndex
+        UiSettings.setStatusAndNavigationBarColor(theme.background)
     }
 
     width: 350
