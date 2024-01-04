@@ -1,7 +1,9 @@
 #include <QGuiApplication>
 #include <QScreen>
 #include <QWindow>
-#include <QtCore/private/qandroidextras_p.h>
+#ifdef Q_OS_ANDROID
+#  include <QtCore/private/qandroidextras_p.h>
+#endif
 
 #include "uisettings.h"
 
@@ -32,6 +34,7 @@ static bool isQColorLight(const QColor &color)
     return (darkness < 0.2);
 }
 
+#ifdef Q_OS_ANDROID
 static QJniObject getAndroidWindow()
 {
     QJniObject activity = QNativeInterface::QAndroidApplication::context();
@@ -47,6 +50,7 @@ static QJniObject getAndroidDecorView()
 
     return view;
 }
+#endif
 
 UiSettings::UiSettings(QObject *parent) : QObject{ parent } { }
 
@@ -72,6 +76,7 @@ void UiSettings::setStatusAndNavigationBarColor(const QColor &color)
 
 void UiSettings::setStatusAndNavigationBarTheme(bool isLight)
 {
+#ifdef Q_OS_ANDROID
     QNativeInterface::QAndroidApplication::runOnAndroidMainThread([=]() {
         if (QNativeInterface::QAndroidApplication::sdkVersion() < 30) {
             // Added in API level 23 // Deprecated in API level 30
@@ -126,4 +131,5 @@ void UiSettings::setStatusAndNavigationBarTheme(bool isLight)
             }
         }
     });
+#endif
 }
