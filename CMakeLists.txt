@@ -98,6 +98,7 @@ qt_add_qml_module(appOPC_UA_Browser
     SOURCES treeitem.h treeitem.cpp
     SOURCES types.h
     SOURCES uisettings.h uisettings.cpp
+    SOURCES x509certificate.h x509certificate.cpp
 )
 
 qt_add_resources(appOPC_UA_Browser "icons"

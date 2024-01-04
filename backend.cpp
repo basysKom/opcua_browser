@@ -9,28 +9,11 @@
 #include "dashboarditemmodel.h"
 #include "monitoreditemmodel.h"
 #include "opcuamodel.h"
+#include "x509certificate.h"
 
-static bool copyDirRecursively(const QString &from, const QString &to)
+static QString defaultPkiPath()
 {
-    const QDir srcDir(from);
-    const QDir targetDir(to);
-    if (!QDir().mkpath(to))
-        return false;
-
-    const QFileInfoList infos =
-            srcDir.entryInfoList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-    for (const QFileInfo &info : infos) {
-        const QString srcItemPath = info.absoluteFilePath();
-        const QString dstItemPath = targetDir.absoluteFilePath(info.fileName());
-        if (info.isDir()) {
-            if (!copyDirRecursively(srcItemPath, dstItemPath))
-                return false;
-        } else if (info.isFile()) {
-            if (!QFile::copy(srcItemPath, dstItemPath))
-                return false;
-        }
-    }
-    return true;
+    return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/pki";
 }
 
 static void addItemToStringListModel(QStringListModel *model, const QString &name)
@@ -54,9 +37,10 @@ BackEnd::BackEnd(QObject *parent)
       mSavedVariableDashboardsModel(new QStringListModel(this)),
       mSavedEventDashboardsModel(new QStringListModel(this))
 {
+    setupPkiConfiguration();
 
     //! [Application Identity]
-    // m_identity = m_pkiConfig.applicationIdentity();
+    mIdentity = mPkiConfig.applicationIdentity();
     //! [Application Identity]
 
     QSettings settings;
@@ -221,6 +205,23 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
 
     mCurrentEndpoint = mEndpointList[endpointIndex];
     setState(QStringLiteral("connected to client \"%1\"").arg(mCurrentEndpoint.securityPolicy()));
+
+    // Automatically add server certificate to the trusted certificates
+    const QByteArray ba = mCurrentEndpoint.serverCertificate();
+    // Use hash as file name to recognise whether the server certificate is already saved
+    const QString hash = QString(QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex());
+    const QString trustedCertsPath = defaultPkiPath() + "/trusted/certs/";
+    if (QDir().mkpath(trustedCertsPath)) {
+        const QString filename = trustedCertsPath + QStringLiteral("%1.der").arg(hash);
+        if (!QFile::exists(filename)) {
+            QFile file(filename);
+            if (file.open(QIODevice::WriteOnly)) {
+                file.write(ba);
+                file.close();
+            }
+        }
+    }
+
     createClient();
 
     if (usePassword) {
@@ -439,16 +440,16 @@ void BackEnd::createClient()
 
         connect(mOpcUaClient, &QOpcUaClient::stateChanged, this, &BackEnd::connectionStateChanged);
         connect(mOpcUaClient, &QOpcUaClient::connectError, this, &BackEnd::clientConnectError);
-        // mOpcUaClient->setApplicationIdentity(m_identity);
-        // mOpcUaClient->setPkiConfiguration(m_pkiConfig);
 
-        // if
-        // (mOpcUaClient->supportedUserTokenTypes().contains(QOpcUaUserTokenPolicy::TokenType::Certificate))
-        // {
-        //     QOpcUaAuthenticationInformation authInfo;
-        //     authInfo.setCertificateAuthentication();
-        //     mOpcUaClient->setAuthenticationInformation(authInfo);
-        // }
+        mOpcUaClient->setApplicationIdentity(mIdentity);
+        mOpcUaClient->setPkiConfiguration(mPkiConfig);
+
+        if (mOpcUaClient->supportedUserTokenTypes().contains(
+                    QOpcUaUserTokenPolicy::TokenType::Certificate)) {
+            QOpcUaAuthenticationInformation authInfo;
+            authInfo.setCertificateAuthentication();
+            mOpcUaClient->setAuthenticationInformation(authInfo);
+        }
 
         connect(mOpcUaClient, &QOpcUaClient::connected, this, &BackEnd::clientConnected);
         connect(mOpcUaClient, &QOpcUaClient::disconnected, this, &BackEnd::clientDisconnected);
@@ -464,18 +465,16 @@ void BackEnd::createClient()
 //! [PKI Configuration]
 void BackEnd::setupPkiConfiguration()
 {
-    const QDir pkidir =
-            QDir(QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/pki");
+    const QDir pkiDir = QDir(defaultPkiPath());
+    if (!pkiDir.exists() && !X509Certificate::createCertificate(pkiDir.path()))
+        qFatal("Could not set up directory %s!", qUtf8Printable(pkiDir.path()));
 
-    if (!pkidir.exists() && !copyDirRecursively(":/pki", pkidir.path()))
-        qFatal("Could not set up directory %s!", qUtf8Printable(pkidir.path()));
-
-    mPkiConfig.setClientCertificateFile(pkidir.absoluteFilePath("own/certs/opcuaviewer.der"));
-    mPkiConfig.setPrivateKeyFile(pkidir.absoluteFilePath("own/private/opcuaviewer.pem"));
-    mPkiConfig.setTrustListDirectory(pkidir.absoluteFilePath("trusted/certs"));
-    mPkiConfig.setRevocationListDirectory(pkidir.absoluteFilePath("trusted/crl"));
-    mPkiConfig.setIssuerListDirectory(pkidir.absoluteFilePath("issuers/certs"));
-    mPkiConfig.setIssuerRevocationListDirectory(pkidir.absoluteFilePath("issuers/crl"));
+    mPkiConfig.setClientCertificateFile(pkiDir.absoluteFilePath("own/certs/opcuabrowser.der"));
+    mPkiConfig.setPrivateKeyFile(pkiDir.absoluteFilePath("own/private/opcuabrowser.pem"));
+    mPkiConfig.setTrustListDirectory(pkiDir.absoluteFilePath("trusted/certs"));
+    mPkiConfig.setRevocationListDirectory(pkiDir.absoluteFilePath("trusted/crl"));
+    mPkiConfig.setIssuerListDirectory(pkiDir.absoluteFilePath("issuers/certs"));
+    mPkiConfig.setIssuerRevocationListDirectory(pkiDir.absoluteFilePath("issuers/crl"));
 
     const QStringList toCreate = { mPkiConfig.issuerListDirectory(),
                                    mPkiConfig.issuerRevocationListDirectory() };
