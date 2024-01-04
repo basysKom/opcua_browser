@@ -61,6 +61,8 @@ public:
     Q_INVOKABLE void findServers(const QString &urlString);
     Q_INVOKABLE void getEndpoints(int serverIndex);
     Q_INVOKABLE void connectToEndpoint(int endpointIndex);
+    Q_INVOKABLE void connectToEndpointWithPassword(int endpointIndex, const QString &userName,
+                                                   const QString &password);
     Q_INVOKABLE void disconnectFromEndpoint();
 
     Q_INVOKABLE void monitorSelectedNodes();
@@ -100,6 +102,8 @@ private:
 
     void monitorNode(MonitoredItemModel *model, const QString &nodeId);
 
+    void connectToEndpoint(int endpointIndex, bool usePassword, const QString &userName = QString(),
+                           const QString &password = QString());
     void saveLastDashboards();
 
     OpcUaModel *mOpcUaModel;

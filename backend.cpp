@@ -173,19 +173,13 @@ void BackEnd::clearEndpointList()
 
 void BackEnd::connectToEndpoint(int endpointIndex)
 {
-    if ((endpointIndex < 0) || (endpointIndex >= mEndpointList.size())) {
-        setState(QStringLiteral("endpoint index out of range"));
-        qCritical() << QStringLiteral(
-                               "endpoint index out of range, index: %1, endpoint list size: %2")
-                               .arg(endpointIndex)
-                               .arg(mEndpointList.size());
-        return;
-    }
+    connectToEndpoint(endpointIndex, false);
+}
 
-    mCurrentEndpoint = mEndpointList[endpointIndex];
-    setState(QStringLiteral("connected to client \"%1\"").arg(mCurrentEndpoint.securityPolicy()));
-    createClient();
-    mOpcUaClient->connectToEndpoint(mCurrentEndpoint);
+void BackEnd::connectToEndpointWithPassword(int endpointIndex, const QString &userName,
+                                            const QString &password)
+{
+    connectToEndpoint(endpointIndex, true, userName, password);
 }
 
 void BackEnd::disconnectFromEndpoint()
@@ -211,6 +205,31 @@ void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId)
     }
 
     model->addItem(node);
+}
+
+void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QString &userName,
+                                const QString &password)
+{
+    if ((endpointIndex < 0) || (endpointIndex >= mEndpointList.size())) {
+        setState(QStringLiteral("endpoint index out of range"));
+        qCritical() << QStringLiteral(
+                               "endpoint index out of range, index: %1, endpoint list size: %2")
+                               .arg(endpointIndex)
+                               .arg(mEndpointList.size());
+        return;
+    }
+
+    mCurrentEndpoint = mEndpointList[endpointIndex];
+    setState(QStringLiteral("connected to client \"%1\"").arg(mCurrentEndpoint.securityPolicy()));
+    createClient();
+
+    if (usePassword) {
+        QOpcUaAuthenticationInformation authInfo;
+        authInfo.setUsernameAuthentication(userName, password);
+        mOpcUaClient->setAuthenticationInformation(authInfo);
+    }
+
+    mOpcUaClient->connectToEndpoint(mCurrentEndpoint);
 }
 
 void BackEnd::monitorSelectedNodes()

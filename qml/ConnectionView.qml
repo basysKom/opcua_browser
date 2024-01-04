@@ -95,7 +95,8 @@ Item {
             enabled: !BackEnd.isConnected
             visible: endpointListBox.visible
             captionText: qsTr("Authentication")
-            model: ["Anonymous", "Username", "Certificate"]
+            model: ["Anonymous", "Username" /*, "Certificate"*/
+            ]
         }
 
         StyledTextField {
@@ -154,7 +155,14 @@ Item {
                     if (BackEnd.isConnected) {
                         BackEnd.disconnectFromEndpoint()
                     } else {
-                        BackEnd.connectToEndpoint(serverListBox.currentIndex)
+                        if (authenticationListBox.currentIndex === 1) {
+                            BackEnd.connectToEndpointWithPassword(
+                                        endpointListBox.currentIndex,
+                                        userName.text, password.text)
+                        } else {
+                            BackEnd.connectToEndpoint(
+                                        endpointListBox.currentIndex)
+                        }
                     }
                 }
             }
