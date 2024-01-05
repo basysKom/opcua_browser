@@ -140,6 +140,10 @@ target_link_libraries(appOPC_UA_Browser
     PRIVATE Qt6::Core Qt6::Quick Qt6::QuickControls2 Qt::OpcUa
 )
 
+if (IOS)
+    qt6_import_plugins(appOPC_UA_Browser INCLUDE Qt::QOpen62541Plugin)
+endif()
+
 include(GNUInstallDirs)
 install(TARGETS appOPC_UA_Browser
     BUNDLE DESTINATION .
