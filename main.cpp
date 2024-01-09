@@ -13,6 +13,10 @@ static constexpr auto FontSwanseaBold = "://font/SwanseaBold.ttf";
 
 int main(int argc, char *argv[])
 {
+#ifdef Q_OS_ANDROID
+    qputenv("ANDROID_OPENSSL_SUFFIX", "_3");
+#endif
+
     QGuiApplication::setAttribute(Qt::AA_Use96Dpi);
     QGuiApplication app(argc, argv);
 

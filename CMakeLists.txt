@@ -8,6 +8,10 @@ set(QML_IMPORT_PATH ${CMAKE_SOURCE_DIR}/qml ${CMAKE_BINARY_DIR}/imports CACHE ST
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Quick QuickControls2 OpcUa)
 
+if(QT_KNOWN_POLICY_QTP0002)
+    qt_policy(SET QTP0002 NEW)
+endif()
+
 qt_standard_project_setup(REQUIRES 6.5)
 
 qt_add_executable(appOPC_UA_Browser
