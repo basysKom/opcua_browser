@@ -88,6 +88,5 @@ bool X509Certificate::createCertificate(const QString &pkiDir)
     certFile.write(selfSignedCertificateData);
     certFile.close();
 
-    qDebug() << "***** created certificate";
     return true;
 }

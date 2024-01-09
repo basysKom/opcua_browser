@@ -1,3 +1,4 @@
+#include <QCryptographicHash>
 #include <QDir>
 #include <QSettings>
 #include <QStandardPaths>
@@ -465,16 +466,21 @@ void BackEnd::createClient()
 //! [PKI Configuration]
 void BackEnd::setupPkiConfiguration()
 {
-    const QDir pkiDir = QDir(defaultPkiPath());
-    if (!pkiDir.exists() && !X509Certificate::createCertificate(pkiDir.path()))
-        qFatal("Could not set up directory %s!", qUtf8Printable(pkiDir.path()));
+    const QString pkiPath = defaultPkiPath();
+    const QString certFileName(pkiPath % "/own/certs/opcuabrowser.der");
+    const QString privateKeyFileName(pkiPath % "/own/private/opcuabrowser.pem");
 
-    mPkiConfig.setClientCertificateFile(pkiDir.absoluteFilePath("own/certs/opcuabrowser.der"));
-    mPkiConfig.setPrivateKeyFile(pkiDir.absoluteFilePath("own/private/opcuabrowser.pem"));
-    mPkiConfig.setTrustListDirectory(pkiDir.absoluteFilePath("trusted/certs"));
-    mPkiConfig.setRevocationListDirectory(pkiDir.absoluteFilePath("trusted/crl"));
-    mPkiConfig.setIssuerListDirectory(pkiDir.absoluteFilePath("issuers/certs"));
-    mPkiConfig.setIssuerRevocationListDirectory(pkiDir.absoluteFilePath("issuers/crl"));
+    const bool createCertificate =
+            !QFile::exists(certFileName) || !QFile::exists(privateKeyFileName);
+    if (createCertificate && !X509Certificate::createCertificate(pkiPath))
+        qFatal("****** Could not set up directory %s!", qUtf8Printable(pkiPath));
+
+    mPkiConfig.setClientCertificateFile(certFileName);
+    mPkiConfig.setPrivateKeyFile(privateKeyFileName);
+    mPkiConfig.setTrustListDirectory(pkiPath % "/trusted/certs");
+    mPkiConfig.setRevocationListDirectory(pkiPath % "/trusted/crl");
+    mPkiConfig.setIssuerListDirectory(pkiPath % "/issuers/certs");
+    mPkiConfig.setIssuerRevocationListDirectory(pkiPath % "/issuers/crl");
 
     const QStringList toCreate = { mPkiConfig.issuerListDirectory(),
                                    mPkiConfig.issuerRevocationListDirectory() };
