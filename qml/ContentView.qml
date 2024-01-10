@@ -52,6 +52,9 @@ Item {
                 // After successful connection, go to dashboard configuration view
                 stackLayout.currentIndex = dashboardConfiguration.StackLayout.index
                 dashboardConfiguration.type = DashboardConfigurationView.Type.Unknown
+            } else if (!BackEnd.isConnected) {
+                dashboardConfiguration.type = DashboardConfigurationView.Type.Unknown
+                showConnectionView()
             }
         }
     }

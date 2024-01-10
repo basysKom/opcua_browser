@@ -383,12 +383,12 @@ void BackEnd::clientDisconnected()
     qDebug() << "client disconnected";
     setState(QStringLiteral("client disconnected"));
 
+    saveLastDashboards();
+    mDashboardItemModel->clearItems();
+
     mOpcUaClient->deleteLater();
     mOpcUaClient = nullptr;
     mOpcUaModel->setOpcUaClient(nullptr);
-
-    saveLastDashboards();
-    mDashboardItemModel->clearItems();
 }
 
 void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)
