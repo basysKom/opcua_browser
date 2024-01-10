@@ -115,6 +115,7 @@ Item {
             visible: authenticationListBox.visible
                      && authenticationListBox.currentIndex === 1
             captionText: qsTr("Password")
+            echoMode: TextInput.Password
         }
 
         StyledTextField {

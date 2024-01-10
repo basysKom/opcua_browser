@@ -13,6 +13,7 @@ ColumnLayout {
     property alias captionText: caption.text
     property alias text: textField.text
     property alias placeholderText: textField.placeholderText
+    property alias echoMode: textField.echoMode
     property ThemeTextField theme: Style.textField
 
     Text {
@@ -30,6 +31,9 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.preferredHeight: layout.textFieldColumnHeight
         verticalAlignment: Qt.AlignVCenter
+
+        passwordCharacter: "*"
+        passwordMaskDelay: 500
 
         background: Rectangle {
             color: theme.background
