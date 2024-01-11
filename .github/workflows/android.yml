@@ -4,7 +4,21 @@ on:
   workflow_dispatch: 
 
 jobs:
-  linux:
+  build_matrix:
+    strategy:
+      matrix:
+        arch: ["arm64_v8a", "x86", "x86_64"] # ["armv7"]
+        include:
+          - arch: arm64_v8a
+            ssl_path: arm64-v8a
+          - arch: x86
+            ssl_path: x86
+          - arch: x86_64
+            ssl_path: x86_64
+          #- arch: armv7
+          #  ssl_path: armeabi-v7a
+    env:
+      BUILD_ARCH: ${{ matrix.arch }}
     runs-on: thuban
     container:
       image: stateoftheartio/qt6:6.6-android-aqt
@@ -19,7 +33,7 @@ jobs:
       run: |
         HOME_DIR=$(pwd) && \
         mkdir -p build && \
-        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua -DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/arm64-v8a/ && \
+        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua -DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/${{ matrix.ssl_path }}/ && \
         cmake --build ./build/qtopcua && \
         sudo /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua
     - name: Build App
