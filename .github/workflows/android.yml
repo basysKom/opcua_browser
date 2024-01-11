@@ -19,7 +19,7 @@ jobs:
           #  ssl_path: armeabi-v7a
     env:
       BUILD_ARCH: ${{ matrix.arch }}
-    runs-on: thuban
+    runs-on: ubuntu-latest
     container:
       image: stateoftheartio/qt6:6.6-android-aqt
       options: --user root
