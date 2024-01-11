@@ -307,6 +307,7 @@ void BackEnd::findServers(const QString &urlString)
         url.setPort(4840);
 
     if (mOpcUaClient) {
+        mServerHost = url.host();
         mOpcUaClient->findServers(url);
         qDebug() << "Discovering servers on " << url.toString();
     }
@@ -324,7 +325,9 @@ void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &ser
     setState(QStringLiteral("%1 server(s) detected").arg(servers.size()));
     mServerList.clear();
     for (const auto &server : servers) {
-        mServerList << server.discoveryUrls();
+        for (auto &url : server.discoveryUrls()) {
+            mServerList << url.replace("localhost", mServerHost);
+        }
         qDebug() << server.applicationUri() << server.applicationName() << server.discoveryUrls()
                  << server.productUri();
     }
