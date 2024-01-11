@@ -80,7 +80,7 @@ Item {
             }
         }
 
-        StyledComboBox {
+        StyledEndpointComboBox {
             id: endpointListBox
 
             enabled: !BackEnd.isConnected

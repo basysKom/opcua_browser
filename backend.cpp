@@ -104,7 +104,7 @@ QVector<QString> BackEnd::endpointList() const
             index = 0;
         }
 
-        list << QStringLiteral("%1 (%2)").arg(endpoint.securityPolicy(), modes[index]);
+        list << QStringLiteral("%1#%2").arg(endpoint.securityPolicy(), modes[index]);
     }
     return list;
 }

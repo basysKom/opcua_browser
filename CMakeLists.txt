@@ -57,6 +57,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/controls/SideMenu.qml
               qml/controls/StyledButton.qml
               qml/controls/StyledComboBox.qml
+              qml/controls/StyledEndpointComboBox.qml
               qml/controls/StyledIconTabButton.qml
               qml/controls/StyledItemSelector.qml
               qml/controls/StyledMenuItem.qml
