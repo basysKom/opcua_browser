@@ -1,0 +1,29 @@
+name: Build Android
+on:
+  workflow_call:
+  workflow_dispatch: 
+
+jobs:
+  linux:
+    runs-on: thuban
+    container:
+      image: stateoftheartio/qt6:6.6-android-aqt
+      options: --user root
+    timeout-minutes: 60
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    - name: Get dependencies
+      run: ./get_dependencies.sh
+    - name: Build qtopcua
+      run: |
+        HOME_DIR=$(pwd) && \
+        mkdir -p build && \
+        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua -DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/arm64-v8a/ && \
+        cmake --build ./build/qtopcua && \
+        sudo /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua
+    - name: Build App
+      run: |
+        mkdir -p ./build/opc_ua_browser && \
+        qt-cmake . -G Ninja -B ./build/opc_ua_browser && \
+        cmake --build ./build/opc_ua_browser
