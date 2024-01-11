@@ -19,14 +19,7 @@ qt_add_executable(appOPC_UA_Browser
 )
 
 if (ANDROID)
-    FetchContent_Declare(
-      android_openssl
-      DOWNLOAD_EXTRACT_TIMESTAMP true
-      URL      https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
-    )
-    FetchContent_MakeAvailable(android_openssl)
-    include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
-
+    include(dependencies/android_openssl/android_openssl.cmake)
     add_android_openssl_libraries(appOPC_UA_Browser)
 endif()
 
