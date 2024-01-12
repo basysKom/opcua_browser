@@ -54,6 +54,5 @@ jobs:
     - name: Build App
       run: |
         mkdir -p ./build/opc_ua_browser && \
-        #-DQT_ANDROID_ABIS="armeabi-v7a;arm64-v8a;x86;x86_64"
         qt-cmake . -G Ninja -B ./build/opc_ua_browser -DQT_ANDROID_BUILD_ALL_ABIS=ON && \
-        cmake --build ./build/opc_ua_browser
+        cmake --build ./build/opc_ua_browser --target aab
