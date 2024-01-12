@@ -45,6 +45,120 @@ QString euInformationToString(const QOpcUaEUInformation &info)
                  localizedTextToString(info.description()));
 }
 
+QStringList eventNotifierToStringList(quint8 byte)
+{
+    QStringList eventNotifier;
+    if ((byte & 0x01) != 0)
+        eventNotifier << QStringLiteral("SubscribeToEvents");
+    if ((byte & 0x02) != 0)
+        eventNotifier << QStringLiteral("Unknown");
+    if ((byte & 0x04) != 0)
+        eventNotifier << QStringLiteral("HistoryRead");
+    if ((byte & 0x08) != 0)
+        eventNotifier << QStringLiteral("HistoryWrite");
+    if ((byte & 0x10) != 0)
+        eventNotifier << QStringLiteral("Unknown");
+    if ((byte & 0x20) != 0)
+        eventNotifier << QStringLiteral("Unknown");
+    if ((byte & 0x40) != 0)
+        eventNotifier << QStringLiteral("Unknown");
+    if ((byte & 0x80) != 0)
+        eventNotifier << QStringLiteral("Unknown");
+    return eventNotifier;
+}
+
+QStringList accessLevelToStringList(quint8 byte)
+{
+    QStringList accessLevels;
+    if ((byte & 0x01) != 0)
+        accessLevels << QStringLiteral("CurrentRead");
+    if ((byte & 0x02) != 0)
+        accessLevels << QStringLiteral("CurrentWrite");
+    if ((byte & 0x04) != 0)
+        accessLevels << QStringLiteral("HistoryRead");
+    if ((byte & 0x08) != 0)
+        accessLevels << QStringLiteral("HistoryWrite");
+    if ((byte & 0x10) != 0)
+        accessLevels << QStringLiteral("SemanticChange");
+    if ((byte & 0x20) != 0)
+        accessLevels << QStringLiteral("StatusWrite");
+    if ((byte & 0x40) != 0)
+        accessLevels << QStringLiteral("TimestampWrite");
+    if ((byte & 0x80) != 0)
+        accessLevels << QStringLiteral("Unknown");
+    return accessLevels;
+}
+
+QStringList writeMaskToStringList(quint32 value)
+{
+    QStringList attributes;
+    if ((value & 0x00000001) != 0)
+        attributes << QStringLiteral("AccessLevel");
+    if ((value & 0x00000002) != 0)
+        attributes << QStringLiteral("ArrayDimensions");
+    if ((value & 0x00000004) != 0)
+        attributes << QStringLiteral("BrowseName");
+    if ((value & 0x00000008) != 0)
+        attributes << QStringLiteral("ContainsNoLoops");
+    if ((value & 0x00000010) != 0)
+        attributes << QStringLiteral("DataType");
+    if ((value & 0x00000020) != 0)
+        attributes << QStringLiteral("Description");
+    if ((value & 0x00000040) != 0)
+        attributes << QStringLiteral("DisplayName");
+    if ((value & 0x00000080) != 0)
+        attributes << QStringLiteral("EventNotifier");
+    if ((value & 0x00000100) != 0)
+        attributes << QStringLiteral("Executable");
+    if ((value & 0x00000200) != 0)
+        attributes << QStringLiteral("Historizing");
+    if ((value & 0x00000400) != 0)
+        attributes << QStringLiteral("InverseName");
+    if ((value & 0x00000800) != 0)
+        attributes << QStringLiteral("IsAbstract");
+    if ((value & 0x00001000) != 0)
+        attributes << QStringLiteral("MinimumSamplingInterval");
+    if ((value & 0x00002000) != 0)
+        attributes << QStringLiteral("NodeClass");
+    if ((value & 0x00004000) != 0)
+        attributes << QStringLiteral("NodeId");
+    if ((value & 0x00008000) != 0)
+        attributes << QStringLiteral("Symmetric");
+    if ((value & 0x00010000) != 0)
+        attributes << QStringLiteral("UserAccessLevel");
+    if ((value & 0x00020000) != 0)
+        attributes << QStringLiteral("UserExecutable");
+    if ((value & 0x00040000) != 0)
+        attributes << QStringLiteral("UserWriteMask");
+    if ((value & 0x00080000) != 0)
+        attributes << QStringLiteral("ValueRank");
+    if ((value & 0x00100000) != 0)
+        attributes << QStringLiteral("WriteMask");
+    if ((value & 0x00200000) != 0)
+        attributes << QStringLiteral("ValueForVariableType");
+    if ((value & 0x00400000) != 0)
+        attributes << QStringLiteral("DataTypeDefinition");
+    if ((value & 0x00800000) != 0)
+        attributes << QStringLiteral("RolePermissions");
+    if ((value & 0x01000000) != 0)
+        attributes << QStringLiteral("AccessLevel");
+    if ((value & 0x02000000) != 0)
+        attributes << QStringLiteral("AccessRestrictions");
+    if ((value & 0x04000000) != 0)
+        attributes << QStringLiteral("AccessLevelEx");
+    if ((value & 0x08000000) != 0)
+        attributes << QStringLiteral("Unknown");
+    if ((value & 0x10000000) != 0)
+        attributes << QStringLiteral("Unknown");
+    if ((value & 0x20000000) != 0)
+        attributes << QStringLiteral("Unknown");
+    if ((value & 0x40000000) != 0)
+        attributes << QStringLiteral("Unknown");
+    if ((value & 0x80000000) != 0)
+        attributes << QStringLiteral("Unknown");
+    return attributes;
+}
+
 QString variantToString(const QVariant &value, const QString &typeNodeId)
 {
     if (value.metaType().id() == QMetaType::QVariantList) {
@@ -169,8 +283,6 @@ QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribu
     case QOpcUa::NodeAttribute::InverseName:
         return node->attribute(attr).value<QOpcUaLocalizedText>().text();
     case QOpcUa::NodeAttribute::NodeId:
-    case QOpcUa::NodeAttribute::WriteMask:
-    case QOpcUa::NodeAttribute::UserWriteMask:
     case QOpcUa::NodeAttribute::IsAbstract:
     case QOpcUa::NodeAttribute::Symmetric:
     case QOpcUa::NodeAttribute::ContainsNoLoops:
@@ -185,11 +297,28 @@ QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribu
         return QString::number(node->attribute(attr).toUInt());
     case QOpcUa::NodeAttribute::MinimumSamplingInterval:
         return QString::number(node->attribute(attr).toDouble());
-    case QOpcUa::NodeAttribute::EventNotifier:
+    case QOpcUa::NodeAttribute::EventNotifier: {
+        const quint32 byte = node->attribute(attr).toUInt();
+        const QStringList eventNotifierTypes = QStringList()
+                << QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'))
+                << eventNotifierToStringList((quint8)byte);
+        return eventNotifierTypes.join("\n");
+    }
     case QOpcUa::NodeAttribute::AccessLevel:
     case QOpcUa::NodeAttribute::UserAccessLevel: {
         const quint32 byte = node->attribute(attr).toUInt();
-        return QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'));
+        const QStringList accessLevelTypes = QStringList()
+                << QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'))
+                << accessLevelToStringList((quint8)byte);
+        return accessLevelTypes.join("\n");
+    }
+    case QOpcUa::NodeAttribute::WriteMask:
+    case QOpcUa::NodeAttribute::UserWriteMask: {
+        const quint32 value = node->attribute(attr).toUInt();
+        const QStringList accessLevelTypes = QStringList()
+                << QStringLiteral("0x%1").arg(value, 8, 16, QChar('0'))
+                << writeMaskToStringList(value);
+        return accessLevelTypes.join("\n");
     }
     case QOpcUa::NodeAttribute::Value: {
         const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();
