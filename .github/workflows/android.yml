@@ -56,3 +56,16 @@ jobs:
         mkdir -p ./build/opc_ua_browser && \
         qt-cmake . -G Ninja -B ./build/opc_ua_browser -DQT_ANDROID_BUILD_ALL_ABIS=ON && \
         cmake --build ./build/opc_ua_browser --target aab
+    - uses: r0adkll/sign-android-release@v1
+      name: Sign app APK
+      # ID used to access action output
+      id: sign_app
+      with:
+        releaseDirectory: build/opc_ua_browser/android-build/build/outputs/bundle/release/
+        signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+        alias: ${{ secrets.KEY_ALIAS }}
+        keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Signed app bundle
+        path: ${{steps.sign_app.outputs.signedReleaseFile}}
