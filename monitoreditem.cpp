@@ -28,12 +28,22 @@ const QString &MonitoredItem::nodeId() const noexcept
 
 const QString &MonitoredItem::displayName() const noexcept
 {
-    return mDisplayName;
+    return mDisplayName.isEmpty() ? nodeId() : mDisplayName;
 }
 
 const QString &MonitoredItem::value() const noexcept
 {
     return mValue;
+}
+
+QString MonitoredItem::status() const
+{
+    return QOpcUa::statusToString(mStatusCode);
+}
+
+bool MonitoredItem::hasError() const noexcept
+{
+    return (mStatusCode != QOpcUa::Good);
 }
 
 void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
@@ -55,11 +65,28 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
     }
 
     if (attributes.testFlag(QOpcUa::NodeAttribute::Value)) {
-        const QString newValue = QOpcUaHelper::getFormattedAttributeValue(
-                mOpcNode.get(), QOpcUa::NodeAttribute::Value);
-        if (newValue != mValue) {
-            mValue = newValue;
-            emit valueChanged();
+        setStatusCode(mOpcNode->valueAttributeError());
+
+        if (!hasError()) {
+            const QString newValue = QOpcUaHelper::getFormattedAttributeValue(
+                    mOpcNode.get(), QOpcUa::NodeAttribute::Value);
+            if (newValue != mValue) {
+                mValue = newValue;
+                emit valueChanged();
+            }
+        }
+    }
+}
+
+void MonitoredItem::setStatusCode(QOpcUa::UaStatusCode statusCode)
+{
+    if (mStatusCode != statusCode) {
+        const QOpcUa::UaStatusCode lastStatusCode = mStatusCode;
+        mStatusCode = statusCode;
+
+        emit statusChanged();
+        if ((statusCode == QOpcUa::Good) || (lastStatusCode == QOpcUa::Good)) {
+            emit hasErrorChanged();
         }
     }
 }

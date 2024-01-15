@@ -34,6 +34,7 @@ ThemeDefault {
         item {
             background: foreground
             backgroundHeld: "lightsteelblue"
+            backgroundError: "#F26161"
             textColor: anthrazite
         }
     }
