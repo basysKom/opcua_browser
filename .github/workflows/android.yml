@@ -59,22 +59,24 @@ jobs:
         cmake --build ./build/opc_ua_browser --target apk
     - uses: r0adkll/sign-android-release@v1
       name: Sign app AAB
-      # ID used to access action output
       id: sign_aab
       with:
         releaseDirectory: build/opc_ua_browser/android-build/build/outputs/bundle/release/
         signingKeyBase64: ${{ secrets.SIGNING_KEY }}
         alias: ${{ secrets.KEY_ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: "33.0.0"
     - uses: r0adkll/sign-android-release@v1
       name: Sign app APK
-      # ID used to access action output
       id: sign_apk
       with:
         releaseDirectory: build/opc_ua_browser/android-build/
         signingKeyBase64: ${{ secrets.SIGNING_KEY }}
         alias: ${{ secrets.KEY_ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+      env:
+        BUILD_TOOLS_VERSION: "33.0.0"
     - uses: actions/upload-artifact@v2
       with:
         name: Signed app bundle
