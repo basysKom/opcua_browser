@@ -3,7 +3,7 @@ import QtQuick
 import OPC_UA_Browser
 
 Rectangle {
-    id: root
+    id: view
 
     enum Type {
         ExpertMode,
@@ -25,11 +25,11 @@ Rectangle {
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
-        anchors.bottom: (type === BrowserView.Type.ExpertMode) ? spacer.top : okButton.top
+        anchors.bottom: (view.type === BrowserView.Type.ExpertMode) ? spacer.top : okButton.top
         anchors.bottomMargin: 10
 
-        canSelectVariables: (type === BrowserView.Type.SelectMonitoredItem)
-        canSelectEvents: (type === BrowserView.Type.SelectEvents)
+        canSelectVariables: (view.type === BrowserView.Type.SelectMonitoredItem)
+        canSelectEvents: (view.type === BrowserView.Type.SelectEvents)
     }
 
     Item {
@@ -37,7 +37,7 @@ Rectangle {
 
         anchors.left: parent.left
         anchors.right: parent.right
-        y: root.height - 200 - height
+        y: view.height - 200 - height
         height: nodeDetailView.visible ? 10 : 0
 
         MouseArea {
@@ -55,7 +55,8 @@ Rectangle {
         anchors.right: parent.right
         anchors.top: spacer.bottom
         anchors.bottom: parent.bottom
-        visible: BackEnd.isConnected && (type === BrowserView.Type.ExpertMode)
+        visible: BackEnd.isConnected
+                 && (view.type === BrowserView.Type.ExpertMode)
 
         attributes: nodesView.attributes
         references: nodesView.references
@@ -68,11 +69,11 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         width: parent.width / 3
-        visible: (type !== BrowserView.Type.ExpertMode)
+        visible: (view.type !== BrowserView.Type.ExpertMode)
         highlighted: false
         text: qsTr("Cancel")
 
-        onClicked: selectionCancelled()
+        onClicked: view.selectionCancelled()
     }
 
     StyledButton {
@@ -82,9 +83,9 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         width: parent.width / 3
-        visible: (type !== BrowserView.Type.ExpertMode)
+        visible: (view.type !== BrowserView.Type.ExpertMode)
         text: qsTr("Ok")
 
-        onClicked: selectionAccepted()
+        onClicked: view.selectionAccepted()
     }
 }

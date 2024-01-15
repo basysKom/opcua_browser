@@ -21,7 +21,7 @@ ApplicationWindow {
 
     Component.onCompleted: {
         Style.currentThemeIndex = window.themeIndex
-        UiSettings.setStatusAndNavigationBarColor(theme.background)
+        UiSettings.setStatusAndNavigationBarColor(window.theme.background)
     }
 
     width: 350
@@ -35,7 +35,7 @@ ApplicationWindow {
         property bool isSaveMode: false
 
         height: childrenRect.height
-        color: theme.header.background
+        color: window.theme.header.background
         clip: true
 
         Behavior on height {
@@ -60,7 +60,7 @@ ApplicationWindow {
                     sourceSize.width: 24
                     sourceSize.height: 24
                     source: leftImage.showBackButton ? "qrc:/icons/back.svg" : "qrc:/icons/menu.svg"
-                    color: theme.header.iconColor
+                    color: window.theme.header.iconColor
 
                     MouseArea {
                         anchors.fill: parent
@@ -89,7 +89,7 @@ ApplicationWindow {
                     sourceSize.width: 24
                     sourceSize.height: 24
                     source: "qrc:/icons/save.svg"
-                    color: theme.header.iconColor
+                    color: window.theme.header.iconColor
                     visible: contentView.canSaveDashboard
                              && !headerItem.isSaveMode
 
@@ -154,7 +154,7 @@ ApplicationWindow {
                 Layout.preferredHeight: 2
                 Layout.leftMargin: 5
                 Layout.rightMargin: 5
-                color: theme.header.dividerColor
+                color: window.theme.header.dividerColor
             }
         }
     }
@@ -162,8 +162,8 @@ ApplicationWindow {
     SideMenu {
         id: sideMenu
 
-        y: -header.height
-        menuHeight: parent.height + header.height
+        y: -window.header.height
+        menuHeight: parent.height + window.header.height
         menuWidth: Math.min(310, 0.8 * parent.width)
 
         onAddConnectionSelected: {

@@ -21,7 +21,7 @@ ColumnLayout {
 
         Layout.preferredHeight: layout.textColumnHeight
         verticalAlignment: Qt.AlignVCenter
-        color: theme.captionTextColor
+        color: layout.theme.captionTextColor
         font.bold: true
     }
 
@@ -36,7 +36,7 @@ ColumnLayout {
         passwordMaskDelay: 500
 
         background: Rectangle {
-            color: theme.background
+            color: layout.theme.background
         }
     }
 }

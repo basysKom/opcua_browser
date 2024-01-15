@@ -40,7 +40,7 @@ Item {
             text: qsTr("Use last session")
             visible: view.showLastSessionButton && BackEnd.hasLastDashboards
 
-            onClicked: useLastSession()
+            onClicked: view.useLastSession()
         }
 
         StyledButton {
@@ -95,9 +95,9 @@ Item {
 
             onClicked: {
                 if (view.type === DashboardConfigurationView.Type.SelectVariables) {
-                    addMonitoredItems()
+                    view.addMonitoredItems()
                 } else {
-                    addEvents()
+                    view.addEvents()
                 }
             }
         }
@@ -141,10 +141,10 @@ Item {
 
                 onClicked: {
                     if (view.type === DashboardConfigurationView.Type.SelectVariables) {
-                        addSavedVariableDashboard(
+                        view.addSavedVariableDashboard(
                                     savedDashboardListBox.currentText)
                     } else {
-                        addSavedEventDashboard(
+                        view.addSavedEventDashboard(
                                     savedDashboardListBox.currentText)
                     }
                 }
@@ -156,7 +156,7 @@ Item {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         anchors.margins: 10
-        visible: !selection.visible && !showCancelButton
+        visible: !selection.visible && !view.showCancelButton
         width: parent.width / 3
         highlighted: false
         text: qsTr("Back")
@@ -168,11 +168,11 @@ Item {
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         anchors.margins: 10
-        visible: showCancelButton
+        visible: view.showCancelButton
         width: parent.width / 3
         highlighted: false
         text: qsTr("Cancel")
 
-        onClicked: viewCanceled()
+        onClicked: view.viewCanceled()
     }
 }

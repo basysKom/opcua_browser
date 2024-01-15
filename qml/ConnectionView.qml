@@ -1,10 +1,11 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 import OPC_UA_Browser
 
 Item {
+    id: view
+
     property ThemeConnectionView theme: Style.connectionView
 
     ColumnLayout {
@@ -145,7 +146,7 @@ Item {
                 Layout.preferredHeight: Layout.preferredWidth
 
                 radius: Layout.preferredWidth / 2
-                color: (2 === BackEnd.connectionState) ? theme.connected : (1 === BackEnd.connectionState) ? theme.connecting : theme.disconnected
+                color: (2 === BackEnd.connectionState) ? view.theme.connected : (1 === BackEnd.connectionState) ? view.theme.connecting : view.theme.disconnected
             }
 
             StyledButton {

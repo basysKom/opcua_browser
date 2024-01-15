@@ -26,7 +26,7 @@ Rectangle {
         spacing: 10
 
         Text {
-            color: theme.textColor
+            color: view.theme.textColor
             font {
                 pointSize: 18
                 bold: true
@@ -35,7 +35,7 @@ Rectangle {
         }
 
         Text {
-            color: theme.textColor
+            color: view.theme.textColor
             font {
                 pointSize: 14
                 bold: true
@@ -52,12 +52,12 @@ Rectangle {
                 height: 24
                 width: height
                 checkState: (Style.currentThemeIndex === 0) ? Qt.Checked : Qt.Unchecked
-                onToggled: setTheme(0)
+                onToggled: view.setTheme(0)
             }
 
             Text {
                 anchors.verticalCenter: darkItemSelector.verticalCenter
-                color: theme.textColor
+                color: view.theme.textColor
                 font.pointSize: 12
                 text: qsTr("Dark")
             }
@@ -73,12 +73,12 @@ Rectangle {
                 height: 24
                 width: height
                 checkState: (Style.currentThemeIndex === 1) ? Qt.Checked : Qt.Unchecked
-                onToggled: setTheme(1)
+                onToggled: view.setTheme(1)
             }
 
             Text {
                 anchors.verticalCenter: brightItemSelector.verticalCenter
-                color: theme.textColor
+                color: view.theme.textColor
                 font.pointSize: 12
                 text: qsTr("Bright")
             }
