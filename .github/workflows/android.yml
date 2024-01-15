@@ -10,6 +10,10 @@ jobs:
       image: stateoftheartio/qt6:6.6-android-aqt
       options: --user root
     timeout-minutes: 60
+    env:
+      QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON"
+      QT_PATH: "/opt/Qt/6.6.1"
+      SSL_PATH: "dependencies/android_openssl/ssl_3"
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -17,39 +21,55 @@ jobs:
       run: ./get_dependencies.sh
     - name: Build qtopcua for arm64_v8a
       run: |
-        HOME_DIR=$(pwd) && \
-        export BUILD_ARCH=arm64_v8a && \
-        mkdir -p build && \
-        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.6.1/android_arm64_v8a -DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/arm64-v8a/ && \
-        cmake --build ./build/qtopcua && \
-        /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua && \
+        HOME_DIR=$(pwd)
+        export BUILD_ARCH=arm64_v8a
+        mkdir -p build 
+        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua \
+          ${QTOPCUA_BUILD_ARGS} \
+          -DCMAKE_INSTALL_PREFIX=${QT_PATH}/android_arm64_v8a \
+          -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/${SSL_PATH}/include/ \
+          -DOPENSSL_ROOT_DIR=${HOME_DIR}/${SSL_PATH}/arm64-v8a/ 
+        cmake --build ./build/qtopcua 
+        /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua 
         rm -rf ./build/qtopcua
     - name: Build qtopcua for x86
       run: |
-        HOME_DIR=$(pwd) && \
-        export BUILD_ARCH=x86 && \
-        mkdir -p build && \
-        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.6.1/android_x86 -DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/x86/ && \
-        cmake --build ./build/qtopcua && \
-        /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua && \
+        HOME_DIR=$(pwd)
+        export BUILD_ARCH=x86
+        mkdir -p build
+        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua \
+          ${QTOPCUA_BUILD_ARGS} \
+          -DCMAKE_INSTALL_PREFIX=${QT_PATH}/android_x86 \
+          -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/${SSL_PATH}/include/ \
+          -DOPENSSL_ROOT_DIR=${HOME_DIR}/${SSL_PATH}/x86/ 
+        cmake --build ./build/qtopcua 
+        /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua 
         rm -rf ./build/qtopcua
     - name: Build qtopcua for x86_64
       run: |
-        HOME_DIR=$(pwd) && \
-        export BUILD_ARCH=x86_64 && \
-        mkdir -p build && \
-        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.6.1/android_x86_64 -DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/x86_64/ && \
-        cmake --build ./build/qtopcua && \
-        /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua && \
+        HOME_DIR=$(pwd) 
+        export BUILD_ARCH=x86_64 
+        mkdir -p build 
+        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua \
+          ${QTOPCUA_BUILD_ARGS} \
+          -DCMAKE_INSTALL_PREFIX=${QT_PATH}/android_x86_64 \
+          -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/${SSL_PATH}/include/ \
+          -DOPENSSL_ROOT_DIR=${HOME_DIR}/${SSL_PATH}/x86_64/ 
+        cmake --build ./build/qtopcua 
+        /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua 
         rm -rf ./build/qtopcua
     - name: Build qtopcua for armv7
       run: |
-        HOME_DIR=$(pwd) && \
-        export BUILD_ARCH=armv7 && \
-        mkdir -p build && \
-        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.6.1/android_armv7 -DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${HOME_DIR}/dependencies/android_openssl/ssl_3/armeabi-v7a/ && \
-        cmake --build ./build/qtopcua && \
-        /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua && \
+        HOME_DIR=$(pwd) 
+        export BUILD_ARCH=armv7 
+        mkdir -p build 
+        qt-cmake ./dependencies/qtopcua -G Ninja -B ./build/qtopcua \
+          ${QTOPCUA_BUILD_ARGS} \
+          -DCMAKE_INSTALL_PREFIX=${QT_PATH}/android_armv7 \
+          -DOPENSSL_INCLUDE_DIR=${HOME_DIR}/${SSL_PATH}/include/ \
+          -DOPENSSL_ROOT_DIR=${HOME_DIR}/${SSL_PATH}/armeabi-v7a/ 
+        cmake --build ./build/qtopcua 
+        /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua 
         rm -rf ./build/qtopcua
     - name: Build App
       run: |
