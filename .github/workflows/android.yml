@@ -105,3 +105,10 @@ jobs:
       with:
         name: Signed app bundle
         path: ${{steps.sign_aab.outputs.signedReleaseFile}}
+    - uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
+        releaseFiles: ${{steps.sign_aab.outputs.signedReleaseFile}}
+        packageName: org.basyskom.opcuabrowser
+        track: internal
+        changesNotSentForReview: true
