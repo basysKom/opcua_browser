@@ -57,7 +57,7 @@ Item {
             }
         }
 
-        StyledButton {
+        /*StyledButton {
             Layout.fillWidth: true
             text: qsTr("Add event dashboard")
 
@@ -69,7 +69,7 @@ Item {
                     view.type = DashboardConfigurationView.Type.SelectEvents
                 }
             }
-        }
+        }*/
 
         StyledButton {
             Layout.fillWidth: true

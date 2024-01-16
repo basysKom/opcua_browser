@@ -62,13 +62,13 @@ Menu {
         onTriggered: control.closeConnectionSelected()
     }
 
-    StyledMenuItem {
+
+    /*StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Add connection")
         iconSource: "qrc:/icons/connect.svg"
         onTriggered: control.addConnectionSelected()
-    }
-
+    }*/
     StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Expert mode")
