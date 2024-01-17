@@ -25,20 +25,20 @@ Item {
         }
 
         ColumnLayout {
-            visible: hostUrl.visible && (recentConnections.model !== undefined)
-                     && (recentConnections.model.rowCount() > 0)
+            visible: hostUrl.visible && (recentConnections.model.length > 0)
 
             StyledComboBox {
                 id: recentConnections
 
                 captionText: qsTr("Recent connections")
                 model: BackEnd.recentConnections
-                textRole: "display"
             }
 
             StyledButton {
                 Layout.fillWidth: true
-                text: qsTr("Connect")
+                text: qsTr("Discover")
+
+                onClicked: BackEnd.findServers(recentConnections.currentText)
             }
         }
 
@@ -50,7 +50,8 @@ Item {
 
                 captionText: qsTr("Host")
                 //text: "opc.tcp://192.168.178.25:43344"
-                text: "opc.tcp://localhost:43344"
+                //text: "opc.tcp://localhost:43344"
+                //text: "opc.tcp://10.0.2.2:43344"
                 placeholderText: "opc.tcp://localhost:4080"
             }
 
