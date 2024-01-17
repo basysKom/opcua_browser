@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: thuban
+    runs-on: ubuntu-latest
     container:
       image: stateoftheartio/qt6:6.6-android-aqt
       options: --user root
