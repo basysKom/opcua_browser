@@ -21,6 +21,8 @@ qt_add_executable(appOPC_UA_Browser
 if (ANDROID)
     include(dependencies/android_openssl/android_openssl.cmake)
     add_android_openssl_libraries(appOPC_UA_Browser)
+    set_property(TARGET appOPC_UA_Browser APPEND PROPERTY QT_ANDROID_VERSION_CODE ${ANDROID_VERSION_CODE})
+    set_property(TARGET appOPC_UA_Browser APPEND PROPERTY QT_ANDROID_VERSION_NAME ${ANDROID_VERSION_NAME})
 endif()
 
 set_source_files_properties(qml/style/Style.qml PROPERTIES

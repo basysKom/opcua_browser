@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: thuban
     container:
       image: stateoftheartio/qt6:6.6-android-aqt
       options: --user root
@@ -14,6 +14,8 @@ jobs:
       QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON"
       QT_PATH: "/opt/Qt/6.6.1"
       SSL_PATH: "dependencies/android_openssl/ssl_3"
+      ANDROID_VERSION_CODE: "2"
+      ANDROID_VERSION_NAME: "1.0.0"
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -74,7 +76,10 @@ jobs:
     - name: Build App
       run: |
         mkdir -p ./build/opc_ua_browser && \
-        qt-cmake . -G Ninja -B ./build/opc_ua_browser -DQT_ANDROID_BUILD_ALL_ABIS=ON && \
+        qt-cmake . -G Ninja -B ./build/opc_ua_browser \
+          -DQT_ANDROID_BUILD_ALL_ABIS=ON \
+          -DANDROID_VERSION_CODE=${ANDROID_VERSION_CODE} \
+          -DANDROID_VERSION_NAME=${ANDROID_VERSION_NAME} && \
         cmake --build ./build/opc_ua_browser --target aab && \
         cmake --build ./build/opc_ua_browser --target apk
     - uses: r0adkll/sign-android-release@v1
