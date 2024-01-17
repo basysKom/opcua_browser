@@ -116,4 +116,3 @@ jobs:
         releaseFiles: ${{steps.sign_aab.outputs.signedReleaseFile}}
         packageName: org.basyskom.opcuabrowser
         track: internal
-        changesNotSentForReview: true
