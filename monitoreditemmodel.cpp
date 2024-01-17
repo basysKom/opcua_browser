@@ -5,6 +5,8 @@ enum Roles : int {
     DisplayNameRole = Qt::DisplayRole,
     ValueRole = Qt::UserRole,
     IsAddItemRole,
+    StatusRole,
+    HasErrorRole,
 };
 
 MonitoredItemModel::MonitoredItemModel(QObject *parent) : QAbstractListModel{ parent }
@@ -21,9 +23,8 @@ MonitoredItemModel::~MonitoredItemModel()
 QHash<int, QByteArray> MonitoredItemModel::roleNames() const
 {
     return {
-        { DisplayNameRole, "name" },
-        { ValueRole, "value" },
-        { IsAddItemRole, "isAddItem" },
+        { DisplayNameRole, "name" }, { ValueRole, "value" },       { IsAddItemRole, "isAddItem" },
+        { StatusRole, "status" },    { HasErrorRole, "hasError" },
     };
 }
 
@@ -44,6 +45,10 @@ QVariant MonitoredItemModel::data(const QModelIndex &index, int role) const
         return mItems[index.row()]->value();
     case IsAddItemRole:
         return mItems[index.row()]->nodeId().isEmpty();
+    case StatusRole:
+        return mItems[index.row()]->status();
+    case HasErrorRole:
+        return mItems[index.row()]->hasError();
     }
 
     return QVariant();
@@ -65,6 +70,12 @@ void MonitoredItemModel::addItem(QOpcUaNode *node)
 
     connect(monitoredItem, &MonitoredItem::valueChanged, this,
             [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << ValueRole); });
+
+    connect(monitoredItem, &MonitoredItem::hasErrorChanged, this,
+            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << HasErrorRole); });
+
+    connect(monitoredItem, &MonitoredItem::statusChanged, this,
+            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << StatusRole); });
 
     beginInsertRows(QModelIndex(), pos, pos);
     mItems.insert(pos, monitoredItem);

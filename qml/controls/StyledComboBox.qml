@@ -15,6 +15,7 @@ ColumnLayout {
     property alias textRole: comboBox.textRole
     property alias currentIndex: comboBox.currentIndex
     property alias currentText: comboBox.currentText
+    property alias _comboBox: comboBox
     property ThemeComboBox theme: Style.comboBox
 
     Text {

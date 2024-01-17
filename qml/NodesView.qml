@@ -4,7 +4,7 @@ import QtQuick.Controls
 import OPC_UA_Browser
 
 Item {
-    id: root
+    id: view
 
     property var attributes
     property var references
@@ -66,17 +66,17 @@ Item {
 
             onIsCurrentItemChanged: {
                 if (isCurrentItem) {
-                    root.attributes = model.attributes
-                    root.references = model.references
+                    view.attributes = model.attributes
+                    view.references = model.references
                 }
             }
 
             width: implicitWidth
             implicitWidth: Math.max(
-                               root.width,
+                               view.width,
                                padding + label.x + label.implicitWidth + padding)
             implicitHeight: 34
-            color: isCurrentItem ? theme.backgroundSelected : "transparent"
+            color: isCurrentItem ? view.theme.backgroundSelected : "transparent"
 
             TapHandler {
                 id: tapHandler
@@ -143,17 +143,17 @@ Item {
                 clip: true
                 text: model.display
                 font.pointSize: 12
-                color: model.isCurrentItem ? theme.textColorSelected : theme.textColor
+                color: model.isCurrentItem ? view.theme.textColorSelected : view.theme.textColor
             }
 
             StyledItemSelector {
-                x: treeView.contentX + root.width - width - 15
+                x: treeDelegate.treeView.contentX + view.width - width - 15
                 anchors.verticalCenter: treeDelegate.verticalCenter
                 height: treeDelegate.height - 10
                 width: height
                 checkState: model.isSelected ? Qt.Checked : Qt.Unchecked
-                visible: (canSelectVariables && model.canMonitoring)
-                         || (canSelectEvents && model.hasEventNotifier)
+                visible: (view.canSelectVariables && model.canMonitoring)
+                         || (view.canSelectEvents && model.hasEventNotifier)
 
                 onToggled: model.isSelected = !model.isSelected
             }

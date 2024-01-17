@@ -42,14 +42,14 @@ Menu {
     }
 
     background: Rectangle {
-        color: theme.background
+        color: control.theme.background
     }
 
     Text {
         topPadding: 10
         font.pointSize: 20
         font.bold: true
-        color: theme.textColor
+        color: control.theme.textColor
         text: "OPC UA Browser"
     }
 
@@ -59,28 +59,28 @@ Menu {
         enabled: BackEnd.isConnected
         text: qsTr("Close connection")
         iconSource: "qrc:/icons/disconnect.svg"
-        onTriggered: closeConnectionSelected()
+        onTriggered: control.closeConnectionSelected()
     }
 
-    StyledMenuItem {
+
+    /*StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Add connection")
         iconSource: "qrc:/icons/connect.svg"
-        onTriggered: addConnectionSelected()
-    }
-
+        onTriggered: control.addConnectionSelected()
+    }*/
     StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Expert mode")
         iconSource: "qrc:/icons/expert.svg"
-        onTriggered: showExpertModeSelected()
+        onTriggered: control.showExpertModeSelected()
     }
 
     StyledMenuItem {
         enabled: BackEnd.isConnected
         text: qsTr("Dashboards")
         iconSource: "qrc:/icons/dashboard.svg"
-        onTriggered: showDashboardsSelected()
+        onTriggered: control.showDashboardsSelected()
     }
 
     StyledMenuSeparator {
@@ -90,18 +90,18 @@ Menu {
     StyledMenuItem {
         text: qsTr("Settings")
         iconSource: "qrc:/icons/settings.svg"
-        onTriggered: showSettingsSelected()
+        onTriggered: control.showSettingsSelected()
     }
 
     StyledMenuItem {
         text: qsTr("Imprint")
         iconSource: "qrc:/icons/info.svg"
-        onTriggered: showImprintSelected()
+        onTriggered: control.showImprintSelected()
     }
 
     Item {
-        width: control.menuWidth - leftPadding - rightPadding
-        height: control.menuHeight - y - topPadding - bottomPadding
+        width: control.menuWidth - control.leftPadding - control.rightPadding
+        height: control.menuHeight - control.y - control.topPadding - control.bottomPadding
 
         Image {
             anchors.right: parent.right

@@ -52,6 +52,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/controls/SideMenu.qml
               qml/controls/StyledButton.qml
               qml/controls/StyledComboBox.qml
+              qml/controls/StyledEndpointComboBox.qml
               qml/controls/StyledIconTabButton.qml
               qml/controls/StyledItemSelector.qml
               qml/controls/StyledMenuItem.qml
@@ -130,6 +131,8 @@ set_target_properties(appOPC_UA_Browser PROPERTIES
 #    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appOPC_UA_Browser
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER com.basyskom.opcua.browser
+    XCODE_ATTRIBUTE_DEVELOPMENT_TEAM SCCL9D8G29 # basysKom GmbH
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
 )
@@ -137,6 +140,10 @@ set_target_properties(appOPC_UA_Browser PROPERTIES
 target_link_libraries(appOPC_UA_Browser
     PRIVATE Qt6::Core Qt6::Quick Qt6::QuickControls2 Qt::OpcUa
 )
+
+if (IOS)
+    qt6_import_plugins(appOPC_UA_Browser INCLUDE Qt::QOpen62541Plugin)
+endif()
 
 include(GNUInstallDirs)
 install(TARGETS appOPC_UA_Browser

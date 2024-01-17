@@ -60,6 +60,7 @@ bool readNodeClassSpecificAttributes(QOpcUaNode *node, QOpcUa::NodeClass nodeCla
         break;
     case QOpcUa::NodeClass::Undefined:
     default:
+        qWarning() << "Unknown node class:" << nodeClass;
         Q_UNREACHABLE();
         break;
     }

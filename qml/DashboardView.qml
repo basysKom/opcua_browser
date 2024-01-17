@@ -75,7 +75,9 @@ Rectangle {
             property bool held: false
             required property string name
             required property string value
+            required property string status
             required property bool isAddItem
+            required property bool hasError
             required property int index
 
             height: content.height
@@ -103,7 +105,7 @@ Rectangle {
                 width: view.itemWidth
                 implicitHeight: Math.max(80, childrenRect.height)
                 radius: 5
-                color: dragArea.held ? theme.item.backgroundHeld : theme.item.background
+                color: dragArea.held ? theme.item.backgroundHeld : dragArea.hasError ? theme.item.backgroundError : theme.item.background
 
                 Behavior on color {
                     ColorAnimation {
@@ -169,6 +171,16 @@ Rectangle {
                         font.pointSize: 10
                         color: theme.item.textColor
                         text: dragArea.value
+                        elide: Text.ElideRight
+                        clip: true
+                    }
+
+                    Text {
+                        visible: dragArea.hasError
+                        width: parent.width - 2 * parent.padding
+                        font.pointSize: 10
+                        color: theme.item.textColor
+                        text: dragArea.status
                         elide: Text.ElideRight
                         clip: true
                     }

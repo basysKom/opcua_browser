@@ -24,6 +24,8 @@ public:
     Q_PROPERTY(QString stateText READ stateText NOTIFY stateTextChanged FINAL)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionStateChanged FINAL)
     Q_PROPERTY(int connectionState READ connectionState NOTIFY connectionStateChanged FINAL)
+    Q_PROPERTY(QVector<QString> recentConnections READ recentConnections NOTIFY
+                       recentConnectionsChanged FINAL)
     Q_PROPERTY(QVector<QString> serverList READ serverList NOTIFY serverListChanged FINAL)
     Q_PROPERTY(QVector<QString> endpointList READ endpointList NOTIFY endpointListChanged FINAL)
     Q_PROPERTY(QAbstractItemModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
@@ -45,6 +47,7 @@ public:
     bool isConnected() const;
     int connectionState() const;
     QString stateText() const noexcept;
+    QVector<QString> recentConnections() const noexcept;
     QVector<QString> serverList() const noexcept;
     QVector<QString> endpointList() const;
     OpcUaModel *opcUaModel() const noexcept;
@@ -73,6 +76,7 @@ public:
     Q_INVOKABLE void loadLastDashboardsFromSettings();
 
 signals:
+    void recentConnectionsChanged();
     void serverListChanged();
     void endpointListChanged();
     void stateTextChanged();
@@ -105,6 +109,8 @@ private:
     void connectToEndpoint(int endpointIndex, bool usePassword, const QString &userName = QString(),
                            const QString &password = QString());
     void saveLastDashboards();
+    void loadLastServerHostsFromSettings();
+    void saveServerHost(const QString &host);
 
     OpcUaModel *mOpcUaModel;
     QOpcUaProvider *mOpcUaProvider;
@@ -113,11 +119,13 @@ private:
     QOpcUaPkiConfiguration mPkiConfig;
 
     QString mState;
+    QUrl mServerHost;
     QVector<QString> mServerList;
     QList<QOpcUaEndpointDescription> mEndpointList;
     QOpcUaEndpointDescription mCurrentEndpoint;
     DashboardItemModel *mDashboardItemModel = nullptr;
 
+    QVector<QString> mLastServerHosts;
     QStringListModel *mDefaultVariableDashboardsModel;
     QStringListModel *mDefaultEventDashboardsModel;
     QStringListModel *mSavedVariableDashboardsModel;

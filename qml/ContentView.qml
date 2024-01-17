@@ -6,7 +6,7 @@ import QtQuick.Layouts
 import OPC_UA_Browser
 
 Item {
-    id: root
+    id: view
 
     readonly property bool showBackButtonInHeader: (stackLayout.currentIndex
                                                     === imprint.StackLayout.index)
@@ -54,7 +54,7 @@ Item {
                 dashboardConfiguration.type = DashboardConfigurationView.Type.Unknown
             } else if (!BackEnd.isConnected) {
                 dashboardConfiguration.type = DashboardConfigurationView.Type.Unknown
-                showConnectionView()
+                view.showConnectionView()
             }
         }
     }

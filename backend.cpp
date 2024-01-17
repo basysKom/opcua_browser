@@ -59,6 +59,8 @@ BackEnd::BackEnd(QObject *parent)
 
     const QStringList childGroups = settings.childGroups();
     mHasLastDashboards = childGroups.contains("lastDashboards");
+
+    loadLastServerHostsFromSettings();
 }
 
 BackEnd::~BackEnd()
@@ -86,6 +88,11 @@ QString BackEnd::stateText() const noexcept
     return mState;
 }
 
+QVector<QString> BackEnd::recentConnections() const noexcept
+{
+    return mLastServerHosts;
+}
+
 QVector<QString> BackEnd::serverList() const noexcept
 {
     return mServerList;
@@ -104,7 +111,7 @@ QVector<QString> BackEnd::endpointList() const
             index = 0;
         }
 
-        list << QStringLiteral("%1 (%2)").arg(endpoint.securityPolicy(), modes[index]);
+        list << QStringLiteral("%1#%2").arg(endpoint.securityPolicy(), modes[index]);
     }
     return list;
 }
@@ -307,6 +314,7 @@ void BackEnd::findServers(const QString &urlString)
         url.setPort(4840);
 
     if (mOpcUaClient) {
+        mServerHost = url;
         mOpcUaClient->findServers(url);
         qDebug() << "Discovering servers on " << url.toString();
     }
@@ -322,9 +330,12 @@ void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &ser
     }
 
     setState(QStringLiteral("%1 server(s) detected").arg(servers.size()));
+    saveServerHost(mServerHost.toString());
     mServerList.clear();
     for (const auto &server : servers) {
-        mServerList << server.discoveryUrls();
+        for (auto &url : server.discoveryUrls()) {
+            mServerList << url.replace("localhost", mServerHost.host());
+        }
         qDebug() << server.applicationUri() << server.applicationName() << server.discoveryUrls()
                  << server.productUri();
     }
@@ -527,4 +538,40 @@ void BackEnd::saveLastDashboards()
 {
     Q_ASSERT(mDashboardItemModel);
     mDashboardItemModel->saveDashboardsToSettings();
+}
+
+void BackEnd::loadLastServerHostsFromSettings()
+{
+    mLastServerHosts.clear();
+
+    QSettings settings;
+    int size = settings.beginReadArray("recentConnections");
+    for (int i = 0; i < size; ++i) {
+        settings.setArrayIndex(i);
+        mLastServerHosts << settings.value("url").toString();
+    }
+    settings.endArray();
+}
+
+void BackEnd::saveServerHost(const QString &host)
+{
+    if (mLastServerHosts.contains(host)) {
+        if (mLastServerHosts.first() == host)
+            return;
+
+        mLastServerHosts.removeAll(host);
+    }
+
+    mLastServerHosts.prepend(host);
+    emit recentConnectionsChanged();
+
+    QSettings settings;
+    settings.remove("recentConnections");
+
+    settings.beginWriteArray("recentConnections");
+    for (qsizetype i = 0; i < qMin(10, mLastServerHosts.count()); ++i) {
+        settings.setArrayIndex(i);
+        settings.setValue("url", mLastServerHosts[i]);
+    }
+    settings.endArray();
 }

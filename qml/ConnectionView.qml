@@ -1,10 +1,11 @@
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 import OPC_UA_Browser
 
 Item {
+    id: view
+
     property ThemeConnectionView theme: Style.connectionView
 
     ColumnLayout {
@@ -24,20 +25,20 @@ Item {
         }
 
         ColumnLayout {
-            visible: hostUrl.visible && (recentConnections.model !== undefined)
-                     && (recentConnections.model.rowCount() > 0)
+            visible: hostUrl.visible && (recentConnections.model.length > 0)
 
             StyledComboBox {
                 id: recentConnections
 
                 captionText: qsTr("Recent connections")
                 model: BackEnd.recentConnections
-                textRole: "display"
             }
 
             StyledButton {
                 Layout.fillWidth: true
-                text: qsTr("Connect")
+                text: qsTr("Discover")
+
+                onClicked: BackEnd.findServers(recentConnections.currentText)
             }
         }
 
@@ -49,7 +50,8 @@ Item {
 
                 captionText: qsTr("Host")
                 //text: "opc.tcp://192.168.178.25:43344"
-                text: "opc.tcp://localhost:43344"
+                //text: "opc.tcp://localhost:43344"
+                //text: "opc.tcp://10.0.2.2:43344"
                 placeholderText: "opc.tcp://localhost:4080"
             }
 
@@ -80,7 +82,7 @@ Item {
             }
         }
 
-        StyledComboBox {
+        StyledEndpointComboBox {
             id: endpointListBox
 
             enabled: !BackEnd.isConnected
@@ -145,7 +147,7 @@ Item {
                 Layout.preferredHeight: Layout.preferredWidth
 
                 radius: Layout.preferredWidth / 2
-                color: (2 === BackEnd.connectionState) ? theme.connected : (1 === BackEnd.connectionState) ? theme.connecting : theme.disconnected
+                color: (2 === BackEnd.connectionState) ? view.theme.connected : (1 === BackEnd.connectionState) ? view.theme.connecting : view.theme.disconnected
             }
 
             StyledButton {
