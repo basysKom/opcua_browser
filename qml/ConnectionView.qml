@@ -53,6 +53,7 @@ Item {
                 //text: "opc.tcp://localhost:43344"
                 //text: "opc.tcp://10.0.2.2:43344"
                 placeholderText: "opc.tcp://localhost:4080"
+                inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             }
 
             StyledButton {
