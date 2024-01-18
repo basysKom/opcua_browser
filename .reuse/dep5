@@ -3,6 +3,6 @@ Upstream-Name: basysKom OPC UA Browser
 Upstream-Contact: Karsten Herrler <karsten.herrler@basyskom.com>
 Source: https://github.com/basysKom/opcua_browser
 
-Files: android/res/drawable-*/icon.png android/ic_launcher-playstore.png android/ic_presentation-playstore.png
+Files: src/android/res/drawable-*/icon.png src/android/ic_launcher-playstore.png src/android/ic_presentation-playstore.png
 Copyright: Karsten Herrler <karsten.herrler@basyskom.com>
 License: GPL-3.0-or-later
