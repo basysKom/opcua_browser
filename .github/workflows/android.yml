@@ -14,7 +14,7 @@ jobs:
       QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON"
       QT_PATH: "/opt/Qt/6.6.1"
       SSL_PATH: "dependencies/android_openssl/ssl_3"
-      ANDROID_VERSION_CODE: "10"
+      ANDROID_VERSION_CODE: "1"
       ANDROID_VERSION_NAME: "1.0.0"
     steps:
     - name: Checkout repository
@@ -114,6 +114,6 @@ jobs:
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
         releaseFiles: ${{steps.sign_aab.outputs.signedReleaseFile}}
-        packageName: org.basyskom.opcuabrowser
+        packageName: com.basyskom.opcua.app
         track: internal
         status: draft
