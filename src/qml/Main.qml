@@ -22,6 +22,15 @@ ApplicationWindow {
         UiSettings.setStatusAndNavigationBarColor(theme.background)
     }
 
+    Connections {
+        target: Qt.application
+        function onStateChanged(inState) {
+            if (inState === Qt.ApplicationSuspended) {
+                BackEnd.applicationSuspended()
+            }
+        }
+    }
+
     Settings {
         property alias themeIndex: window.themeIndex
     }

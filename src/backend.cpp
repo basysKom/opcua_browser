@@ -541,6 +541,13 @@ void BackEnd::loadLastDashboardsFromSettings()
     settings.endArray();
 }
 
+void BackEnd::applicationSuspended()
+{
+    if (isConnected()) {
+        saveLastDashboards();
+    }
+}
+
 void BackEnd::saveLastDashboards()
 {
     Q_ASSERT(mDashboardItemModel);

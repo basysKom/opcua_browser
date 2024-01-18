@@ -143,6 +143,10 @@ void DashboardItemModel::setCurrentIndex(uint index)
 
 void DashboardItemModel::saveDashboardsToSettings() const
 {
+    // Prevent dashboards from being saved if there is only the "Add" button
+    if (mItems.count() <= 1)
+        return;
+
     QSettings settings;
     settings.remove("lastDashboards");
 

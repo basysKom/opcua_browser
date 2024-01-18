@@ -82,6 +82,8 @@ public:
 
     Q_INVOKABLE void loadLastDashboardsFromSettings();
 
+    Q_INVOKABLE void applicationSuspended();
+
 signals:
     void recentConnectionsChanged();
     void serverListChanged();
