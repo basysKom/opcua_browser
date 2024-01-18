@@ -1,3 +1,11 @@
+
+
+/**
+ * SPDX-FileCopyrightText: 2024 basysKom GmbH
+ * SPDX-FileContributor: Karsten Herrler <karsten.herrler@basyskom.com>
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -14,6 +22,7 @@ ColumnLayout {
     property alias text: textField.text
     property alias placeholderText: textField.placeholderText
     property alias echoMode: textField.echoMode
+    property alias inputMethodHints: textField.inputMethodHints
     property ThemeTextField theme: Style.textField
 
     Text {

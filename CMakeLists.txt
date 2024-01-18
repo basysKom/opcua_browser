@@ -1,4 +1,8 @@
-cmake_minimum_required(VERSION 3.19)
+# SPDX-FileCopyrightText: 2024 basysKom GmbH
+# SPDX-FileContributor: Karsten Herrler <karsten.herrler@basyskom.com>
+# SPDX-License-Identifier: BSD-3-Clause
+
+ cmake_minimum_required(VERSION 3.19)
 include(FetchContent)
 
 project(OPC_UA_Browser VERSION 0.1 LANGUAGES CXX)
