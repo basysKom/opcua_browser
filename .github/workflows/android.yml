@@ -11,10 +11,10 @@ jobs:
       options: --user root
     timeout-minutes: 60
     env:
-      QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON"
+      QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DCMAKE_BUILD_TYPE=Release"
       QT_PATH: "/opt/Qt/6.6.1"
       SSL_PATH: "dependencies/android_openssl/ssl_3"
-      ANDROID_VERSION_CODE: "2"
+      ANDROID_VERSION_CODE: "3"
       ANDROID_VERSION_NAME: "1.0.0"
     steps:
     - name: Checkout repository
@@ -78,6 +78,7 @@ jobs:
         mkdir -p ./build/opc_ua_browser && \
         qt-cmake . -G Ninja -B ./build/opc_ua_browser \
           -DQT_ANDROID_BUILD_ALL_ABIS=ON \
+          -DCMAKE_BUILD_TYPE=Release \
           -DANDROID_VERSION_CODE=${ANDROID_VERSION_CODE} \
           -DANDROID_VERSION_NAME=${ANDROID_VERSION_NAME} && \
         cmake --build ./build/opc_ua_browser --target aab && \
@@ -86,7 +87,7 @@ jobs:
       name: Sign app AAB
       id: sign_aab
       with:
-        releaseDirectory: build/opc_ua_browser/android-build/build/outputs/bundle/release/
+        releaseDirectory: build/opc_ua_browser/src/android-build/build/outputs/bundle/release/
         signingKeyBase64: ${{ secrets.SIGNING_KEY }}
         alias: ${{ secrets.KEY_ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
@@ -96,7 +97,7 @@ jobs:
       name: Sign app APK
       id: sign_apk
       with:
-        releaseDirectory: build/opc_ua_browser/android-build/
+        releaseDirectory: build/opc_ua_browser/src/android-build/build/outputs/apk/release/
         signingKeyBase64: ${{ secrets.SIGNING_KEY }}
         alias: ${{ secrets.KEY_ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
