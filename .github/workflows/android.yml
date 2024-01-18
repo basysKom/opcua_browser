@@ -14,7 +14,7 @@ jobs:
       QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON"
       QT_PATH: "/opt/Qt/6.6.1"
       SSL_PATH: "dependencies/android_openssl/ssl_3"
-      ANDROID_VERSION_CODE: "1"
+      ANDROID_VERSION_CODE: "2"
       ANDROID_VERSION_NAME: "1.0.0"
     steps:
     - name: Checkout repository
@@ -106,10 +106,6 @@ jobs:
       with:
         name: Signed app bundle
         path: ${{steps.sign_apk.outputs.signedReleaseFile}}
-    - uses: actions/upload-artifact@v2
-      with:
-        name: Signed app bundle
-        path: ${{steps.sign_aab.outputs.signedReleaseFile}}
     - uses: r0adkll/upload-google-play@v1
       with:
         serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
