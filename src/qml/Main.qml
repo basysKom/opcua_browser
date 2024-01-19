@@ -17,16 +17,22 @@ ApplicationWindow {
 
     property ThemeMainWindow theme: Style.mainWindow
     property int themeIndex: 0
-    onThemeIndexChanged: {
-        Style.currentThemeIndex = themeIndex
-        UiSettings.setStatusAndNavigationBarColor(theme.background)
-    }
 
     Connections {
         target: Qt.application
         function onStateChanged(inState) {
             if (inState === Qt.ApplicationSuspended) {
                 BackEnd.applicationSuspended()
+            }
+        }
+    }
+
+    Connections {
+        target: Style
+        function onCurrentThemeIndexChanged() {
+            if (window.themeIndex !== Style.currentThemeIndex) {
+                window.themeIndex = Style.currentThemeIndex
+                UiSettings.setStatusAndNavigationBarColor(window.theme.background)
             }
         }
     }

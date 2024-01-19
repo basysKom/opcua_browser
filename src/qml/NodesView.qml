@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 
@@ -60,7 +62,6 @@ Item {
         delegate: Rectangle {
             id: treeDelegate
 
-            readonly property real isCurrentItem: model.isCurrentItem
             readonly property real indent: 25
             readonly property real padding: 5
 
@@ -70,11 +71,25 @@ Item {
             required property bool expanded
             required property int hasChildren
             required property int depth
+            required property int row
+            required property int column
+
+            // Assigned to by model:
+            required property bool isCurrentItem
+            required property bool isSelected
+            required property bool canMonitoring
+            required property bool hasEventNotifier
+            required property color indicatorColor
+            required property string display
+            required property string value
+            required property var attributes
+            required property var references
+            required property var model
 
             onIsCurrentItemChanged: {
                 if (isCurrentItem) {
-                    view.attributes = model.attributes
-                    view.references = model.references
+                    view.attributes = attributes
+                    view.references = references
                 }
             }
 
@@ -89,14 +104,12 @@ Item {
                 id: tapHandler
 
                 onTapped: {
-                    treeView.toggleExpanded(row)
-                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(row,
-                                                                      column))
+                    treeView.toggleExpanded(treeDelegate.row)
+                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(treeDelegate.row, treeDelegate.column))
                 }
 
                 onLongPressed: {
-                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(row,
-                                                                      column))
+                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(row, column))
 
                     var xPos = tapHandler.point.position.x + treeDelegate.x - treeView.contentX
                     var yPos = tapHandler.point.position.y + treeDelegate.y - treeView.contentY
@@ -137,7 +150,7 @@ Item {
                 anchors.verticalCenter: label.verticalCenter
                 width: height
                 height: label.height / 2
-                color: model.color
+                color: treeDelegate.indicatorColor
                 border.width: 1
             }
 
@@ -148,9 +161,9 @@ Item {
                 anchors.verticalCenter: parent.verticalCenter
                 width: treeDelegate.width - treeDelegate.padding - x
                 clip: true
-                text: model.display
+                text: treeDelegate.display
                 font.pointSize: 12
-                color: model.isCurrentItem ? view.theme.textColorSelected : view.theme.textColor
+                color: treeDelegate.isCurrentItem ? view.theme.textColorSelected : view.theme.textColor
             }
 
             StyledItemSelector {
@@ -158,11 +171,11 @@ Item {
                 anchors.verticalCenter: treeDelegate.verticalCenter
                 height: treeDelegate.height - 10
                 width: height
-                checkState: model.isSelected ? Qt.Checked : Qt.Unchecked
-                visible: (view.canSelectVariables && model.canMonitoring)
-                         || (view.canSelectEvents && model.hasEventNotifier)
+                checkState: treeDelegate.isSelected ? Qt.Checked : Qt.Unchecked
+                visible: (view.canSelectVariables && treeDelegate.canMonitoring)
+                         || (view.canSelectEvents && treeDelegate.hasEventNotifier)
 
-                onToggled: model.isSelected = !model.isSelected
+                onToggled: treeDelegate.model.isSelected = !treeDelegate.isSelected
             }
         }
     }

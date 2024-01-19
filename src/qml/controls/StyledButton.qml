@@ -11,6 +11,8 @@ import QtQuick.Controls
 import OPC_UA_Browser
 
 Button {
+    id: button
+
     highlighted: true
     height: 36
 
@@ -20,8 +22,8 @@ Button {
     palette.buttonText: theme.textColor
 
     background: Rectangle {
-        color: highlighted ? theme.highlightedBackground : theme.background
-        border.color: highlighted ? theme.highlightedBorderColor : theme.borderColor
+        color: button.highlighted ? button.theme.highlightedBackground : button.theme.background
+        border.color: button.highlighted ? button.theme.highlightedBorderColor : button.theme.borderColor
         border.width: 1
         radius: 5
     }

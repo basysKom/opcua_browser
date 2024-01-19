@@ -15,7 +15,7 @@ Rectangle {
     property ThemeSettingsView theme: Style.settingsView
 
     function setTheme(index) {
-        window.themeIndex = index
+        Style.currentThemeIndex = index
         if (index === 0) {
             darkItemSelector.checkState = Qt.Checked
             brightItemSelector.checkState = Qt.Unchecked

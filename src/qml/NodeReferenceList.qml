@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -48,7 +50,7 @@ Rectangle {
             id: referenceList
 
             height: flickable.height
-            width: maxDelegateWidth()
+            width: root.maxDelegateWidth()
 
             //boundsBehavior: Flickable.StopAtBounds
             ScrollBar.vertical: StyledScrollBar {}
@@ -62,7 +64,7 @@ Rectangle {
                 implicitHeight: childrenRect.height
                 z: 2
 
-                color: theme.headerBackground
+                color: root.theme.headerBackground
 
                 RowLayout {
                     spacing: 0
@@ -81,7 +83,7 @@ Rectangle {
 
                     Rectangle {
                         Layout.fillHeight: true
-                        width: 1
+                        Layout.preferredWidth: 1
                         color: root.textColor
                     }
 
@@ -101,11 +103,17 @@ Rectangle {
             delegate: Rectangle {
                 id: listViewDelegate
 
+                required property int index
+                required property string type
+                required property string typeNodeId
+                required property string target
+                required property string targetNodeId
+
                 readonly property real padding: 5
 
-                width: maxDelegateWidth()
+                width: root.maxDelegateWidth()
                 implicitHeight: childrenRect.height
-                color: ((index % 2) == 0) ? theme.color1 : theme.color2
+                color: ((listViewDelegate.index % 2) == 0) ? root.theme.color1 : root.theme.color2
 
                 RowLayout {
                     spacing: 0
@@ -116,7 +124,7 @@ Rectangle {
                         Layout.alignment: Qt.AlignVCenter
                         sourceSize.width: 15
                         sourceSize.height: 15
-                        source: model.isForward ? "qrc:/icons/forward.svg" : "qrc:/icons/inverse.svg"
+                        source: referenceList.model.isForward ? "qrc:/icons/forward.svg" : "qrc:/icons/inverse.svg"
                         color: root.textColor
                     }
 
@@ -125,21 +133,20 @@ Rectangle {
                         Layout.fillHeight: true
                         Layout.preferredWidth: root.width / 3
                         verticalAlignment: Qt.AlignVCenter
-                        text: model.type
+                        text: listViewDelegate.type
                         elide: Qt.ElideRight
                         color: root.textColor
 
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(
-                                           model.typeNodeId)
+                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(typeNodeId) // qmllint disable unresolved-type
                         }
                     }
 
                     Rectangle {
                         Layout.fillHeight: true
-                        width: 1
+                        Layout.preferredWidth: 1
                         color: root.textColor
                     }
 
@@ -149,14 +156,13 @@ Rectangle {
                         Layout.fillHeight: true
                         Layout.minimumWidth: root.width - x
                         verticalAlignment: Qt.AlignVCenter
-                        text: model.target
+                        text: listViewDelegate.target
                         color: root.textColor
 
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(
-                                           model.targetNodeId)
+                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(targetNodeId) // qmllint disable unresolved-type
                         }
                     }
                 }

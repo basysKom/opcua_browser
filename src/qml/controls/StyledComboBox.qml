@@ -30,7 +30,7 @@ ColumnLayout {
 
         Layout.preferredHeight: layout.textColumnHeight
         verticalAlignment: Qt.AlignVCenter
-        color: theme.captionTextColor
+        color: layout.theme.captionTextColor
         font.bold: true
     }
 
@@ -39,6 +39,6 @@ ColumnLayout {
 
         Layout.fillWidth: true
         Layout.preferredHeight: layout.comboBoxColumnHeight
-        palette.button: theme.background
+        palette.button: layout.theme.background
     }
 }

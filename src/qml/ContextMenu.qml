@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -12,7 +14,7 @@ import QtQuick.Layouts
 import OPC_UA_Browser
 
 Popup {
-    id: contextMenu
+    id: menu
 
     property alias listModel: popupListView.model
     property ThemeContextMenu theme: Style.contextMenu
@@ -28,10 +30,10 @@ Popup {
     background: Rectangle {
         id: transparentBorderRect
 
-        width: contextMenu.width
-        height: contextMenu.height
+        width: menu.width
+        height: menu.height
         radius: 3
-        color: theme.background
+        color: menu.theme.background
     }
 
     contentItem: Item {
@@ -46,25 +48,31 @@ Popup {
             clip: true
 
             delegate: Item {
+                id: delegateItem
+
                 height: 36
                 width: 200
+
+                required property int index
+                required property url imageSource
+                required property string name
 
                 MouseArea {
                     anchors.fill: parent
                     hoverEnabled: true
 
-                    onEntered: popupListView.currentIndex = index
+                    onEntered: popupListView.currentIndex = delegateItem.index
                     onClicked: {
-                        listItemClicked(index)
-                        contextMenu.close()
+                        menu.listItemClicked(delegateItem.index)
+                        menu.close()
                     }
                 }
 
                 Rectangle {
                     anchors.fill: parent
                     radius: transparentBorderRect.radius
-                    color: theme.backgroundSelected
-                    opacity: popupListView.currentIndex === index ? 0.8 : 0
+                    color: menu.theme.backgroundSelected
+                    opacity: popupListView.currentIndex === delegateItem.index ? 0.8 : 0
                 }
 
                 RowLayout {
@@ -76,17 +84,17 @@ Popup {
                         Layout.alignment: Qt.AlignVCenter
                         sourceSize.width: 24
                         sourceSize.height: 24
-                        source: model.imageSource
-                        color: theme.textColor
+                        source: delegateItem.imageSource
+                        color: menu.theme.textColor
                     }
                     Text {
                         Layout.fillHeight: true
                         Layout.fillWidth: true
                         verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHLeft
-                        color: theme.textColor
+                        horizontalAlignment: Text.AlignLeft
+                        color: menu.theme.textColor
                         font.pointSize: 12
-                        text: model.name
+                        text: delegateItem.name
                     }
                 }
             }

@@ -25,7 +25,7 @@ TabButton {
     width: 80
 
     background: Rectangle {
-        color: isCurrentTab ? theme.backgroundSelected : theme.background
+        color: control.isCurrentTab ? control.theme.backgroundSelected : control.theme.background
     }
 
     contentItem: ColumnLayout {
@@ -48,7 +48,7 @@ TabButton {
             horizontalAlignment: Text.AlignHCenter
             font.pointSize: 8
             text: control.text
-            color: isCurrentTab ? theme.textColorSelected : theme.textColor
+            color: control.isCurrentTab ? control.theme.textColorSelected : control.theme.textColor
             elide: Text.ElideRight
         }
     }

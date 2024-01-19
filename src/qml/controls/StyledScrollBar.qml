@@ -19,7 +19,7 @@ ScrollBar {
         implicitWidth: 10
         implicitHeight: 10
         radius: 5
-        color: theme.selector
+        color: control.theme.selector
         opacity: (control.policy === ScrollBar.AlwaysOn)
                  || (control.active && control.size < 1.0) ? 0.75 : 0
 
@@ -30,6 +30,6 @@ ScrollBar {
     }
 
     background: Rectangle {
-        color: theme.background
+        color: control.theme.background
     }
 }
