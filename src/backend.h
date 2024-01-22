@@ -16,10 +16,18 @@
 #include <QOpcUaProvider>
 #include <QOpcUaErrorState>
 
+#include "dashboarditemmodel.h"
 #include "opcuamodel.h"
 
-class DashboardItemModel;
 class MonitoredItemModel;
+
+// Workaround, otherwise qmllint doesn't recognise the QStringListModel
+struct ThisIsAnnoying
+{
+    Q_GADGET
+    QML_FOREIGN(QStringListModel)
+    QML_ANONYMOUS
+};
 
 class BackEnd : public QObject
 {
@@ -35,8 +43,8 @@ public:
                        recentConnectionsChanged FINAL)
     Q_PROPERTY(QVector<QString> serverList READ serverList NOTIFY serverListChanged FINAL)
     Q_PROPERTY(QVector<QString> endpointList READ endpointList NOTIFY endpointListChanged FINAL)
-    Q_PROPERTY(QAbstractItemModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
-    Q_PROPERTY(QAbstractItemModel *dashboardItemModel READ dashboardItemModel NOTIFY
+    Q_PROPERTY(OpcUaModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
+    Q_PROPERTY(DashboardItemModel *dashboardItemModel READ dashboardItemModel NOTIFY
                        opcUaModelChanged FINAL)
     Q_PROPERTY(QStringListModel *defaultVariableDashboards READ defaultVariableDashboards NOTIFY
                        defaultVariableDashboardsChanged FINAL)
@@ -58,7 +66,7 @@ public:
     QVector<QString> serverList() const noexcept;
     QVector<QString> endpointList() const;
     OpcUaModel *opcUaModel() const noexcept;
-    QAbstractItemModel *dashboardItemModel() const noexcept;
+    DashboardItemModel *dashboardItemModel() const noexcept;
     QStringListModel *defaultVariableDashboards() const noexcept;
     QStringListModel *defaultEventDashboards() const noexcept;
     QStringListModel *savedVariableDashboards() const noexcept;

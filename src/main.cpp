@@ -13,8 +13,6 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
-#include "types.h"
-
 static constexpr auto FontSwansea = "://font/Swansea.ttf";
 static constexpr auto FontSwanseaBold = "://font/SwanseaBold.ttf";
 
@@ -49,8 +47,6 @@ int main(int argc, char *argv[])
             &engine, &QQmlApplicationEngine::objectCreationFailed, &app,
             []() { QCoreApplication::exit(-1); }, Qt::QueuedConnection);
 
-    qmlRegisterUncreatableMetaObject(Types::staticMetaObject, "Types", 1, 0, "DashboardType",
-                                     "Error: only enums");
     engine.loadFromModule("OPC_UA_Browser", "Main");
 
     return app.exec();

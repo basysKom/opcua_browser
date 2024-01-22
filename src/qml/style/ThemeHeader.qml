@@ -7,7 +7,7 @@
 
 import QtQuick
 
-Item {
+StyleDefinitions {
     property color background: "transparent"
     property color iconColor: foreground
     property color dividerColor: dark

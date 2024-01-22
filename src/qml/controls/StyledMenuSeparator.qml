@@ -11,12 +11,14 @@ import QtQuick.Controls
 import OPC_UA_Browser
 
 MenuSeparator {
+    id: separator
+
     property ThemeSideMenu theme: Style.sideMenu
 
     height: enabled ? implicitHeight : 0
 
     contentItem: Rectangle {
         implicitHeight: 1
-        color: theme.iconColor
+        color: separator.theme.iconColor
     }
 }

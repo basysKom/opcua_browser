@@ -9,12 +9,17 @@
 #define DASHBOARDITEMMODEL_H
 
 #include <QAbstractListModel>
+#include <QQmlEngine>
 
 #include "dashboarditem.h"
+
+class MonitoredItemModel;
 
 class DashboardItemModel : public QAbstractListModel
 {
     Q_OBJECT
+    QML_ANONYMOUS
+
 public:
     explicit DashboardItemModel(QObject *parent = nullptr);
     ~DashboardItemModel();
@@ -24,13 +29,13 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
     bool containsItem(const QString &name) const noexcept;
-    Q_INVOKABLE int addItem(Types::DashboardType type, const QString &name = QString());
+    Q_INVOKABLE int addItem(DashboardItem::DashboardType type, const QString &name = QString());
     Q_INVOKABLE void removeItem(int index);
     void clearItems();
 
     MonitoredItemModel *getMonitoredItemModel(int index) const;
     MonitoredItemModel *getCurrentMonitoredItemModel() const;
-    Types::DashboardType getCurrentDashboardType() const;
+    DashboardItem::DashboardType getCurrentDashboardType() const;
     void setCurrentDashboardName(const QString &name);
 
     Q_INVOKABLE bool isAddItem(uint index) const;

@@ -28,6 +28,6 @@ MenuItem {
     }
 
     background: Rectangle {
-        color: theme.background
+        color: control.theme.background
     }
 }

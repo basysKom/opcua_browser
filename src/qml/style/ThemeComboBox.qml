@@ -7,7 +7,7 @@
 
 import QtQuick
 
-Item {
+StyleDefinitions {
     property color background: mediumLight
     property color captionTextColor: foreground
 }

@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -49,7 +51,7 @@ Rectangle {
             property bool wasOvershooted: false
 
             height: flickable.height
-            width: maxDelegateWidth()
+            width: root.maxDelegateWidth()
 
             model: root.attributes
             //boundsBehavior: Flickable.StopAtBounds
@@ -66,11 +68,15 @@ Rectangle {
             delegate: Rectangle {
                 id: listViewDelegate
 
+                required property int index
+                required property string attribute
+                required property string value
+
                 readonly property real padding: 5
 
-                width: maxDelegateWidth()
+                width: root.maxDelegateWidth()
                 implicitHeight: childrenRect.height
-                color: ((index % 1) == 0) ? theme.color1 : theme.color2
+                color: ((listViewDelegate.index % 1) == 0) ? root.theme.color1 : root.theme.color2
 
                 ColumnLayout {
                     spacing: 0
@@ -78,20 +84,20 @@ Rectangle {
                     Rectangle {
                         Layout.preferredWidth: flickable.width
                         Layout.preferredHeight: 1
-                        visible: model.index > 0
-                        color: theme.divider
+                        visible: listViewDelegate.index > 0
+                        color: root.theme.divider
                     }
 
                     Text {
-                        id: attribute
+                        id: attributeText
 
                         Layout.topMargin: 5
                         Layout.leftMargin: 5
                         Layout.fillWidth: true
                         verticalAlignment: Qt.AlignVCenter
-                        text: model.attribute
+                        text: listViewDelegate.attribute
                         elide: Qt.ElideRight
-                        color: theme.textColor
+                        color: root.theme.textColor
                         font {
                             pointSize: 11
                             bold: true
@@ -105,47 +111,10 @@ Rectangle {
                         Layout.bottomMargin: 5
                         Layout.fillWidth: true
                         verticalAlignment: Qt.AlignVCenter
-                        text: model.value
-                        color: attribute.color
+                        text: listViewDelegate.value
+                        color: attributeText.color
                     }
                 }
-
-
-                /*RowLayout {
-                    spacing: 0
-                    height: Math.max(30, valueLabel.implicitHeight)
-
-                    Text {
-                        id: attribute
-
-                        Layout.margins: 5
-                        Layout.fillHeight: true
-                        Layout.preferredWidth: root.width / 3
-                        verticalAlignment: Qt.AlignVCenter
-                        text: model.attribute
-                        elide: Qt.ElideRight
-                        color: theme.textColor
-                    }
-
-                    Rectangle {
-                        id: divider
-
-                        Layout.fillHeight: true
-                        width: 1
-                        color: attribute.color
-                    }
-
-                    Text {
-                        id: valueLabel
-
-                        Layout.margins: 5
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        verticalAlignment: Qt.AlignVCenter
-                        text: model.value
-                        color: attribute.color
-                    }
-                }*/
             }
         }
     }

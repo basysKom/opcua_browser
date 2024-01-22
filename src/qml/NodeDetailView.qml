@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -35,6 +37,7 @@ Item {
 
             model: [qsTr("Attributes"), qsTr("References")]
             StyledTabButton {
+                required property string modelData
                 text: modelData
                 width: Math.max(100, root.width / repeater.count)
             }

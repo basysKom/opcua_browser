@@ -4,7 +4,10 @@ SPDX-FileContributor: Karsten Herrler <karsten.herrler@basyskom.com>
 SPDX-License-Identifier: BSD-3-Clause
 ]]
 
- cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.19)
+
+set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
+set(QML_IMPORT_PATH ${QT_QML_OUTPUT_DIRECTORY} CACHE STRING "Import paths for Qt Creator's code model" FORCE)
 
 qt_add_executable(appOPC_UA_Browser
     main.cpp
@@ -16,7 +19,8 @@ set_source_files_properties(qml/style/Style.qml PROPERTIES
 
 qt_add_qml_module(appOPC_UA_Browser
     URI OPC_UA_Browser
-    VERSION 1.0.0
+    VERSION 1.0
+    DEPENDENCIES QtCore QtQuick
     QML_FILES qml/Main.qml
               qml/BrowserView.qml
               qml/ConnectionView.qml
@@ -77,7 +81,6 @@ qt_add_qml_module(appOPC_UA_Browser
             reference.h reference.cpp
             referencemodel.h referencemodel.cpp
             treeitem.h treeitem.cpp
-            types.h
             uisettings.h uisettings.cpp
             x509certificate.h x509certificate.cpp
 )

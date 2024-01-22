@@ -12,27 +12,32 @@
 #include <QQmlEngine>
 #include <QString>
 
-#include "types.h"
-
 class MonitoredItemModel;
 class QAbstractListModel;
 
 class DashboardItem : public QObject
 {
+    Q_OBJECT
+    QML_ELEMENT
+    QML_UNCREATABLE("DashboardItem is created by DashboardItemModel")
+
 public:
-    explicit DashboardItem(Types::DashboardType type, const QString &name = QString());
+    enum class DashboardType { Unknown = -1, Variables, Events, Add };
+    Q_ENUM(DashboardType)
+
+    explicit DashboardItem(DashboardItem::DashboardType type, const QString &name = QString());
     ~DashboardItem();
 
     const QString &name() const noexcept;
     void setName(const QString &name);
 
-    Types::DashboardType type() const noexcept;
+    DashboardItem::DashboardType type() const noexcept;
     QAbstractListModel *monitoredItemModel() const noexcept;
     QStringList getMonitoredNodeIds() const;
 
 private:
     QString mName;
-    Types::DashboardType mType;
+    DashboardItem::DashboardType mType;
     MonitoredItemModel *mMonitoredItemModel = nullptr;
 };
 

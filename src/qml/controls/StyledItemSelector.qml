@@ -21,15 +21,15 @@ CheckBox {
         width: control.width
         height: width
         radius: width / 2
-        color: theme.background
-        opacity: theme.backgroundOpacity
+        color: control.theme.background
+        opacity: control.theme.backgroundOpacity
     }
 
     Rectangle {
         anchors.fill: parent
         radius: background.radius
         border.width: 1
-        border.color: theme.borderColor
+        border.color: control.theme.borderColor
         color: "transparent"
 
         IconImage {
@@ -39,8 +39,8 @@ CheckBox {
             source: "qrc:/icons/checkmark.svg"
             sourceSize.width: parent.height * 0.65
             sourceSize.height: parent.width * 0.65
-            color: theme.checkMarkColor
-            visible: (checkState === Qt.Checked)
+            color: control.theme.checkMarkColor
+            visible: (control.checkState === Qt.Checked)
         }
     }
 }

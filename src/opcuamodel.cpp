@@ -29,7 +29,7 @@ enum Roles : int {
 QHash<int, QByteArray> OpcUaModel::roleNames() const
 {
     auto names = QAbstractItemModel::roleNames();
-    names[ColorRole] = "color";
+    names[ColorRole] = "indicatorColor";
     names[ValueRole] = "value";
     names[NodeIdRole] = "nodeId";
     names[AttributesRole] = "attributes";
