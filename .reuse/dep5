@@ -6,3 +6,8 @@ Source: https://github.com/basysKom/opcua_browser
 Files: src/android/res/drawable-*/icon.png src/android/ic_launcher-playstore.png src/android/ic_presentation-playstore.png
 Copyright: Karsten Herrler <karsten.herrler@basyskom.com>
 License: GPL-3.0-or-later
+
+Files: .github/workflows/*
+Copyright: Arno Krapf <arno.krapf@basyskom.com>
+License: BSD-3-Clause
+

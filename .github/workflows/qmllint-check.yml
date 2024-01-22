@@ -1,0 +1,16 @@
+name: qmllint Check
+on:
+  workflow_call:
+  workflow_dispatch: 
+  push:
+
+jobs:
+  qmllint-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4  
+      with:
+        fetch-depth: 1
+    - name: Validate QML 
+      uses: liri-infra/qmllint-action@master
