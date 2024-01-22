@@ -22,7 +22,7 @@ Item {
     property ThemeNodesView theme: Style.nodesView
 
     Connections {
-        target: BackEnd.opcUaModel // qmllint disable incompatible-type
+        target: BackEnd.opcUaModel
         function onCurrentIndexChanged(index) {
             treeView.expandToIndex(index)
             treeView.forceLayout()

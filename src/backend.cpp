@@ -38,10 +38,10 @@ BackEnd::BackEnd(QObject *parent)
       mOpcUaModel(new OpcUaModel(this)),
       mOpcUaProvider(new QOpcUaProvider(this)),
       mDashboardItemModel(new DashboardItemModel(this)),
-      mDefaultVariableDashboardsModel(new QQmlStringListModel(this)),
-      mDefaultEventDashboardsModel(new QQmlStringListModel(this)),
-      mSavedVariableDashboardsModel(new QQmlStringListModel(this)),
-      mSavedEventDashboardsModel(new QQmlStringListModel(this))
+      mDefaultVariableDashboardsModel(new QStringListModel(this)),
+      mDefaultEventDashboardsModel(new QStringListModel(this)),
+      mSavedVariableDashboardsModel(new QStringListModel(this)),
+      mSavedEventDashboardsModel(new QStringListModel(this))
 {
     setupPkiConfiguration();
 
@@ -131,22 +131,22 @@ DashboardItemModel *BackEnd::dashboardItemModel() const noexcept
     return mDashboardItemModel;
 }
 
-QQmlStringListModel *BackEnd::defaultVariableDashboards() const noexcept
+QStringListModel *BackEnd::defaultVariableDashboards() const noexcept
 {
     return mDefaultVariableDashboardsModel;
 }
 
-QQmlStringListModel *BackEnd::defaultEventDashboards() const noexcept
+QStringListModel *BackEnd::defaultEventDashboards() const noexcept
 {
     return mDefaultEventDashboardsModel;
 }
 
-QQmlStringListModel *BackEnd::savedVariableDashboards() const noexcept
+QStringListModel *BackEnd::savedVariableDashboards() const noexcept
 {
     return mSavedVariableDashboardsModel;
 }
 
-QQmlStringListModel *BackEnd::savedEventDashboards() const noexcept
+QStringListModel *BackEnd::savedEventDashboards() const noexcept
 {
     return mSavedEventDashboardsModel;
 }

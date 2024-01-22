@@ -22,21 +22,11 @@
 class MonitoredItemModel;
 
 // Workaround, otherwise qmllint doesn't recognise the QStringListModel
-class QQmlStringListModel : public QStringListModel
+struct ThisIsAnnoying
 {
-    Q_OBJECT
+    Q_GADGET
+    QML_FOREIGN(QStringListModel)
     QML_ANONYMOUS
-
-public:
-    explicit QQmlStringListModel(QObject *parent = nullptr)
-        : QStringListModel(parent){
-
-          };
-
-    Q_INVOKABLE int rowCount(const QModelIndex &parent = QModelIndex()) const override
-    {
-        return QStringListModel::rowCount(parent);
-    };
 };
 
 class BackEnd : public QObject
@@ -56,13 +46,13 @@ public:
     Q_PROPERTY(OpcUaModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
     Q_PROPERTY(DashboardItemModel *dashboardItemModel READ dashboardItemModel NOTIFY
                        opcUaModelChanged FINAL)
-    Q_PROPERTY(QQmlStringListModel *defaultVariableDashboards READ defaultVariableDashboards NOTIFY
+    Q_PROPERTY(QStringListModel *defaultVariableDashboards READ defaultVariableDashboards NOTIFY
                        defaultVariableDashboardsChanged FINAL)
-    Q_PROPERTY(QQmlStringListModel *defaultEventDashboards READ defaultEventDashboards NOTIFY
+    Q_PROPERTY(QStringListModel *defaultEventDashboards READ defaultEventDashboards NOTIFY
                        defaultEventDashboardsChanged FINAL)
-    Q_PROPERTY(QQmlStringListModel *savedVariableDashboards READ savedVariableDashboards NOTIFY
+    Q_PROPERTY(QStringListModel *savedVariableDashboards READ savedVariableDashboards NOTIFY
                        savedVariableDashboardsChanged FINAL)
-    Q_PROPERTY(QQmlStringListModel *savedEventDashboards READ savedEventDashboards NOTIFY
+    Q_PROPERTY(QStringListModel *savedEventDashboards READ savedEventDashboards NOTIFY
                        savedEventDashboardsChanged FINAL)
     Q_PROPERTY(bool hasLastDashboards READ hasLastDashboards CONSTANT FINAL)
 
@@ -77,10 +67,10 @@ public:
     QVector<QString> endpointList() const;
     OpcUaModel *opcUaModel() const noexcept;
     DashboardItemModel *dashboardItemModel() const noexcept;
-    QQmlStringListModel *defaultVariableDashboards() const noexcept;
-    QQmlStringListModel *defaultEventDashboards() const noexcept;
-    QQmlStringListModel *savedVariableDashboards() const noexcept;
-    QQmlStringListModel *savedEventDashboards() const noexcept;
+    QStringListModel *defaultVariableDashboards() const noexcept;
+    QStringListModel *defaultEventDashboards() const noexcept;
+    QStringListModel *savedVariableDashboards() const noexcept;
+    QStringListModel *savedEventDashboards() const noexcept;
     bool hasLastDashboards() const noexcept;
 
     Q_INVOKABLE void clearServerList();
@@ -153,10 +143,10 @@ private:
     DashboardItemModel *mDashboardItemModel = nullptr;
 
     QVector<QString> mLastServerHosts;
-    QQmlStringListModel *mDefaultVariableDashboardsModel;
-    QQmlStringListModel *mDefaultEventDashboardsModel;
-    QQmlStringListModel *mSavedVariableDashboardsModel;
-    QQmlStringListModel *mSavedEventDashboardsModel;
+    QStringListModel *mDefaultVariableDashboardsModel;
+    QStringListModel *mDefaultEventDashboardsModel;
+    QStringListModel *mSavedVariableDashboardsModel;
+    QStringListModel *mSavedEventDashboardsModel;
 
     bool mHasLastDashboards = false;
 };

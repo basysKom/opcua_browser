@@ -20,6 +20,7 @@ set_source_files_properties(qml/style/Style.qml PROPERTIES
 qt_add_qml_module(appOPC_UA_Browser
     URI OPC_UA_Browser
     VERSION 1.0
+    DEPENDENCIES QtCore QtQuick
     QML_FILES qml/Main.qml
               qml/BrowserView.qml
               qml/ConnectionView.qml
