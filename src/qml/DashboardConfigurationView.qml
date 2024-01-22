@@ -6,7 +6,6 @@
  */
 
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Layouts
 
 import OPC_UA_Browser
@@ -57,7 +56,7 @@ Item {
             onClicked: {
                 if ((BackEnd.defaultVariableDashboards.rowCount() === 0)
                         && (BackEnd.savedVariableDashboards.rowCount() === 0)) {
-                    addMonitoredItems()
+                    view.addMonitoredItems()
                 } else {
                     view.type = DashboardConfigurationView.Type.SelectVariables
                 }

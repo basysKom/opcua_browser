@@ -22,7 +22,7 @@ Item {
     property ThemeNodesView theme: Style.nodesView
 
     Connections {
-        target: BackEnd.opcUaModel
+        target: BackEnd.opcUaModel // qmllint disable incompatible-type
         function onCurrentIndexChanged(index) {
             treeView.expandToIndex(index)
             treeView.forceLayout()
@@ -103,13 +103,14 @@ Item {
             TapHandler {
                 id: tapHandler
 
-                onTapped: {
+                // ToDo: fix qmllint warning
+                onTapped: function(point, button) { // qmllint disable signal-handler-parameters
                     treeView.toggleExpanded(treeDelegate.row)
                     BackEnd.opcUaModel.setCurrentIndex(treeView.index(treeDelegate.row, treeDelegate.column))
                 }
 
                 onLongPressed: {
-                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(row, column))
+                    BackEnd.opcUaModel.setCurrentIndex(treeView.index(treeDelegate.row, treeDelegate.column))
 
                     var xPos = tapHandler.point.position.x + treeDelegate.x - treeView.contentX
                     var yPos = tapHandler.point.position.y + treeDelegate.y - treeView.contentY

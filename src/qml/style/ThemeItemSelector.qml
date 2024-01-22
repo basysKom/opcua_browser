@@ -7,7 +7,7 @@
 
 import QtQuick
 
-Item {
+StyleDefinitions {
     property color background: anthrazite
     property real backgroundOpacity: 0.8
     property color borderColor: accent

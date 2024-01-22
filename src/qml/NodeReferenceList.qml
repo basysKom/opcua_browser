@@ -140,7 +140,7 @@ Rectangle {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(typeNodeId) // qmllint disable unresolved-type
+                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(listViewDelegate.typeNodeId)
                         }
                     }
 
@@ -162,7 +162,7 @@ Rectangle {
                         MouseArea {
                             anchors.fill: parent
                             cursorShape: Qt.PointingHandCursor
-                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(targetNodeId) // qmllint disable unresolved-type
+                            onClicked: BackEnd.opcUaModel.setCurrentNodeId(listViewDelegate.targetNodeId)
                         }
                     }
                 }

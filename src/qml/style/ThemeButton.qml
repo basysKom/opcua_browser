@@ -7,7 +7,7 @@
 
 import QtQuick
 
-Item {
+StyleDefinitions {
     property color background: "transparent"
     property color borderColor: mediumLight
     property color textColor: mediumLight

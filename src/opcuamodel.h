@@ -9,6 +9,7 @@
 #define OPCUAMODEL_H
 
 #include <QAbstractItemModel>
+#include <QQmlEngine>
 
 #include "treeitem.h"
 
@@ -18,6 +19,7 @@ class QOpcUaNode;
 class OpcUaModel : public QAbstractItemModel
 {
     Q_OBJECT
+    QML_ANONYMOUS
 
 public:
     explicit OpcUaModel(QObject *parent = nullptr);

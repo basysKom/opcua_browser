@@ -10,17 +10,16 @@ import QtQuick.Controls
 import QtQuick.Layouts
 
 import OPC_UA_Browser
-import Types
 
 TabButton {
     id: control
 
     readonly property bool isCurrentTab: (TabBar.tabBar.currentIndex == TabBar.index)
-                                         && (type !== DashboardType.Add)
+                                         && (type !== DashboardItem.DashboardType.Add)
 
     property ThemeIconTabButton theme: Style.iconTabButton
 
-    property int type: DashboardType.Variables
+    property int type: DashboardItem.DashboardType.Variables
 
     width: 80
 
@@ -37,7 +36,8 @@ TabButton {
             Layout.alignment: Qt.AlignCenter
             sourceSize.width: 40
             sourceSize.height: 40
-            source: (DashboardType.Add === type) ? "qrc:/icons/plus.svg" : (DashboardType.Events === type) ? "qrc:/icons/event.svg" : "qrc:/icons/dashboard.svg"
+            source: (DashboardItem.DashboardType.Add === control.type) ? "qrc:/icons/plus.svg" :
+                    (DashboardItem.DashboardType.Events === control.type) ? "qrc:/icons/event.svg" : "qrc:/icons/dashboard.svg"
             color: label.color
         }
 

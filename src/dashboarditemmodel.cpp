@@ -20,7 +20,7 @@ enum Roles : int {
 DashboardItemModel::DashboardItemModel(QObject *parent) : QAbstractListModel{ parent }
 {
     // Insert Add item
-    mItems.push_back(new DashboardItem(Types::DashboardType::Add));
+    mItems.push_back(new DashboardItem(DashboardItem::DashboardType::Add));
 }
 
 DashboardItemModel::~DashboardItemModel()
@@ -59,7 +59,7 @@ QVariant DashboardItemModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
-int DashboardItemModel::addItem(Types::DashboardType type, const QString &name)
+int DashboardItemModel::addItem(DashboardItem::DashboardType type, const QString &name)
 {
     const int pos = mItems.size() - 1;
     DashboardItem *item = new DashboardItem(type, name);
@@ -90,7 +90,7 @@ void DashboardItemModel::clearItems()
     qDeleteAll(mItems);
     mItems.clear();
     // Insert Add item
-    mItems.push_back(new DashboardItem(Types::DashboardType::Add));
+    mItems.push_back(new DashboardItem(DashboardItem::DashboardType::Add));
     endResetModel();
 }
 
@@ -107,10 +107,10 @@ MonitoredItemModel *DashboardItemModel::getCurrentMonitoredItemModel() const
     return getMonitoredItemModel(mCurrentIndex);
 }
 
-Types::DashboardType DashboardItemModel::getCurrentDashboardType() const
+DashboardItem::DashboardType DashboardItemModel::getCurrentDashboardType() const
 {
     if (mCurrentIndex >= mItems.size())
-        return Types::DashboardType::Unknown;
+        return DashboardItem::DashboardType::Unknown;
 
     return mItems[mCurrentIndex]->type();
 }
@@ -131,7 +131,7 @@ bool DashboardItemModel::isAddItem(uint index) const
     if (index >= mItems.size())
         return false;
 
-    return (mItems.at(index)->type() == Types::DashboardType::Add);
+    return (mItems.at(index)->type() == DashboardItem::DashboardType::Add);
 }
 
 void DashboardItemModel::setCurrentIndex(uint index)
@@ -152,7 +152,7 @@ void DashboardItemModel::saveDashboardsToSettings() const
 
     settings.beginWriteArray("lastDashboards");
     for (qsizetype i = 0; i < mItems.count(); ++i) {
-        if (mItems[i]->type() == Types::DashboardType::Add)
+        if (mItems[i]->type() == DashboardItem::DashboardType::Add)
             continue;
 
         settings.setArrayIndex(i);

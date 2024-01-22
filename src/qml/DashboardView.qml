@@ -5,19 +5,19 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
 import OPC_UA_Browser
-import Types
 
 Rectangle {
     id: view
 
     readonly property bool canSaveDashboard: repeater.count > 1
-    readonly property string currentDashboardName: (tabBar.currentItem
-                                                    === null) ? "" : tabBar.currentItem.text
+    readonly property string currentDashboardName: (tabBar.currentItem === null) ? "" : tabBar.currentText
     readonly property int itemWidth: {
         // Calculate content width of flow
         var contentWidth = flow.width - flow.leftPadding - flow.rightPadding
@@ -37,12 +37,12 @@ Rectangle {
     signal addNewDashboard
 
     function addMonitoredItemsDashboard(name) {
-        tabRepeater.model.addItem(DashboardType.Variables, name)
+        tabRepeater.model.addItem(DashboardItem.DashboardType.Variables, name)
         tabBar.currentIndex = tabRepeater.count - 2
     }
 
     function addEventsDashboard(name) {
-        tabRepeater.model.addItem(DashboardType.Events, name)
+        tabRepeater.model.addItem(DashboardItem.DashboardType.Events, name)
         tabBar.currentIndex = tabRepeater.count - 2
     }
 
@@ -97,7 +97,7 @@ Rectangle {
             onReleased: held = false
             onClicked: {
                 if (dragArea.isAddItem) {
-                    addMonitoredItems()
+                    view.addMonitoredItems()
                 }
             }
 
@@ -112,7 +112,7 @@ Rectangle {
                 width: view.itemWidth
                 implicitHeight: Math.max(80, childrenRect.height)
                 radius: 5
-                color: dragArea.held ? theme.item.backgroundHeld : dragArea.hasError ? theme.item.backgroundError : theme.item.background
+                color: dragArea.held ? view.theme.item.backgroundHeld : dragArea.hasError ? view.theme.item.backgroundError : view.theme.item.background
 
                 Behavior on color {
                     ColorAnimation {
@@ -126,7 +126,8 @@ Rectangle {
                     ParentChange {
                         target: content
                         parent: view
-                        width: view.itemWidth
+                        // https://bugreports.qt.io/browse/QTBUG-101364
+                        width: view.itemWidth // qmllint disable incompatible-type
                     }
                     AnchorChanges {
                         target: content
@@ -148,7 +149,7 @@ Rectangle {
 
                         Text {
                             Layout.fillWidth: true
-                            color: theme.item.textColor
+                            color: view.theme.item.textColor
                             text: dragArea.name
                             font {
                                 pointSize: 12
@@ -162,7 +163,7 @@ Rectangle {
                             sourceSize.width: 24
                             sourceSize.height: 24
                             source: "qrc:/icons/delete.svg"
-                            color: theme.item.textColor
+                            color: view.theme.item.textColor
 
                             MouseArea {
                                 anchors.fill: parent
@@ -176,7 +177,7 @@ Rectangle {
                     Text {
                         width: parent.width - 2 * parent.padding
                         font.pointSize: 10
-                        color: theme.item.textColor
+                        color: view.theme.item.textColor
                         text: dragArea.value
                         elide: Text.ElideRight
                         clip: true
@@ -186,7 +187,7 @@ Rectangle {
                         visible: dragArea.hasError
                         width: parent.width - 2 * parent.padding
                         font.pointSize: 10
-                        color: theme.item.textColor
+                        color: view.theme.item.textColor
                         text: dragArea.status
                         elide: Text.ElideRight
                         clip: true
@@ -199,7 +200,7 @@ Rectangle {
                     sourceSize.height: 48
                     visible: dragArea.isAddItem
                     source: "qrc:/icons/plus.svg"
-                    color: theme.item.textColor
+                    color: view.theme.item.textColor
                 }
             }
 
@@ -221,7 +222,7 @@ Rectangle {
     DelegateModel {
         id: visualModel
 
-        model: (tabBar.currentItem === null) ? null : tabBar.currentItem.monitoringModel
+        model: (tabBar.currentItem === null) ? null : tabBar.currentMonitoringModel
         delegate: dragDelegate
     }
 
@@ -259,6 +260,8 @@ Rectangle {
 
         property int lastCurrentIndex: 0
         property bool allowSelectingAddItem: false
+        property string currentText
+        property var currentMonitoringModel
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -288,18 +291,34 @@ Rectangle {
             StyledIconTabButton {
                 id: tabButton
 
+                required property var model
+                required property var monitoringModel
+                required property int index
+
                 type: model.type
                 text: model.name
-                property var monitoringModel: model.monitoringModel
 
                 onClicked: {
-                    if (type === DashboardType.Add) {
-                        addNewDashboard()
+                    if (type === DashboardItem.DashboardType.Add) {
+                        view.addNewDashboard()
+                    }
+                }
+
+                onIsCurrentTabChanged: {
+                    if (isCurrentTab) {
+                        tabBar.currentText = tabButton.text
+                        tabBar.currentMonitoringModel = tabButton.monitoringModel
+                    }
+                }
+
+                onTextChanged: {
+                    if (isCurrentTab) {
+                        tabBar.currentText = tabButton.text
                     }
                 }
 
                 onPressAndHold: {
-                    if (type === DashboardType.Add)
+                    if (type === DashboardItem.DashboardType.Add)
                         return
 
                     var pressedPoint = mapToItem(view, tabButton.pressX,
@@ -310,7 +329,7 @@ Rectangle {
                                             view.width - contextMenu.width))
                     contextMenu.y = pressedPoint.y - contextMenu.height
 
-                    contextMenu.selectedIndex = index
+                    contextMenu.selectedIndex = tabButton.index
                     contextMenu.open()
                 }
             }

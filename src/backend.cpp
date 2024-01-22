@@ -14,9 +14,7 @@
 #include <QOpcUaAuthenticationInformation>
 
 #include "backend.h"
-#include "dashboarditemmodel.h"
 #include "monitoreditemmodel.h"
-#include "opcuamodel.h"
 #include "x509certificate.h"
 
 static QString defaultPkiPath()
@@ -40,10 +38,10 @@ BackEnd::BackEnd(QObject *parent)
       mOpcUaModel(new OpcUaModel(this)),
       mOpcUaProvider(new QOpcUaProvider(this)),
       mDashboardItemModel(new DashboardItemModel(this)),
-      mDefaultVariableDashboardsModel(new QStringListModel(this)),
-      mDefaultEventDashboardsModel(new QStringListModel(this)),
-      mSavedVariableDashboardsModel(new QStringListModel(this)),
-      mSavedEventDashboardsModel(new QStringListModel(this))
+      mDefaultVariableDashboardsModel(new QQmlStringListModel(this)),
+      mDefaultEventDashboardsModel(new QQmlStringListModel(this)),
+      mSavedVariableDashboardsModel(new QQmlStringListModel(this)),
+      mSavedEventDashboardsModel(new QQmlStringListModel(this))
 {
     setupPkiConfiguration();
 
@@ -128,27 +126,27 @@ OpcUaModel *BackEnd::opcUaModel() const noexcept
     return mOpcUaModel;
 }
 
-QAbstractItemModel *BackEnd::dashboardItemModel() const noexcept
+DashboardItemModel *BackEnd::dashboardItemModel() const noexcept
 {
     return mDashboardItemModel;
 }
 
-QStringListModel *BackEnd::defaultVariableDashboards() const noexcept
+QQmlStringListModel *BackEnd::defaultVariableDashboards() const noexcept
 {
     return mDefaultVariableDashboardsModel;
 }
 
-QStringListModel *BackEnd::defaultEventDashboards() const noexcept
+QQmlStringListModel *BackEnd::defaultEventDashboards() const noexcept
 {
     return mDefaultEventDashboardsModel;
 }
 
-QStringListModel *BackEnd::savedVariableDashboards() const noexcept
+QQmlStringListModel *BackEnd::savedVariableDashboards() const noexcept
 {
     return mSavedVariableDashboardsModel;
 }
 
-QStringListModel *BackEnd::savedEventDashboards() const noexcept
+QQmlStringListModel *BackEnd::savedEventDashboards() const noexcept
 {
     return mSavedEventDashboardsModel;
 }
@@ -281,11 +279,11 @@ void BackEnd::saveCurrentDashboard(const QString &name)
 
     QSettings settings;
     switch (mDashboardItemModel->getCurrentDashboardType()) {
-    case Types::DashboardType::Variables:
+    case DashboardItem::DashboardType::Variables:
         settings.setValue("dashboards/variables/" % name, nodeIds);
         addItemToStringListModel(mSavedVariableDashboardsModel, name);
         break;
-    case Types::DashboardType::Events:
+    case DashboardItem::DashboardType::Events:
         settings.setValue("dashboards/events/" % name, nodeIds);
         addItemToStringListModel(mSavedEventDashboardsModel, name);
         break;
@@ -526,8 +524,8 @@ void BackEnd::loadLastDashboardsFromSettings()
     for (int i = 0; i < size; ++i) {
         settings.setArrayIndex(i);
         const QString name = settings.value("name").toString();
-        const Types::DashboardType type =
-                static_cast<Types::DashboardType>(settings.value("type", 0).toInt());
+        const DashboardItem::DashboardType type =
+                static_cast<DashboardItem::DashboardType>(settings.value("type", 0).toInt());
 
         const int index = mDashboardItemModel->addItem(type, name);
         auto model = mDashboardItemModel->getMonitoredItemModel(index);

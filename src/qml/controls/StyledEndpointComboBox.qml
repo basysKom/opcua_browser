@@ -5,10 +5,14 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+pragma ComponentBehavior: Bound
+
 import QtQuick
 import QtQuick.Controls
 
 StyledComboBox {
+    id: comboBox
+
     comboBoxColumnHeight: _comboBox.contentItem.implicitHeight
 
     function getDisplayTextPart(str, part) {
@@ -26,21 +30,21 @@ StyledComboBox {
         leftPadding: 12
         Text {
             font.pointSize: 12
-            text: getDisplayTextPart(_comboBox.displayText, 0)
+            text: comboBox.getDisplayTextPart(comboBox._comboBox.displayText, 0)
             verticalAlignment: Text.AlignVCenter
         }
 
         Text {
             leftPadding: 12
             font.pointSize: 10
-            text: getDisplayTextPart(_comboBox.displayText, 1)
+            text: comboBox.getDisplayTextPart(comboBox._comboBox.displayText, 1)
             verticalAlignment: Text.AlignVCenter
         }
 
         Text {
             leftPadding: 12
             font.pointSize: 10
-            text: getDisplayTextPart(_comboBox.displayText, 2)
+            text: comboBox.getDisplayTextPart(comboBox._comboBox.displayText, 2)
             verticalAlignment: Text.AlignVCenter
         }
     }
@@ -52,29 +56,30 @@ StyledComboBox {
 
         required property var model
         required property int index
-        property string delegateText: model[_comboBox.textRole]
 
-        width: _comboBox.width
-        highlighted: _comboBox.highlightedIndex === index
+        property string delegateText: model[comboBox._comboBox.textRole]
+
+        width: comboBox._comboBox.width
+        highlighted: comboBox._comboBox.highlightedIndex === delegate.index
 
         contentItem: Column {
             Text {
                 font.pointSize: 12
-                text: getDisplayTextPart(delegateText, 0)
+                text: comboBox.getDisplayTextPart(delegate.delegateText, 0)
                 verticalAlignment: Text.AlignVCenter
             }
 
             Text {
                 leftPadding: 12
                 font.pointSize: 10
-                text: getDisplayTextPart(delegateText, 1)
+                text: comboBox.getDisplayTextPart(delegate.delegateText, 1)
                 verticalAlignment: Text.AlignVCenter
             }
 
             Text {
                 leftPadding: 12
                 font.pointSize: 10
-                text: getDisplayTextPart(delegateText, 2)
+                text: comboBox.getDisplayTextPart(delegate.delegateText, 2)
                 verticalAlignment: Text.AlignVCenter
             }
         }
