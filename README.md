@@ -9,6 +9,8 @@
 ![Provided](https://img.shields.io/badge/provided%20by-basysKom%20GmbH-orange)
 
 ![Contributors](https://img.shields.io/github/contributors/basysKom/opcua_browser?style=plastic)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads-pre/basysKom/opcua_browser/latest/total)
+![Watchers](https://img.shields.io/github/watchers/basysKom/opcua_browser)
 ![Forks](https://img.shields.io/github/forks/basysKom/opcua_browser)
 ![Stars](https://img.shields.io/github/stars/basysKom/opcua_browser)
 ![Licence](https://img.shields.io/github/license/basysKom/opcua_browser)
@@ -41,20 +43,17 @@ coming soon in Google Play store
 coming soon in App Store
 
 ## Compatibility
+
 The application has been tested on:
-
 - Windows using the MinGW 64-Bit compiler and Qt 6.5+
-
 - Linux (Ubuntu 22.04 LTS) and Qt 6.5+
-
-- Android using clang for arm64-v8a, armeabi-v7a, x86, x86_64
-
+- Android using Clang for arm64-v8a, armeabi-v7a, x86, x86_64
 - iOS
 
 ## Dependencies
 
 - Qt 6.5+
-- Qt OPC UA (available at [https://doc.qt.io/qt-6/qtopcua-index.html))
+- Qt OPC UA (available at https://doc.qt.io/qt-6/qtopcua-index.html)
 - OpenSSL >= 3.0
 
 ## Building
