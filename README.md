@@ -6,6 +6,14 @@
 -->
 # OPC UA Browser
 
+![Provided](https://img.shields.io/badge/provided%20by-basysKom%20GmbH-orange)
+
+![Contributors](https://img.shields.io/github/contributors/basysKom/opcua_browser?style=plastic)
+![Forks](https://img.shields.io/github/forks/basysKom/opcua_browser)
+![Stars](https://img.shields.io/github/stars/basysKom/opcua_browser)
+![Licence](https://img.shields.io/github/license/basysKom/opcua_browser)
+![Issues](https://img.shields.io/github/issues/basysKom/opcua_browser)
+
 The OPC UA Browser from basysKom is an OPC UA client with a wide range of application options for OPC UA technology.
 
 The OPC UA Browser can be used to establish an unencrypted connection to an OPC UA server as well as a connection encrypted via certificates. User authentication via user name and password is also supported.
