@@ -1,21 +1,28 @@
-name: Android
+name: Android Build
+
 on:
   workflow_call:
   workflow_dispatch: 
+  push:
+    branches:
+      - '*'
+      - '!main'
+
+env:
+  QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DCMAKE_BUILD_TYPE=Release"
+  QT_PATH: "/opt/Qt/6.6.1"
+  SSL_PATH: "dependencies/android_openssl/ssl_3"
+  ANDROID_VERSION_CODE: ${{github.run_number}}
+  ANDROID_VERSION_NAME: "0.0.0"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  android-build:
+    runs-on: thuban
     container:
       image: stateoftheartio/qt6:6.6-android-aqt
       options: --user root
     timeout-minutes: 60
-    env:
-      QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DCMAKE_BUILD_TYPE=Release"
-      QT_PATH: "/opt/Qt/6.6.1"
-      SSL_PATH: "dependencies/android_openssl/ssl_3"
-      ANDROID_VERSION_CODE: "3"
-      ANDROID_VERSION_NAME: "1.0.0"
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -73,6 +80,14 @@ jobs:
         cmake --build ./build/qtopcua 
         /opt/Qt/Tools/CMake/bin/cmake --install ./build/qtopcua 
         rm -rf ./build/qtopcua
+    - name: Check if we build a tag
+      id: checkref
+      run: echo ::set-output name=is_tag::$(echo "${{ github.ref }}" | grep -q '^refs/tags/' && echo true || echo false)
+    - name: Set Version
+      if: steps.checkref.outputs.is_tag == 'true'
+      run: |
+        TAG=$(echo "${{ github.ref }}" | sed 's/refs\/tags\///')
+        echo "ANDROID_VERSION_NAME=$TAG" >> $GITHUB_ENV
     - name: Build App
       run: |
         mkdir -p ./build/opc_ua_browser && \
@@ -83,8 +98,8 @@ jobs:
           -DANDROID_VERSION_NAME=${ANDROID_VERSION_NAME} && \
         cmake --build ./build/opc_ua_browser --target aab && \
         cmake --build ./build/opc_ua_browser --target apk
-    - uses: r0adkll/sign-android-release@v1
-      name: Sign app AAB
+    - name: Sign app AAB
+      uses: r0adkll/sign-android-release@v1
       id: sign_aab
       with:
         releaseDirectory: build/opc_ua_browser/src/android-build/build/outputs/bundle/release/
@@ -93,8 +108,8 @@ jobs:
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
       env:
         BUILD_TOOLS_VERSION: "33.0.0"
-    - uses: r0adkll/sign-android-release@v1
-      name: Sign app APK
+    - name: Sign app APK
+      uses: r0adkll/sign-android-release@v1
       id: sign_apk
       with:
         releaseDirectory: build/opc_ua_browser/src/android-build/build/outputs/apk/release/
@@ -103,14 +118,13 @@ jobs:
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
       env:
         BUILD_TOOLS_VERSION: "33.0.0"
-    - uses: actions/upload-artifact@v2
+    - name: Upload APK
+      uses: actions/upload-artifact@v3
       with:
-        name: Signed app bundle
+        name: android-apk
         path: ${{steps.sign_apk.outputs.signedReleaseFile}}
-    - uses: r0adkll/upload-google-play@v1
+    - name: Upload ABB
+      uses: actions/upload-artifact@v3
       with:
-        serviceAccountJsonPlainText: ${{ secrets.SERVICE_ACCOUNT_JSON }}
-        releaseFiles: ${{steps.sign_aab.outputs.signedReleaseFile}}
-        packageName: com.basyskom.opcua.app
-        track: internal
-        status: draft
+        name: android-abb
+        path: ${{steps.sign_aab.outputs.signedReleaseFile}}

@@ -14,3 +14,5 @@ jobs:
         fetch-depth: 1
     - name: Validate QML 
       uses: liri-infra/qmllint-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
