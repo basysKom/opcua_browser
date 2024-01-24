@@ -58,6 +58,56 @@ The application has been tested on:
 
 ## Building
 
+> [!IMPORTANT]
+> Make sure that the versions of Qt and Qt OPC UA Plugin are identical.
+
+### Linux
+#### Install Qt OPC UA Plugin
+```
+git clone https://code.qt.io/qt/qtopcua.git
+cd qtopcua
+git checkout 6.6.1
+mkdir build && cd build
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug ..
+```
+Check whether "Open62541 security support" and "Support for global discovery server" is activated. Otherwise, OpenSSL may need to be installed or the path to the OpenSSL library may need to be added to the path variable.
+
+```
+-- Configure summary:
+Qt Opcua:
+  Open62541 .............................. yes
+  Unified Automation C++ SDK ............. no
+  Support for namespace 0 NodeId names ... yes
+  Namespace 0 NodeIds generator .......... no
+  Open62541 security support ............. yes
+  Support for global discovery server .... yes
+```
+Build OPC UA Plugin
+```
+ninja
+```
+Optional: Install the libraries in the Qt directory. Otherwise, the directory for the libraries of the Qt OPC UA Plugin must be passed to the build process of the OPC UA browser.  
+```
+ninja install
+```
+
+#### Build OPC UA Browser
+
+```
+git clone https://github.com/basysKom/opcua_browser.git
+cd opcua_browser
+mkdir build && cd build
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug ..
+ninja
+```
+
+### Windows
+To be done
+
+### Android
+To be done
+
+### iOS
 To be done
 
 ## Contributing
