@@ -8,11 +8,9 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/android.yml
-    if: endsWith(github.event.base_ref, 'main') == false
 
   deploy:
     needs: build
-    if: endsWith(github.event.base_ref, 'main') == false
     runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
