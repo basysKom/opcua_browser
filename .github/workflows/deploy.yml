@@ -13,7 +13,7 @@ jobs:
   deploy:
     needs: build
     if: github.ref == 'refs/heads/main'
-    runs-on: thuban
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/download-artifact@v3
     - name: Get Version Tag
