@@ -6,6 +6,16 @@
 -->
 # OPC UA Browser
 
+![Provided](https://img.shields.io/badge/provided%20by-basysKom%20GmbH-orange)
+
+![Contributors](https://img.shields.io/github/contributors/basysKom/opcua_browser?style=plastic)
+![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads-pre/basysKom/opcua_browser/latest/total)
+![Watchers](https://img.shields.io/github/watchers/basysKom/opcua_browser)
+![Forks](https://img.shields.io/github/forks/basysKom/opcua_browser)
+![Stars](https://img.shields.io/github/stars/basysKom/opcua_browser)
+![Licence](https://img.shields.io/github/license/basysKom/opcua_browser)
+![Issues](https://img.shields.io/github/issues/basysKom/opcua_browser)
+
 The OPC UA Browser from basysKom is an OPC UA client with a wide range of application options for OPC UA technology.
 
 The OPC UA Browser can be used to establish an unencrypted connection to an OPC UA server as well as a connection encrypted via certificates. User authentication via user name and password is also supported.
@@ -33,24 +43,71 @@ coming soon in Google Play store
 coming soon in App Store
 
 ## Compatibility
+
 The application has been tested on:
-
 - Windows using the MinGW 64-Bit compiler and Qt 6.5+
-
 - Linux (Ubuntu 22.04 LTS) and Qt 6.5+
-
-- Android using clang for arm64-v8a, armeabi-v7a, x86, x86_64
-
+- Android using Clang for arm64-v8a, armeabi-v7a, x86, x86_64
 - iOS
 
 ## Dependencies
 
 - Qt 6.5+
-- Qt OPC UA (available at [https://doc.qt.io/qt-6/qtopcua-index.html))
+- Qt OPC UA (available at https://doc.qt.io/qt-6/qtopcua-index.html)
 - OpenSSL >= 3.0
 
 ## Building
 
+> [!IMPORTANT]
+> Make sure that the versions of Qt and Qt OPC UA Plugin are identical.
+
+### Linux
+#### Install Qt OPC UA Plugin
+```
+git clone https://code.qt.io/qt/qtopcua.git
+cd qtopcua
+git checkout 6.6.1
+mkdir build && cd build
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug ..
+```
+Check whether "Open62541 security support" and "Support for global discovery server" is activated. Otherwise, OpenSSL may need to be installed or the path to the OpenSSL library may need to be added to the path variable.
+
+```
+-- Configure summary:
+Qt Opcua:
+  Open62541 .............................. yes
+  Unified Automation C++ SDK ............. no
+  Support for namespace 0 NodeId names ... yes
+  Namespace 0 NodeIds generator .......... no
+  Open62541 security support ............. yes
+  Support for global discovery server .... yes
+```
+Build OPC UA Plugin
+```
+ninja
+```
+Optional: Install the libraries in the Qt directory. Otherwise, the directory for the libraries of the Qt OPC UA Plugin must be passed to the build process of the OPC UA browser.  
+```
+ninja install
+```
+
+#### Build OPC UA Browser
+
+```
+git clone https://github.com/basysKom/opcua_browser.git
+cd opcua_browser
+mkdir build && cd build
+cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug ..
+ninja
+```
+
+### Windows
+To be done
+
+### Android
+To be done
+
+### iOS
 To be done
 
 ## Contributing
