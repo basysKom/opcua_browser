@@ -1,0 +1,16 @@
+name: REUSE compliance
+on:
+  workflow_call:
+  workflow_dispatch: 
+  push:
+
+jobs:
+  reuse-check:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4  
+      with:
+        fetch-depth: 1
+    - name: REUSE Compliance Check
+      uses: fsfe/reuse-action@v2

@@ -26,13 +26,8 @@ qt_standard_project_setup(REQUIRES 6.5)
 add_subdirectory(src)
 
 if (ANDROID)
-    FetchContent_Declare(
-      android_openssl
-      DOWNLOAD_EXTRACT_TIMESTAMP true
-      URL      https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
-    )
-    FetchContent_MakeAvailable(android_openssl)
-    include(${android_openssl_SOURCE_DIR}/android_openssl.cmake)
-
+    include(dependencies/android_openssl/android_openssl.cmake)
     add_android_openssl_libraries(appOPC_UA_Browser)
+    set_property(TARGET appOPC_UA_Browser APPEND PROPERTY QT_ANDROID_VERSION_CODE ${ANDROID_VERSION_CODE})
+    set_property(TARGET appOPC_UA_Browser APPEND PROPERTY QT_ANDROID_VERSION_NAME ${ANDROID_VERSION_NAME})
 endif()
