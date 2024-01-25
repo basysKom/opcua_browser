@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     uses: ./.github/workflows/android.yml
+    secrets: inherit
 
   deploy:
     needs: build
