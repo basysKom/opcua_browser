@@ -102,10 +102,83 @@ ninja
 ```
 
 ### Windows
-To be done
+
+#### Install Qt OPC UA Plugin
+```
+git clone https://code.qt.io/qt/qtopcua.git
+cd qtopcua
+git checkout 6.6.1
+mkdir build && cd build
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DOPENSSL_ROOT_DIR=C:\Qt\Tools\OpenSSLv3\Win_x64 ..
+```
+Check whether "Open62541 security support" and "Support for global discovery server" is activated. Otherwise, OpenSSL may need to be installed or the path to the OpenSSL library may need to be added to the path variable.
+
+```
+-- Configure summary:
+Qt Opcua:
+  Open62541 .............................. yes
+  Unified Automation C++ SDK ............. no
+  Support for namespace 0 NodeId names ... yes
+  Namespace 0 NodeIds generator .......... no
+  Open62541 security support ............. yes
+  Support for global discovery server .... yes
+```
+Build OPC UA Plugin
+```
+mingw32-make
+```
+Optional: Install the libraries in the Qt directory. Otherwise, the directory for the libraries of the Qt OPC UA Plugin must be passed to the build process of the OPC UA browser.  
+```
+mingw32-make install
+```
+
+#### Build OPC UA Browser
+
+```
+git clone https://github.com/basysKom/opcua_browser.git
+cd opcua_browser
+mkdir build && cd build
+cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DOPENSSL_ROOT_DIR=C:\Qt\Tools\OpenSSLv3\Win_x64 ..
+mingw32-make
+```
 
 ### Android
-To be done
+A cross compiler under Linux or Windows can be used to build for Android. However, this section describes how to create an APK using a Docker container.
+We use a Docker container from the following GitHub repository:
+https://github.com/state-of-the-art/qt6-docker
+
+To use Docker, the Docker library must be installed.
+```
+sudo apt-get install docker.io
+```
+
+This build example is written for an APK build for the architecture arm64_v8a with Qt version 6.6.1.
+If you are using a different version, you must change the Qt version for Qt OPC UA in the file getDependencies.sh and the CMAKE_INSTALL_PREFIX in the build example.
+To build an APK for a different architecture, you must change the CMAKE_INSTALL_PREFIX and the OPENSSL_ROOT_DIR in the build example.
+| Architecture  | CMAKE_INSTALL_PREFIX            | OPENSSL_ROOT_DIR                                       |
+| ------------- | ------------------------------- | ------------------------------------------------------ |
+| arm64_v8a     | /opt/Qt/6.6.1/android_arm64_v8a | ${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/   |
+| armeabi_v7a   | /opt/Qt/6.6.1/android_armv7     | ${PWD}/dependencies/android_openssl/ssl_3/armeabi-v7a/ |
+| x86           | /opt/Qt/6.6.1/android_x86       | ${PWD}/dependencies/android_openssl/ssl_3/x86/         |
+| x86_64        | /opt/Qt/6.6.1/android_x86_64    | ${PWD}/dependencies/android_openssl/ssl_3/x86_64/      |
+
+```
+git clone https://github.com/basysKom/opcua_browser.git
+mkdir build_opcua_browser
+cd opcua_browser
+./get_dependencies.sh
+sudo docker run -it --rm -v "${PWD}:/home/user/project:ro" -v "${PWD}/../build_opcua_browser:/home/user/build:rw" stateoftheartio/qt6:6.6-android-aqt \
+    sh -c 'rm -rf build/* && \
+           cd project && \
+           qt-cmake ./dependencies/qtopcua -G Ninja -B ../build/qtopcua -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.6.1/android_arm64_v8a \
+           	-DOPENSSL_INCLUDE_DIR=${PWD}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/ && \
+           cmake --build ../build/qtopcua && \
+           sudo /opt/Qt/Tools/CMake/bin/cmake --install ../build/qtopcua && \
+           rm -rf ../build/qtopcua && \
+           mkdir -p ../build/opcua_browser && \
+           qt-cmake . -G Ninja -B ../build/opcua_browser -DCMAKE_BUILD_TYPE=Debug && \
+           cmake --build ../build/opcua_browser'
+```
 
 ### iOS
 To be done
