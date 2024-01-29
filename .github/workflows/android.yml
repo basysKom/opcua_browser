@@ -13,7 +13,7 @@ env:
   QT_PATH: "/opt/Qt/6.6.1"
   SSL_PATH: "dependencies/android_openssl/ssl_3"
   ANDROID_VERSION_CODE: ${{github.run_number}}
-  ANDROID_VERSION_NAME: "0.0.0"
+  ANDROID_VERSION_NAME: "1.0.0"
 
 jobs:
   android-build:
