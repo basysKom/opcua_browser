@@ -14,7 +14,7 @@ import OPC_UA_Browser
 TabButton {
     id: control
 
-    readonly property bool isCurrentTab: (TabBar.tabBar.currentIndex == TabBar.index)
+    readonly property bool isCurrentTab: (TabBar.tabBar != null) && (TabBar.tabBar.currentIndex == TabBar.index)
                                          && (type !== DashboardItem.DashboardType.Add)
 
     property ThemeIconTabButton theme: Style.iconTabButton

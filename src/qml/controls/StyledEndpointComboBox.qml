@@ -53,11 +53,13 @@ StyledComboBox {
         id: delegate
         topPadding: 6
         bottomPadding: topPadding
+        enabled: comboBox.getDisplayTextPart(delegate.delegateText, 3).startsWith("opc.tcp://")
 
         required property var model
         required property int index
 
-        property string delegateText: model[comboBox._comboBox.textRole]
+        readonly property string delegateText: model[comboBox._comboBox.textRole]
+        readonly property color textColor: enabled ? "black" : "lightgray"
 
         width: comboBox._comboBox.width
         highlighted: comboBox._comboBox.highlightedIndex === delegate.index
@@ -67,6 +69,7 @@ StyledComboBox {
                 font.pointSize: 12
                 text: comboBox.getDisplayTextPart(delegate.delegateText, 0)
                 verticalAlignment: Text.AlignVCenter
+                color: delegate.textColor
             }
 
             Text {
@@ -74,6 +77,7 @@ StyledComboBox {
                 font.pointSize: 10
                 text: comboBox.getDisplayTextPart(delegate.delegateText, 1)
                 verticalAlignment: Text.AlignVCenter
+                color: delegate.textColor
             }
 
             Text {
@@ -81,6 +85,7 @@ StyledComboBox {
                 font.pointSize: 10
                 text: comboBox.getDisplayTextPart(delegate.delegateText, 2)
                 verticalAlignment: Text.AlignVCenter
+                color: delegate.textColor
             }
         }
     }
