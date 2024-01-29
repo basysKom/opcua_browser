@@ -319,7 +319,7 @@ void BackEnd::findServers(const QString &urlString)
         url.setPort(4840);
 
     if (mOpcUaClient) {
-        mServerHost = url;
+        mHostUrl = url;
         mOpcUaClient->findServers(url);
         qDebug() << "Discovering servers on " << url.toString();
     }
@@ -335,11 +335,11 @@ void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &ser
     }
 
     setState(QStringLiteral("%1 server(s) detected").arg(servers.size()));
-    saveServerHost(mServerHost.toString());
+    saveServerHost(mHostUrl.toString());
     mServerList.clear();
     for (const auto &server : servers) {
         for (auto &url : server.discoveryUrls()) {
-            mServerList << url.replace("localhost", mServerHost.host());
+            mServerList << url.replace("localhost", mHostUrl.host());
         }
         qDebug() << server.applicationUri() << server.applicationName() << server.discoveryUrls()
                  << server.productUri();
@@ -358,11 +358,11 @@ void BackEnd::getEndpoints(int serverIndex)
         return;
     }
 
-    const auto serverUrl = mServerList.at(serverIndex);
-    setState(QStringLiteral("Request endpoints for \"%1\"").arg(serverUrl));
-    qDebug() << "Request endpoints for " << serverUrl;
+    mServerUrl = mServerList.at(serverIndex);
+    setState(QStringLiteral("Request endpoints for \"%1\"").arg(mServerUrl.toString()));
+    qDebug() << "Request endpoints for " << mServerUrl.toString();
     createClient();
-    mOpcUaClient->requestEndpoints(serverUrl);
+    mOpcUaClient->requestEndpoints(mServerUrl.toString());
 }
 
 void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpoints,
@@ -376,7 +376,13 @@ void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpo
 
     setState(QStringLiteral("%1 endpoint(s) received").arg(endpoints.size()));
     mEndpointList = endpoints;
-    for (const auto &endpoint : endpoints) {
+    for (auto &endpoint : mEndpointList) {
+        QUrl url(endpoint.endpointUrl());
+        // Correct host address due to missing DNS access
+        if (url.host() != mServerUrl.host()) {
+            url.setHost(mServerUrl.host());
+            endpoint.setEndpointUrl(url.toString());
+        }
         qDebug() << endpoint.endpointUrl() << endpoint.securityLevel() << endpoint.securityMode()
                  << endpoint.securityPolicy();
     }

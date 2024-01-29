@@ -136,7 +136,8 @@ private:
     QOpcUaPkiConfiguration mPkiConfig;
 
     QString mState;
-    QUrl mServerHost;
+    QUrl mHostUrl;
+    QUrl mServerUrl;
     QVector<QString> mServerList;
     QList<QOpcUaEndpointDescription> mEndpointList;
     QOpcUaEndpointDescription mCurrentEndpoint;
