@@ -38,6 +38,10 @@ class BackEnd : public QObject
 public:
     Q_PROPERTY(QString stateText READ stateText NOTIFY stateTextChanged FINAL)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionStateChanged FINAL)
+    Q_PROPERTY(bool showUrlMismatchMessage READ showUrlMismatchMessage NOTIFY
+                       showUrlMismatchMessageChanged FINAL)
+    Q_PROPERTY(bool showEndpointReplacementMessage READ showEndpointReplacementMessage NOTIFY
+                       showEndpointReplacementMessageChanged FINAL)
     Q_PROPERTY(int connectionState READ connectionState NOTIFY connectionStateChanged FINAL)
     Q_PROPERTY(QVector<QString> recentConnections READ recentConnections NOTIFY
                        recentConnectionsChanged FINAL)
@@ -73,6 +77,9 @@ public:
     QStringListModel *savedEventDashboards() const noexcept;
     bool hasLastDashboards() const noexcept;
 
+    bool showUrlMismatchMessage() const noexcept;
+    bool showEndpointReplacementMessage() const noexcept;
+
     Q_INVOKABLE void clearServerList();
     Q_INVOKABLE void clearEndpointList();
 
@@ -92,6 +99,13 @@ public:
 
     Q_INVOKABLE void applicationSuspended();
 
+    Q_INVOKABLE void useHostUrlForEndpointRequest();
+    Q_INVOKABLE void hideUrlMismatchMessage();
+    Q_INVOKABLE void useHostUrlForEndpointConnection();
+    Q_INVOKABLE void useHostUrlForEndpointConnectionWithPassword(const QString &userName,
+                                                                 const QString &password);
+    Q_INVOKABLE void hideEndpointReplacementMessage();
+
 signals:
     void recentConnectionsChanged();
     void serverListChanged();
@@ -103,6 +117,9 @@ signals:
     void defaultEventDashboardsChanged();
     void savedVariableDashboardsChanged();
     void savedEventDashboardsChanged();
+
+    void showUrlMismatchMessageChanged();
+    void showEndpointReplacementMessageChanged();
 
 private slots:
     void findServersComplete(const QList<QOpcUaApplicationDescription> &servers,
@@ -123,7 +140,11 @@ private:
 
     void monitorNode(MonitoredItemModel *model, const QString &nodeId);
 
+    void requestEndpoints(const QString &serverUrl);
     void connectToEndpoint(int endpointIndex, bool usePassword, const QString &userName = QString(),
+                           const QString &password = QString());
+    void connectToEndpoint(const QOpcUaEndpointDescription &endpoint, bool usePassword,
+                           const QString &userName = QString(),
                            const QString &password = QString());
     void saveLastDashboards();
     void loadLastServerHostsFromSettings();
@@ -150,6 +171,8 @@ private:
     QStringListModel *mSavedEventDashboardsModel;
 
     bool mHasLastDashboards = false;
+    bool mShowUrlMismatchMessage = false;
+    bool mShowEndpointReplacementMessage = false;
 };
 
 #endif // BACKEND_H
