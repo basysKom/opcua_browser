@@ -157,6 +157,16 @@ bool BackEnd::hasLastDashboards() const noexcept
     return mHasLastDashboards;
 }
 
+bool BackEnd::showUrlMismatchMessage() const noexcept
+{
+    return mShowUrlMismatchMessage;
+}
+
+bool BackEnd::showEndpointReplacementMessage() const noexcept
+{
+    return mShowEndpointReplacementMessage;
+}
+
 void BackEnd::clearServerList()
 {
     mServerList.clear();
@@ -217,7 +227,13 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
         return;
     }
 
-    mCurrentEndpoint = mEndpointList[endpointIndex];
+    connectToEndpoint(mEndpointList[endpointIndex], usePassword, userName, password);
+}
+
+void BackEnd::connectToEndpoint(const QOpcUaEndpointDescription &endpoint, bool usePassword,
+                                const QString &userName, const QString &password)
+{
+    mCurrentEndpoint = endpoint;
     setState(QStringLiteral("connected to client \"%1\"").arg(mCurrentEndpoint.securityPolicy()));
 
     // Automatically add server certificate to the trusted certificates
@@ -339,9 +355,7 @@ void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &ser
     saveServerHost(mHostUrl.toString());
     mServerList.clear();
     for (const auto &server : servers) {
-        for (auto &url : server.discoveryUrls()) {
-            mServerList << url.replace("localhost", mHostUrl.host());
-        }
+        mServerList << server.discoveryUrls();
         qDebug() << server.applicationUri() << server.applicationName() << server.discoveryUrls()
                  << server.productUri();
     }
@@ -359,7 +373,12 @@ void BackEnd::getEndpoints(int serverIndex)
         return;
     }
 
-    mServerUrl = mServerList.at(serverIndex);
+    requestEndpoints(mServerList.at(serverIndex));
+}
+
+void BackEnd::requestEndpoints(const QString &serverUrl)
+{
+    mServerUrl = serverUrl;
     setState(QStringLiteral("Request endpoints for \"%1\"").arg(mServerUrl.toString()));
     qDebug() << "Request endpoints for " << mServerUrl.toString();
     createClient();
@@ -371,6 +390,12 @@ void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpo
 {
     qDebug() << "getEndpointsComplete " << statusCode;
     if (!isSuccessStatus(statusCode)) {
+        if (mServerUrl != mHostUrl) {
+            mShowUrlMismatchMessage = true;
+            emit showUrlMismatchMessageChanged();
+            return;
+        }
+
         setState(QStringLiteral("request of endpoints failed"));
         return;
     }
@@ -449,6 +474,12 @@ void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
              % QStringLiteral("0x%1 (%2)")
                        .arg(errorState->errorCode(), 8, 16, QLatin1Char('0'))
                        .arg(statuscode));
+
+    if (mCurrentEndpoint.endpointUrl() != mHostUrl.toString()) {
+        mShowEndpointReplacementMessage = true;
+        emit showEndpointReplacementMessageChanged();
+        return;
+    }
 }
 
 void BackEnd::createClient()
@@ -551,6 +582,41 @@ void BackEnd::applicationSuspended()
     if (isConnected()) {
         saveLastDashboards();
     }
+}
+
+void BackEnd::useHostUrlForEndpointRequest()
+{
+    hideUrlMismatchMessage();
+    requestEndpoints(mHostUrl.toString());
+}
+
+void BackEnd::hideUrlMismatchMessage()
+{
+    mShowUrlMismatchMessage = false;
+    emit showUrlMismatchMessageChanged();
+}
+
+void BackEnd::useHostUrlForEndpointConnection()
+{
+    hideEndpointReplacementMessage();
+
+    mCurrentEndpoint.setEndpointUrl(mHostUrl.toString());
+    connectToEndpoint(mCurrentEndpoint, false);
+}
+
+void BackEnd::useHostUrlForEndpointConnectionWithPassword(const QString &userName,
+                                                          const QString &password)
+{
+    hideEndpointReplacementMessage();
+
+    mCurrentEndpoint.setEndpointUrl(mHostUrl.toString());
+    connectToEndpoint(mCurrentEndpoint, true, userName, password);
+}
+
+void BackEnd::hideEndpointReplacementMessage()
+{
+    mShowEndpointReplacementMessage = false;
+    emit showEndpointReplacementMessageChanged();
 }
 
 void BackEnd::saveLastDashboards()

@@ -15,6 +15,8 @@ StyledComboBox {
 
     comboBoxColumnHeight: _comboBox.contentItem.implicitHeight
 
+    readonly property string currentEndpointUrl: getDisplayTextPart(comboBox._comboBox.displayText, 3)
+
     function getDisplayTextPart(str, part) {
         var parts = str.split("#")
         if (part >= parts.length) {
@@ -84,6 +86,14 @@ StyledComboBox {
                 leftPadding: 12
                 font.pointSize: 10
                 text: comboBox.getDisplayTextPart(delegate.delegateText, 2)
+                verticalAlignment: Text.AlignVCenter
+                color: delegate.textColor
+            }
+
+            Text {
+                leftPadding: 12
+                font.pointSize: 10
+                text: comboBox.getDisplayTextPart(delegate.delegateText, 3)
                 verticalAlignment: Text.AlignVCenter
                 color: delegate.textColor
             }
