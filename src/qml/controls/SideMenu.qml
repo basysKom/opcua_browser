@@ -21,6 +21,7 @@ Menu {
     signal closeConnectionSelected
     signal showDashboardsSelected
     signal showExpertModeSelected
+    signal showLogSelected
     signal showImprintSelected
     signal showSettingsSelected
 
@@ -97,6 +98,12 @@ Menu {
         text: qsTr("Settings")
         iconSource: "qrc:/icons/settings.svg"
         onTriggered: control.showSettingsSelected()
+    }
+
+    StyledMenuItem {
+        text: qsTr("Log")
+        iconSource: "qrc:/icons/log.svg"
+        onTriggered: control.showLogSelected()
     }
 
     StyledMenuItem {

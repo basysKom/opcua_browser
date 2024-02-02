@@ -204,6 +204,7 @@ ApplicationWindow {
         onShowExpertModeSelected: contentView.showExpertBrowserView()
         onShowImprintSelected: contentView.showImprintView()
         onShowSettingsSelected: contentView.showSettingsView()
+        onShowLogSelected: contentView.showLoggingView()
     }
 
     ContentView {

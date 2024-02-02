@@ -14,13 +14,11 @@ import OPC_UA_Browser
 Item {
     id: view
 
-    readonly property bool showBackButtonInHeader: (stackLayout.currentIndex
-                                                    === imprint.StackLayout.index)
-                                                   || (stackLayout.currentIndex
-                                                       === settings.StackLayout.index)
-    readonly property bool canSaveDashboard: dashboard.canSaveDashboard
-                                             && (stackLayout.currentIndex
-                                                 === dashboard.StackLayout.index)
+    readonly property bool showBackButtonInHeader: (stackLayout.currentIndex === imprint.StackLayout.index) ||
+                                                   (stackLayout.currentIndex === settings.StackLayout.index) ||
+                                                   (stackLayout.currentIndex === log.StackLayout.index)
+    readonly property bool canSaveDashboard: dashboard.canSaveDashboard &&
+                                             (stackLayout.currentIndex === dashboard.StackLayout.index)
     readonly property alias currentDashboardName: dashboard.currentDashboardName
 
     function showConnectionView() {
@@ -44,6 +42,11 @@ Item {
     function showSettingsView() {
         stackLayout.lastStoredViewIndex = stackLayout.currentIndex
         stackLayout.currentIndex = settings.StackLayout.index
+    }
+
+    function showLoggingView() {
+        stackLayout.lastStoredViewIndex = stackLayout.currentIndex
+        stackLayout.currentIndex = log.StackLayout.index
     }
 
     function goBack() {
@@ -197,6 +200,10 @@ Item {
 
         SettingsView {
             id: settings
+        }
+
+        LoggingView {
+            id: log
         }
     }
 }

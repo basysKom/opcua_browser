@@ -21,6 +21,7 @@ ThemeDefault {
     browserView: currentTheme.browserView
     connectionView: currentTheme.connectionView
     imprintView: currentTheme.imprintView
+    loggingView: currentTheme.loggingView
     nodesView: currentTheme.nodesView
     settingsView: currentTheme.settingsView
     dashboard: currentTheme.dashboard

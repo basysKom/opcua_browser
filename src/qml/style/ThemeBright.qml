@@ -22,6 +22,16 @@ ThemeDefault {
         textColor: anthrazite
     }
 
+    loggingView {
+        background: light
+        textColor: anthrazite
+        divider: mediumDark
+        infoColor: "#9ebed9"
+        warningColor: "#feff78"
+        criticalColor: "#ffa9a9"
+        fatalColor: "#ff7878"
+    }
+
     nodesView {
         backgroundSelected: mediumLight
         textColor: anthrazite
