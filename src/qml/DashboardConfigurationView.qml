@@ -109,8 +109,7 @@ Item {
         }
 
         ColumnLayout {
-            visible: (defaultDashboardListBox.model !== undefined)
-                     && (defaultDashboardListBox.model.rowCount() > 0)
+            visible: defaultDashboardListBox?.model?.rowCount() > 0 ?? false
 
             StyledComboBox {
                 id: defaultDashboardListBox
@@ -130,8 +129,7 @@ Item {
         }
 
         ColumnLayout {
-            visible: (savedDashboardListBox.model !== undefined)
-                     && (savedDashboardListBox.model.rowCount() > 0)
+            visible: savedDashboardListBox?.model?.rowCount() > 0 ?? false
 
             StyledComboBox {
                 id: savedDashboardListBox
