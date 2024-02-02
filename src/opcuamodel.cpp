@@ -6,6 +6,7 @@
  */
 
 #include <QColor>
+#include <QLoggingCategory>
 #include <QTimer>
 
 #include <QOpcUaClient>
@@ -13,6 +14,8 @@
 
 #include "opcuamodel.h"
 #include "opcuahelper.h"
+
+Q_LOGGING_CATEGORY(opcuaModelLog, "opcua_browser.model");
 
 enum Roles : int {
     ColorRole = Qt::UserRole,
@@ -359,8 +362,8 @@ void OpcUaModel::collectInverseNodeIds(const QString &nodeId, bool init)
                 }
 
                 if (statusCode != QOpcUa::Good) {
-                    qWarning() << "Browsing node" << node->nodeId()
-                               << "finally failed:" << statusCode;
+                    qCWarning(opcuaModelLog)
+                            << "Browsing node" << node->nodeId() << "finally failed:" << statusCode;
                     node->deleteLater();
                     return;
                 }
@@ -402,7 +405,7 @@ void OpcUaModel::collectInverseNodeIds(const QString &nodeId, bool init)
     request.setReferenceTypeId(QOpcUa::ReferenceTypeId::HierarchicalReferences);
     request.setIncludeSubtypes(true);
     if (!node->browse(request)) {
-        qWarning() << "Browsing node" << node->nodeId() << "failed";
+        qCWarning(opcuaModelLog) << "Browsing node" << node->nodeId() << "failed";
         node->deleteLater();
         return;
     }
@@ -458,7 +461,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
             [=](const QList<QOpcUaReferenceDescription> &children,
                 QOpcUa::UaStatusCode statusCode) {
                 if (nullptr == mOpcUaClient) {
-                    qWarning() << "OPC UA client is null" << node->nodeId();
+                    qCWarning(opcuaModelLog) << "OPC UA client is null" << node->nodeId();
                     deleteNode(node);
                     return;
                 }
@@ -466,7 +469,8 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
                 for (const auto &item : children) {
                     auto childNode = mOpcUaClient->node(item.targetNodeId());
                     if (!childNode) {
-                        qWarning() << "Failed to instantiate node:" << item.targetNodeId().nodeId();
+                        qCWarning(opcuaModelLog)
+                                << "Failed to instantiate node:" << item.targetNodeId().nodeId();
                         continue;
                     }
 
@@ -486,7 +490,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
                 if (!node->readAttributes(QOpcUa::NodeAttribute::NodeId
                                           | QOpcUa::NodeAttribute::DisplayName
                                           | QOpcUa::NodeAttribute::InverseName)) {
-                    qWarning() << "Reading attributes" << node->nodeId() << "failed";
+                    qCWarning(opcuaModelLog) << "Reading attributes" << node->nodeId() << "failed";
                     deleteNode(node);
                 }
             });
@@ -496,7 +500,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
     // First step: browse for children
     if (!node->browseChildren(QOpcUa::ReferenceTypeId::HasSubtype,
                               QOpcUa::NodeClass::ReferenceType)) {
-        qWarning() << "Browsing node" << node->nodeId() << "failed";
+        qCWarning(opcuaModelLog) << "Browsing node" << node->nodeId() << "failed";
         deleteNode(node);
     }
 }
@@ -544,7 +548,7 @@ void OpcUaModel::browseDataTypes(QOpcUaNode *node)
             [=](const QList<QOpcUaReferenceDescription> &children,
                 QOpcUa::UaStatusCode statusCode) {
                 if (nullptr == mOpcUaClient) {
-                    qWarning() << "OPC UA client is null" << node->nodeId();
+                    qCWarning(opcuaModelLog) << "OPC UA client is null" << node->nodeId();
                     deleteNode(node);
                     return;
                 }
@@ -556,7 +560,8 @@ void OpcUaModel::browseDataTypes(QOpcUaNode *node)
 
                     auto childNode = mOpcUaClient->node(item.targetNodeId());
                     if (!childNode) {
-                        qWarning() << "Failed to instantiate node:" << item.targetNodeId().nodeId();
+                        qCWarning(opcuaModelLog)
+                                << "Failed to instantiate node:" << item.targetNodeId().nodeId();
                         continue;
                     }
 
@@ -576,7 +581,7 @@ void OpcUaModel::browseDataTypes(QOpcUaNode *node)
     cntNodes++;
     // First step: browse for children
     if (!node->browseChildren(QOpcUa::ReferenceTypeId::HasSubtype, QOpcUa::NodeClass::DataType)) {
-        qWarning() << "Browsing node" << node->nodeId() << "failed";
+        qCWarning(opcuaModelLog) << "Browsing node" << node->nodeId() << "failed";
         deleteNode(node);
     }
 }

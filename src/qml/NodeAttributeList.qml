@@ -72,8 +72,6 @@ Rectangle {
                 required property string attribute
                 required property string value
 
-                readonly property real padding: 5
-
                 width: root.maxDelegateWidth()
                 implicitHeight: childrenRect.height
                 color: ((listViewDelegate.index % 1) == 0) ? root.theme.color1 : root.theme.color2

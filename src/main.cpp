@@ -13,6 +13,8 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 
+#include "logging.h"
+
 static constexpr auto FontSwansea = "://font/Swansea.ttf";
 static constexpr auto FontSwanseaBold = "://font/SwanseaBold.ttf";
 
@@ -21,6 +23,16 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_ANDROID
     qputenv("ANDROID_OPENSSL_SUFFIX", "_3");
 #endif
+
+    qSetMessagePattern("%{time hh:mm:ss.zzz}|##|"
+                       "%{if-debug}D%{endif}%{if-info}I%{endif}%{if-warning}W%{endif}%{if-critical}"
+                       "C%{endif}%{if-fatal}F%{endif}|##|"
+                       "%{category}|##|"
+                       "%{message}|##|"
+                       "%{function}|##|"
+                       "%{line}");
+    const auto originalHandler = qInstallMessageHandler(Logging::logMessageHandler);
+    Logging::setAdditionalMessageHandler(originalHandler);
 
     QGuiApplication::setAttribute(Qt::AA_Use96Dpi);
     QGuiApplication app(argc, argv);

@@ -29,6 +29,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/DashboardConfigurationView.qml
               qml/DashboardView.qml
               qml/ImprintView.qml
+              qml/LoggingView.qml
               qml/NodeAttributeList.qml
               qml/NodeDetailView.qml
               qml/NodeReferenceList.qml
@@ -62,6 +63,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/style/ThemeImprintView.qml
               qml/style/ThemeItemSelector.qml
               qml/style/ThemeListView.qml
+              qml/style/ThemeLoggingView.qml
               qml/style/ThemeMainWindow.qml
               qml/style/ThemeNodesView.qml
               qml/style/ThemeScrollBar.qml
@@ -74,6 +76,8 @@ qt_add_qml_module(appOPC_UA_Browser
             backend.h backend.cpp
             dashboarditem.h dashboarditem.cpp
             dashboarditemmodel.h dashboarditemmodel.cpp
+            logging.h logging.cpp
+            loggingviewmodel.h loggingviewmodel.cpp
             monitoreditem.h monitoreditem.cpp
             monitoreditemmodel.h monitoreditemmodel.cpp
             opcuahelper.h opcuahelper.cpp
@@ -101,6 +105,7 @@ qt_add_resources(appOPC_UA_Browser "icons"
           icons/forward.svg
           icons/info.svg
           icons/inverse.svg
+          icons/log.svg
           icons/logo_basyskom.svg
           icons/menu.svg
           icons/plus.svg

@@ -6,6 +6,7 @@
  */
 
 #include <QColor>
+#include <QLoggingCategory>
 #include <QSortFilterProxyModel>
 
 #include <QOpcUaClient>
@@ -17,6 +18,8 @@
 #include "opcuahelper.h"
 #include "referencemodel.h"
 #include "treeitem.h"
+
+Q_LOGGING_CATEGORY(treeItemLog, "opcua_browser.treeitem");
 
 static constexpr QOpcUa::NodeAttributes objectAttributes = QOpcUa::NodeAttribute::EventNotifier;
 static constexpr QOpcUa::NodeAttributes variableAttributes = QOpcUa::NodeAttribute::Value
@@ -67,7 +70,7 @@ bool readNodeClassSpecificAttributes(QOpcUaNode *node, QOpcUa::NodeClass nodeCla
         break;
     case QOpcUa::NodeClass::Undefined:
     default:
-        qWarning() << "Unknown node class:" << nodeClass;
+        qCWarning(treeItemLog) << "Unknown node class:" << nodeClass;
         Q_UNREACHABLE();
         break;
     }
@@ -125,7 +128,7 @@ QAbstractItemModel *TreeItem::references() const noexcept
 TreeItem *TreeItem::child(int row)
 {
     if (row >= mChildItems.size())
-        qCritical() << "TreeItem in row" << row << "does not exist.";
+        qCCritical(treeItemLog) << "TreeItem in row" << row << "does not exist.";
     return mChildItems[row];
 }
 
@@ -277,7 +280,7 @@ void TreeItem::refreshAttributes()
     });
 
     if (!readNodeClassSpecificAttributes(node, mNodeClass)) {
-        qWarning() << "Reading attributes" << node->nodeId() << "failed";
+        qCWarning(treeItemLog) << "Reading attributes" << node->nodeId() << "failed";
         node->deleteLater();
     }
 }
@@ -301,8 +304,8 @@ bool TreeItem::browse()
             [=](const QList<QOpcUaReferenceDescription> &refNodes,
                 QOpcUa::UaStatusCode statusCode) {
                 if (statusCode != QOpcUa::Good) {
-                    qWarning() << "Browsing node" << node->nodeId()
-                               << "finally failed:" << statusCode;
+                    qCWarning(treeItemLog)
+                            << "Browsing node" << node->nodeId() << "finally failed:" << statusCode;
                     node->deleteLater();
                     return;
                 }
@@ -333,7 +336,7 @@ bool TreeItem::browse()
     request.setReferenceTypeId(QOpcUa::ReferenceTypeId::References);
     request.setIncludeSubtypes(true);
     if (!node->browse(request)) {
-        qWarning() << "Browsing node" << node->nodeId() << "failed";
+        qCWarning(treeItemLog) << "Browsing node" << node->nodeId() << "failed";
         node->deleteLater();
         return false;
     }
