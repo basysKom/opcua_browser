@@ -11,6 +11,8 @@
 #include <QAbstractListModel>
 #include <QQmlEngine>
 
+class LoggingViewFilterModel;
+
 class LoggingViewModel : public QAbstractListModel
 {
     Q_OBJECT
@@ -22,6 +24,8 @@ public:
     QHash<int, QByteArray> roleNames() const override;
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role) const override;
+
+    LoggingViewFilterModel *getFilteredModel() const noexcept;
 
     void addLogMessage(QtMsgType type, const QString &message);
     Q_INVOKABLE void clearItems();
@@ -44,6 +48,7 @@ private:
     };
 
     QList<LogMessage> mItems;
+    LoggingViewFilterModel *mFilteredModel;
 };
 
 #endif // LOGGINGVIEWMODEL_H

@@ -77,6 +77,7 @@ qt_add_qml_module(appOPC_UA_Browser
             dashboarditem.h dashboarditem.cpp
             dashboarditemmodel.h dashboarditemmodel.cpp
             logging.h logging.cpp
+            loggingviewfiltermodel.h loggingviewfiltermodel.cpp
             loggingviewmodel.h loggingviewmodel.cpp
             monitoreditem.h monitoreditem.cpp
             monitoreditemmodel.h monitoreditemmodel.cpp

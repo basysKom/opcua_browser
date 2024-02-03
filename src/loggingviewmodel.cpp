@@ -5,7 +5,10 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#include "loggingviewfiltermodel.h"
 #include "loggingviewmodel.h"
+
+static constexpr quint16 MAX_ITEMS = 1000;
 
 enum Roles : int {
     MessageRole = Qt::DisplayRole,
@@ -14,7 +17,12 @@ enum Roles : int {
     CategoryRole
 };
 
-LoggingViewModel::LoggingViewModel(QObject *parent) : QAbstractListModel{ parent } { }
+LoggingViewModel::LoggingViewModel(QObject *parent) : QAbstractListModel{ parent }
+{
+    mFilteredModel = new LoggingViewFilterModel(parent);
+    mFilteredModel->setSourceModel(this);
+    mFilteredModel->setFilterRole(TypeRole);
+}
 
 QHash<int, QByteArray> LoggingViewModel::roleNames() const
 {
@@ -50,6 +58,11 @@ QVariant LoggingViewModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+LoggingViewFilterModel *LoggingViewModel::getFilteredModel() const noexcept
+{
+    return mFilteredModel;
+}
+
 void LoggingViewModel::addLogMessage(QtMsgType type, const QString &message)
 {
     const QStringList parts = message.split("|##|");
@@ -61,6 +74,15 @@ void LoggingViewModel::addLogMessage(QtMsgType type, const QString &message)
     beginInsertRows(QModelIndex(), 0, 0);
     mItems.prepend(msg);
     endInsertRows();
+
+    // if the maximum number has been reached, remove 20% of the elements from the list
+    const int rows = rowCount();
+    if (rows > MAX_ITEMS) {
+        const int lastElement = 4 * MAX_ITEMS / 5;
+        beginRemoveRows(QModelIndex(), lastElement, rows);
+        mItems.remove(lastElement, mItems.size() - lastElement);
+        endRemoveRows();
+    }
 }
 
 void LoggingViewModel::clearItems()
