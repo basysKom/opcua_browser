@@ -129,9 +129,9 @@ QVector<QString> BackEnd::endpointList() const
     return list;
 }
 
-LoggingViewModel *BackEnd::loggingViewModel() const noexcept
+LoggingViewFilterModel *BackEnd::loggingViewModel() const noexcept
 {
-    return mLoggingViewModel;
+    return mLoggingViewModel->getFilteredModel();
 }
 
 OpcUaModel *BackEnd::opcUaModel() const noexcept

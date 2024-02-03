@@ -17,6 +17,7 @@ Button {
     height: 36
 
     property ThemeButton theme: Style.button
+    property int radius: 5
 
     palette.brightText: theme.highlightedTextColor
     palette.buttonText: theme.textColor
@@ -25,6 +26,6 @@ Button {
         color: button.highlighted ? button.theme.highlightedBackground : button.theme.background
         border.color: button.highlighted ? button.theme.highlightedBorderColor : button.theme.borderColor
         border.width: 1
-        radius: 5
+        radius: button.radius
     }
 }

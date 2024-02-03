@@ -17,6 +17,7 @@
 #include <QOpcUaErrorState>
 
 #include "dashboarditemmodel.h"
+#include "loggingviewfiltermodel.h"
 #include "loggingviewmodel.h"
 #include "opcuamodel.h"
 
@@ -48,7 +49,7 @@ public:
                        recentConnectionsChanged FINAL)
     Q_PROPERTY(QVector<QString> serverList READ serverList NOTIFY serverListChanged FINAL)
     Q_PROPERTY(QVector<QString> endpointList READ endpointList NOTIFY endpointListChanged FINAL)
-    Q_PROPERTY(LoggingViewModel *loggingViewModel READ loggingViewModel NOTIFY
+    Q_PROPERTY(LoggingViewFilterModel *loggingViewModel READ loggingViewModel NOTIFY
                        loggingViewModelChanged FINAL)
     Q_PROPERTY(OpcUaModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
     Q_PROPERTY(DashboardItemModel *dashboardItemModel READ dashboardItemModel NOTIFY
@@ -72,7 +73,7 @@ public:
     QVector<QString> recentConnections() const noexcept;
     QVector<QString> serverList() const noexcept;
     QVector<QString> endpointList() const;
-    LoggingViewModel *loggingViewModel() const noexcept;
+    LoggingViewFilterModel *loggingViewModel() const noexcept;
     OpcUaModel *opcUaModel() const noexcept;
     DashboardItemModel *dashboardItemModel() const noexcept;
     QStringListModel *defaultVariableDashboards() const noexcept;
