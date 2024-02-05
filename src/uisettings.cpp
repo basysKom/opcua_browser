@@ -31,6 +31,7 @@
 
 /* ************************************************************************** */
 
+#ifdef Q_OS_ANDROID
 static bool isLightTheme = false;
 static bool areRefreshSlotsConnected = false;
 
@@ -40,6 +41,7 @@ static bool isQColorLight(const QColor &color)
             1.0 - (0.299 * color.red() + 0.587 * color.green() + 0.114 * color.blue()) / 255.0;
     return (darkness < 0.2);
 }
+#endif
 
 #ifdef Q_OS_ANDROID
 static QJniObject getAndroidWindow()
@@ -78,6 +80,8 @@ void UiSettings::setStatusAndNavigationBarColor(const QColor &color)
 
         setStatusAndNavigationBarTheme(isLightTheme);
     });
+#else
+    Q_UNUSED(color)
 #endif
 }
 
@@ -138,5 +142,7 @@ void UiSettings::setStatusAndNavigationBarTheme(bool isLight)
             }
         }
     });
+#else
+    Q_UNUSED(isLight)
 #endif
 }

@@ -35,7 +35,7 @@ QHash<int, QByteArray> MonitoredItemModel::roleNames() const
     };
 }
 
-int MonitoredItemModel::rowCount(const QModelIndex &parent) const
+int MonitoredItemModel::rowCount(const QModelIndex &) const
 {
     return mItems.size();
 }

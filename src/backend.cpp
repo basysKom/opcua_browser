@@ -118,7 +118,7 @@ QVector<QString> BackEnd::endpointList() const
     QVector<QString> list;
     for (const auto &endpoint : mEndpointList) {
         int index = endpoint.securityMode();
-        if ((index < 0) || (index >= modes.size())) {
+        if ((index < 0) || (index >= (int)modes.size())) {
             qCWarning(backendLog) << "Invalid security mode";
             index = 0;
         }
