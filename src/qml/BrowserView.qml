@@ -90,7 +90,7 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 10
         width: parent.width / 3
-        visible: (view.type !== BrowserView.Type.ExpertMode)
+        visible: (view.type !== BrowserView.Type.ExpertMode) && BackEnd.opcUaModel.hasSelectedItems
         text: qsTr("Ok")
 
         onClicked: view.selectionAccepted()
