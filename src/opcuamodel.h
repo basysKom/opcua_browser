@@ -21,6 +21,8 @@ class OpcUaModel : public QAbstractItemModel
     Q_OBJECT
     QML_ANONYMOUS
 
+    Q_PROPERTY(bool hasSelectedItems READ hasSelectedItems NOTIFY hasSelectedItemsChanged FINAL)
+
 public:
     explicit OpcUaModel(QObject *parent = nullptr);
 
@@ -47,9 +49,11 @@ public:
     Q_INVOKABLE void refreshAttributesForCurrentIndex();
     Q_INVOKABLE void clearSelectionList();
 
+    bool hasSelectedItems() const noexcept;
     const QStringList &selectedNodes() const noexcept;
 
 signals:
+    void hasSelectedItemsChanged();
     void browsingForReferenceTypesFinished();
     void browsingForDataTypesFinished();
     void currentIndexChanged(const QModelIndex &index);

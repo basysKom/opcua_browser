@@ -157,6 +157,7 @@ bool OpcUaModel::setData(const QModelIndex &index, const QVariant &value, int ro
             mSelectedNodeIds.removeAll(nodeId);
             emit dataChanged(index, index, QList<int>() << SelectedRole);
         }
+        emit hasSelectedItemsChanged();
     }
 
     return true;
@@ -314,6 +315,12 @@ void OpcUaModel::clearSelectionList()
     // after resetting the selected nodes, the list mSelectedNodeIds should be empty
     Q_ASSERT(mSelectedNodeIds.isEmpty());
     mSelectedNodeIds.clear();
+    emit hasSelectedItemsChanged();
+}
+
+bool OpcUaModel::hasSelectedItems() const noexcept
+{
+    return !mSelectedNodeIds.isEmpty();
 }
 
 const QStringList &OpcUaModel::selectedNodes() const noexcept
@@ -324,6 +331,8 @@ const QStringList &OpcUaModel::selectedNodes() const noexcept
 void OpcUaModel::resetModel()
 {
     mSelectedNodeIds.clear();
+    emit hasSelectedItemsChanged();
+
     beginResetModel();
     if (nullptr == mOpcUaClient) {
         mRootItem.reset();
