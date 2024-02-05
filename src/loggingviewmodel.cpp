@@ -34,7 +34,7 @@ QHash<int, QByteArray> LoggingViewModel::roleNames() const
     };
 }
 
-int LoggingViewModel::rowCount(const QModelIndex &parent) const
+int LoggingViewModel::rowCount(const QModelIndex &) const
 {
     return mItems.size();
 }

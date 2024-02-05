@@ -114,6 +114,8 @@ qt_add_resources(appOPC_UA_Browser "icons"
           icons/save.svg
           icons/settings.svg)
 
+target_compile_options(appOPC_UA_Browser PRIVATE -Wall -Wextra -Wdeprecated)
+
 target_link_libraries(appOPC_UA_Browser
     PRIVATE Qt6::Core Qt6::Quick Qt6::QuickControls2 Qt::OpcUa
 )

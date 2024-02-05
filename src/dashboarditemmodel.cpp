@@ -37,7 +37,7 @@ QHash<int, QByteArray> DashboardItemModel::roleNames() const
     };
 }
 
-int DashboardItemModel::rowCount(const QModelIndex &parent) const
+int DashboardItemModel::rowCount(const QModelIndex &) const
 {
     return mItems.size();
 }

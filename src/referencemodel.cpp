@@ -28,7 +28,7 @@ QHash<int, QByteArray> ReferenceModel::roleNames() const
     };
 }
 
-int ReferenceModel::rowCount(const QModelIndex &parent) const
+int ReferenceModel::rowCount(const QModelIndex &) const
 {
     return mReferences.size();
 }

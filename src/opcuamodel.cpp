@@ -239,7 +239,7 @@ int OpcUaModel::rowCount(const QModelIndex &parent) const
     return parentItem ? parentItem->childCount() : 0;
 }
 
-int OpcUaModel::columnCount(const QModelIndex &parent) const
+int OpcUaModel::columnCount(const QModelIndex &) const
 {
     return 1;
 }
@@ -458,8 +458,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
         }
 
         if (!nodeId.isEmpty()) {
-            mReferencesList[nodeId] =
-                    std::move(ReferenceType(displayName, inverseName, isHierachical));
+            mReferencesList[nodeId] = ReferenceType(displayName, inverseName, isHierachical);
         }
 
         // Third step: delete node
@@ -467,8 +466,7 @@ void OpcUaModel::browseReferenceTypes(QOpcUaNode *node, bool isHierachical)
     });
 
     connect(node, &QOpcUaNode::browseFinished, this,
-            [=](const QList<QOpcUaReferenceDescription> &children,
-                QOpcUa::UaStatusCode statusCode) {
+            [=](const QList<QOpcUaReferenceDescription> &children, QOpcUa::UaStatusCode) {
                 if (nullptr == mOpcUaClient) {
                     qCWarning(opcuaModelLog) << "OPC UA client is null" << node->nodeId();
                     deleteNode(node);
@@ -554,8 +552,7 @@ void OpcUaModel::browseDataTypes(QOpcUaNode *node)
     });
 
     connect(node, &QOpcUaNode::browseFinished, this,
-            [=](const QList<QOpcUaReferenceDescription> &children,
-                QOpcUa::UaStatusCode statusCode) {
+            [=](const QList<QOpcUaReferenceDescription> &children, QOpcUa::UaStatusCode) {
                 if (nullptr == mOpcUaClient) {
                     qCWarning(opcuaModelLog) << "OPC UA client is null" << node->nodeId();
                     deleteNode(node);

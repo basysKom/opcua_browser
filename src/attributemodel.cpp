@@ -22,7 +22,7 @@ QHash<int, QByteArray> AttributeModel::roleNames() const
     };
 }
 
-int AttributeModel::rowCount(const QModelIndex &parent) const
+int AttributeModel::rowCount(const QModelIndex &) const
 {
     return mAttributes.size();
 }
