@@ -9,5 +9,7 @@ import QtQuick
 
 StyleDefinitions {
     property color background: anthrazite
+    property color backgroundListView: dark
+    property color backgroundSelected: mediumDark
     property color textColor: foreground
 }

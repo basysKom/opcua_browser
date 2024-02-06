@@ -40,6 +40,8 @@ ThemeDefault {
 
     settingsView {
         background: light
+        backgroundListView: foreground
+        backgroundSelected: mediumLight
         textColor: anthrazite
     }
 

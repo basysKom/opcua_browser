@@ -26,6 +26,11 @@ static QString defaultPkiPath()
     return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/pki";
 }
 
+static QString defaultTrustedCertsPath()
+{
+    return defaultPkiPath() % "/trusted/certs/";
+}
+
 static void addItemToStringListModel(QStringListModel *model, const QString &name)
 {
     QStringList keys = model->stringList();
@@ -39,6 +44,7 @@ static void addItemToStringListModel(QStringListModel *model, const QString &nam
 
 BackEnd::BackEnd(QObject *parent)
     : QObject{ parent },
+      mCertificateItemModel(new CertificateItemModel(defaultTrustedCertsPath(), this)),
       mLoggingViewModel(new LoggingViewModel(this)),
       mOpcUaModel(new OpcUaModel(this)),
       mOpcUaProvider(new QOpcUaProvider(this)),
@@ -95,17 +101,17 @@ int BackEnd::connectionState() const
     return mOpcUaClient->state();
 }
 
-QString BackEnd::stateText() const noexcept
+const QString &BackEnd::stateText() const noexcept
 {
     return mState;
 }
 
-QVector<QString> BackEnd::recentConnections() const noexcept
+const QVector<QString> &BackEnd::recentConnections() const noexcept
 {
     return mLastServerHosts;
 }
 
-QVector<QString> BackEnd::serverList() const noexcept
+const QVector<QString> &BackEnd::serverList() const noexcept
 {
     return mServerList;
 }
@@ -127,6 +133,11 @@ QVector<QString> BackEnd::endpointList() const
                         .arg(endpoint.securityPolicy(), modes[index], endpoint.endpointUrl());
     }
     return list;
+}
+
+CertificateItemModel *BackEnd::certificateItemModel() const noexcept
+{
+    return mCertificateItemModel;
 }
 
 LoggingViewFilterModel *BackEnd::loggingViewModel() const noexcept
@@ -254,7 +265,7 @@ void BackEnd::connectToEndpoint(const QOpcUaEndpointDescription &endpoint, bool 
     const QByteArray ba = mCurrentEndpoint.serverCertificate();
     // Use hash as file name to recognise whether the server certificate is already saved
     const QString hash = QString(QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex());
-    const QString trustedCertsPath = defaultPkiPath() + "/trusted/certs/";
+    const QString trustedCertsPath = defaultTrustedCertsPath();
     if (QDir().mkpath(trustedCertsPath)) {
         const QString filename = trustedCertsPath + QStringLiteral("%1.der").arg(hash);
         if (!QFile::exists(filename)) {
@@ -262,6 +273,10 @@ void BackEnd::connectToEndpoint(const QOpcUaEndpointDescription &endpoint, bool 
             if (file.open(QIODevice::WriteOnly)) {
                 file.write(ba);
                 file.close();
+
+                if (mCertificateItemModel) {
+                    mCertificateItemModel->updateCertificateList();
+                }
             }
         }
     }
