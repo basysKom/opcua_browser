@@ -74,6 +74,7 @@ qt_add_qml_module(appOPC_UA_Browser
     SOURCES attribute.h attribute.cpp
             attributemodel.h attributemodel.cpp
             backend.h backend.cpp
+            certificateitemmodel.h certificateitemmodel.cpp
             dashboarditem.h dashboarditem.cpp
             dashboarditemmodel.h dashboarditemmodel.cpp
             logging.h logging.cpp

@@ -16,6 +16,7 @@
 #include <QOpcUaProvider>
 #include <QOpcUaErrorState>
 
+#include "certificateitemmodel.h"
 #include "dashboarditemmodel.h"
 #include "loggingviewfiltermodel.h"
 #include "loggingviewmodel.h"
@@ -49,6 +50,8 @@ public:
                        recentConnectionsChanged FINAL)
     Q_PROPERTY(QVector<QString> serverList READ serverList NOTIFY serverListChanged FINAL)
     Q_PROPERTY(QVector<QString> endpointList READ endpointList NOTIFY endpointListChanged FINAL)
+    Q_PROPERTY(CertificateItemModel *certificateItemModel READ certificateItemModel NOTIFY
+                       certificateItemModelChanged FINAL)
     Q_PROPERTY(LoggingViewFilterModel *loggingViewModel READ loggingViewModel NOTIFY
                        loggingViewModelChanged FINAL)
     Q_PROPERTY(OpcUaModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
@@ -69,10 +72,11 @@ public:
 
     bool isConnected() const;
     int connectionState() const;
-    QString stateText() const noexcept;
-    QVector<QString> recentConnections() const noexcept;
-    QVector<QString> serverList() const noexcept;
+    const QString &stateText() const noexcept;
+    const QVector<QString> &recentConnections() const noexcept;
+    const QVector<QString> &serverList() const noexcept;
     QVector<QString> endpointList() const;
+    CertificateItemModel *certificateItemModel() const noexcept;
     LoggingViewFilterModel *loggingViewModel() const noexcept;
     OpcUaModel *opcUaModel() const noexcept;
     DashboardItemModel *dashboardItemModel() const noexcept;
@@ -117,6 +121,7 @@ signals:
     void endpointListChanged();
     void stateTextChanged();
     void connectionStateChanged();
+    void certificateItemModelChanged();
     void loggingViewModelChanged();
     void opcUaModelChanged();
     void defaultVariableDashboardsChanged();
@@ -156,6 +161,7 @@ private:
     void loadLastServerHostsFromSettings();
     void saveServerHost(const QString &host);
 
+    CertificateItemModel *mCertificateItemModel;
     LoggingViewModel *mLoggingViewModel;
 
     OpcUaModel *mOpcUaModel;
