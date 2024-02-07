@@ -17,6 +17,11 @@ ThemeDefault {
         }
     }
 
+    messageView {
+        background: light
+        textColor: accent
+    }
+
     imprintView {
         background: light
         textColor: anthrazite

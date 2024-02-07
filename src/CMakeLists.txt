@@ -30,6 +30,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/DashboardView.qml
               qml/ImprintView.qml
               qml/LoggingView.qml
+              qml/MessageView.qml
               qml/NodeAttributeList.qml
               qml/NodeDetailView.qml
               qml/NodeReferenceList.qml
@@ -65,6 +66,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/style/ThemeListView.qml
               qml/style/ThemeLoggingView.qml
               qml/style/ThemeMainWindow.qml
+              qml/style/ThemeMessageView.qml
               qml/style/ThemeNodesView.qml
               qml/style/ThemeScrollBar.qml
               qml/style/ThemeSettingsView.qml
