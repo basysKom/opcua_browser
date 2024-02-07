@@ -20,8 +20,8 @@ MonitoredItem::MonitoredItem(QOpcUaNode *node, QObject *parent) : QObject(parent
         connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this,
                 &MonitoredItem::handleAttributes);
 
-        node->readAttributes(QOpcUa::NodeAttribute::BrowseName | QOpcUa::NodeAttribute::DisplayName
-                             | QOpcUa::NodeAttribute::Value);
+        node->readAttributes(QOpcUa::NodeAttribute::BrowseName
+                             | QOpcUa::NodeAttribute::DisplayName);
 
         QOpcUaMonitoringParameters p(100);
         node->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
@@ -80,6 +80,12 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
             if (newValue != mValue) {
                 mValue = newValue;
                 emit valueChanged();
+            }
+
+            // Workaround: enableMonitoring always returns QOpcUa::Good => Read in value again
+            if (!mHasReadValue) {
+                mHasReadValue = true;
+                mOpcNode->readAttributes(QOpcUa::NodeAttribute::Value);
             }
         }
     }
