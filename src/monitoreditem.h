@@ -42,6 +42,7 @@ private:
     QString mDisplayName;
     QString mValue;
     QOpcUa::UaStatusCode mStatusCode = QOpcUa::Good;
+    bool mHasReadValue = false;
 };
 
 #endif // MONITOREDITEM_H
