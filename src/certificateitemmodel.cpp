@@ -70,10 +70,10 @@ QVariant CertificateItemModel::data(const QModelIndex &index, int role) const
         return mItems[index.row()].mSslCertificate.issuerDisplayName();
     case EffectiveDateRole:
         return mItems[index.row()].mSslCertificate.effectiveDate().toString(
-                QLocale().dateFormat(QLocale::ShortFormat));
+                QLocale().dateFormat(QLocale::LongFormat));
     case ExpiryDateRole:
         return mItems[index.row()].mSslCertificate.expiryDate().toString(
-                QLocale().dateFormat(QLocale::ShortFormat));
+                QLocale().dateFormat(QLocale::LongFormat));
     case FingerprintRole:
         return mItems[index.row()].mFingerprint;
     case SerialNumberRole:
@@ -81,18 +81,29 @@ QVariant CertificateItemModel::data(const QModelIndex &index, int role) const
     case VersionRole:
         return mItems[index.row()].mSslCertificate.version();
     case CommonNameRole:
-        return mItems[index.row()].mSslCertificate.issuerInfo(QSslCertificate::CommonName);
+        return mItems[index.row()]
+                .mSslCertificate.issuerInfo(QSslCertificate::CommonName)
+                .join(",");
     case OrganizationRole:
-        return mItems[index.row()].mSslCertificate.issuerInfo(QSslCertificate::Organization);
+        return mItems[index.row()]
+                .mSslCertificate.issuerInfo(QSslCertificate::Organization)
+                .join(",");
     case OrganizationUnitRole:
-        return mItems[index.row()].mSslCertificate.issuerInfo(
-                QSslCertificate::OrganizationalUnitName);
+        return mItems[index.row()]
+                .mSslCertificate.issuerInfo(QSslCertificate::OrganizationalUnitName)
+                .join(",");
     case LocalityNameRole:
-        return mItems[index.row()].mSslCertificate.issuerInfo(QSslCertificate::LocalityName);
+        return mItems[index.row()]
+                .mSslCertificate.issuerInfo(QSslCertificate::LocalityName)
+                .join(",");
     case CountryNameRole:
-        return mItems[index.row()].mSslCertificate.issuerInfo(QSslCertificate::CountryName);
+        return mItems[index.row()]
+                .mSslCertificate.issuerInfo(QSslCertificate::CountryName)
+                .join(",");
     case StateOrProvinceNameRole:
-        return mItems[index.row()].mSslCertificate.issuerInfo(QSslCertificate::StateOrProvinceName);
+        return mItems[index.row()]
+                .mSslCertificate.issuerInfo(QSslCertificate::StateOrProvinceName)
+                .join(",");
     case CurrentItemRole:
         return mCurrentIndex == index.row();
     }

@@ -180,14 +180,14 @@ bool BackEnd::hasLastDashboards() const noexcept
     return mHasLastDashboards;
 }
 
-bool BackEnd::showUrlMismatchMessage() const noexcept
+BackEnd::MessageType BackEnd::messageType() const noexcept
 {
-    return mShowUrlMismatchMessage;
+    return mMessageType;
 }
 
-bool BackEnd::showEndpointReplacementMessage() const noexcept
+const CertificateInfo &BackEnd::certificateInfo() const noexcept
 {
-    return mShowEndpointReplacementMessage;
+    return mCertificateInfo;
 }
 
 void BackEnd::clearServerList()
@@ -202,15 +202,63 @@ void BackEnd::clearEndpointList()
     emit endpointListChanged();
 }
 
-void BackEnd::connectToEndpoint(int endpointIndex)
+void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QString &userName,
+                                const QString &password)
 {
-    connectToEndpoint(endpointIndex, false);
-}
+    if ((endpointIndex < 0) || (endpointIndex >= mEndpointList.size())) {
+        setState(QStringLiteral("endpoint index out of range"));
+        qCCritical(backendLog)
+                << QStringLiteral("endpoint index out of range, index: %1, endpoint list size: %2")
+                           .arg(endpointIndex)
+                           .arg(mEndpointList.size());
+        return;
+    }
 
-void BackEnd::connectToEndpointWithPassword(int endpointIndex, const QString &userName,
-                                            const QString &password)
-{
-    connectToEndpoint(endpointIndex, true, userName, password);
+    mConnectionConfiguration.mEndpoint = mEndpointList[endpointIndex];
+    mConnectionConfiguration.mUsePassword = usePassword;
+    if (usePassword) {
+        mConnectionConfiguration.mUsername = userName;
+        mConnectionConfiguration.mPassword = password;
+    }
+
+    // Automatically add server certificate to the trusted certificates
+    const QByteArray ba = mEndpointList[endpointIndex].serverCertificate();
+    // Use hash as file name to recognise whether the server certificate is already saved
+    const QString hash = QString(QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex());
+    const QString trustedCertsPath = defaultTrustedCertsPath();
+    if (QDir().mkpath(trustedCertsPath)) {
+        const QString filename = trustedCertsPath + QStringLiteral("%1.der").arg(hash);
+        if (!QFile::exists(filename)) {
+            const QSslCertificate ssl(ba, QSsl::Der);
+            mCertificateInfo.mFilename = filename;
+            mCertificateInfo.mServerCertificate = ba;
+            mCertificateInfo.mExpiryDate =
+                    ssl.expiryDate().toString(QLocale().dateFormat(QLocale::LongFormat));
+            mCertificateInfo.mEffectiveDate =
+                    ssl.effectiveDate().toString(QLocale().dateFormat(QLocale::LongFormat));
+            mCertificateInfo.mIssuerCommonName =
+                    ssl.issuerInfo(QSslCertificate::CommonName).join(",");
+            mCertificateInfo.mIssuerOrganization =
+                    ssl.issuerInfo(QSslCertificate::Organization).join(",");
+            mCertificateInfo.mIssuerOrganizationUnit =
+                    ssl.issuerInfo(QSslCertificate::OrganizationalUnitName).join(",");
+            mCertificateInfo.mIssuerLocality =
+                    ssl.issuerInfo(QSslCertificate::LocalityName).join(",");
+            mCertificateInfo.mIssuerState =
+                    ssl.issuerInfo(QSslCertificate::StateOrProvinceName).join(",");
+            mCertificateInfo.mIssuerCountry =
+                    ssl.issuerInfo(QSslCertificate::CountryName).join(",");
+            mCertificateInfo.mFingerprint = ssl.digest(QCryptographicHash::Sha256).toHex();
+            mCertificateInfo.mSerialNumber = QString(ssl.serialNumber()).remove(':');
+            emit certificateInfoChanged();
+
+            mMessageType = MessageType::TrustCertificate;
+            emit messageTypeChanged();
+            return;
+        }
+    }
+
+    connectToEndpoint();
 }
 
 void BackEnd::disconnectFromEndpoint()
@@ -240,56 +288,21 @@ void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId)
     model->addItem(node);
 }
 
-void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QString &userName,
-                                const QString &password)
+void BackEnd::connectToEndpoint()
 {
-    if ((endpointIndex < 0) || (endpointIndex >= mEndpointList.size())) {
-        setState(QStringLiteral("endpoint index out of range"));
-        qCCritical(backendLog)
-                << QStringLiteral("endpoint index out of range, index: %1, endpoint list size: %2")
-                           .arg(endpointIndex)
-                           .arg(mEndpointList.size());
-        return;
-    }
-
-    connectToEndpoint(mEndpointList[endpointIndex], usePassword, userName, password);
-}
-
-void BackEnd::connectToEndpoint(const QOpcUaEndpointDescription &endpoint, bool usePassword,
-                                const QString &userName, const QString &password)
-{
-    mCurrentEndpoint = endpoint;
-    setState(QStringLiteral("connected to client \"%1\"").arg(mCurrentEndpoint.securityPolicy()));
-
-    // Automatically add server certificate to the trusted certificates
-    const QByteArray ba = mCurrentEndpoint.serverCertificate();
-    // Use hash as file name to recognise whether the server certificate is already saved
-    const QString hash = QString(QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex());
-    const QString trustedCertsPath = defaultTrustedCertsPath();
-    if (QDir().mkpath(trustedCertsPath)) {
-        const QString filename = trustedCertsPath + QStringLiteral("%1.der").arg(hash);
-        if (!QFile::exists(filename)) {
-            QFile file(filename);
-            if (file.open(QIODevice::WriteOnly)) {
-                file.write(ba);
-                file.close();
-
-                if (mCertificateItemModel) {
-                    mCertificateItemModel->updateCertificateList();
-                }
-            }
-        }
-    }
+    setState(QStringLiteral("connected to client \"%1\"")
+                     .arg(mConnectionConfiguration.mEndpoint.securityPolicy()));
 
     createClient();
 
-    if (usePassword) {
+    if (mConnectionConfiguration.mUsePassword) {
         QOpcUaAuthenticationInformation authInfo;
-        authInfo.setUsernameAuthentication(userName, password);
+        authInfo.setUsernameAuthentication(mConnectionConfiguration.mUsername,
+                                           mConnectionConfiguration.mPassword);
         mOpcUaClient->setAuthenticationInformation(authInfo);
     }
 
-    mOpcUaClient->connectToEndpoint(mCurrentEndpoint);
+    mOpcUaClient->connectToEndpoint(mConnectionConfiguration.mEndpoint);
 }
 
 void BackEnd::monitorSelectedNodes()
@@ -423,8 +436,8 @@ void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpo
     if (!isSuccessStatus(statusCode)) {
         qCWarning(backendLog) << "request of endpoints failed, code:" << statusCode;
         if (mServerUrl != mHostUrl) {
-            mShowUrlMismatchMessage = true;
-            emit showUrlMismatchMessageChanged();
+            mMessageType = MessageType::UrlMismatch;
+            emit messageTypeChanged();
             return;
         }
 
@@ -509,9 +522,9 @@ void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
                        .arg(errorState->errorCode(), 8, 16, QLatin1Char('0'))
                        .arg(statuscode));
 
-    if (mCurrentEndpoint.endpointUrl() != mHostUrl.toString()) {
-        mShowEndpointReplacementMessage = true;
-        emit showEndpointReplacementMessageChanged();
+    if (mConnectionConfiguration.mEndpoint.endpointUrl() != mHostUrl.toString()) {
+        mMessageType = MessageType::EndpointReplacement;
+        emit messageTypeChanged();
         return;
     }
 }
@@ -618,39 +631,42 @@ void BackEnd::applicationSuspended()
     }
 }
 
-void BackEnd::useHostUrlForEndpointRequest()
+void BackEnd::hideMessage()
 {
-    hideUrlMismatchMessage();
-    requestEndpoints(mHostUrl.toString());
+    mMessageType = MessageType::NoMessage;
+    emit messageTypeChanged();
 }
 
-void BackEnd::hideUrlMismatchMessage()
+void BackEnd::useHostUrlForEndpointRequest()
 {
-    mShowUrlMismatchMessage = false;
-    emit showUrlMismatchMessageChanged();
+    hideMessage();
+    requestEndpoints(mHostUrl.toString());
 }
 
 void BackEnd::useHostUrlForEndpointConnection()
 {
-    hideEndpointReplacementMessage();
+    hideMessage();
 
-    mCurrentEndpoint.setEndpointUrl(mHostUrl.toString());
-    connectToEndpoint(mCurrentEndpoint, false);
+    mConnectionConfiguration.mEndpoint.setEndpointUrl(mHostUrl.toString());
+    connectToEndpoint();
 }
 
-void BackEnd::useHostUrlForEndpointConnectionWithPassword(const QString &userName,
-                                                          const QString &password)
+void BackEnd::trustCertificate()
 {
-    hideEndpointReplacementMessage();
+    QFile file(mCertificateInfo.mFilename);
+    if (file.open(QIODevice::WriteOnly)) {
+        file.write(mCertificateInfo.mServerCertificate);
+        file.close();
 
-    mCurrentEndpoint.setEndpointUrl(mHostUrl.toString());
-    connectToEndpoint(mCurrentEndpoint, true, userName, password);
-}
+        if (mCertificateItemModel) {
+            mCertificateItemModel->updateCertificateList();
+        }
+    } else {
+        qCWarning(backendLog) << "cannot save server certificate" << mCertificateInfo.mFilename;
+    }
 
-void BackEnd::hideEndpointReplacementMessage()
-{
-    mShowEndpointReplacementMessage = false;
-    emit showEndpointReplacementMessageChanged();
+    hideMessage();
+    connectToEndpoint();
 }
 
 void BackEnd::saveLastDashboards()

@@ -11,6 +11,7 @@ StyleDefinitions {
     property ThemeMainWindow mainWindow: ThemeMainWindow {}
     property ThemeBrowserView browserView: ThemeBrowserView {}
     property ThemeConnectionView connectionView: ThemeConnectionView {}
+    property ThemeMessageView messageView: ThemeMessageView {}
     property ThemeImprintView imprintView: ThemeImprintView {}
     property ThemeLoggingView loggingView: ThemeLoggingView {}
     property ThemeNodesView nodesView: ThemeNodesView {}

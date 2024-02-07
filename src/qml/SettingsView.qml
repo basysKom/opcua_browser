@@ -258,15 +258,7 @@ Rectangle {
                                 }*/
 
                                 SubitemTitle {
-                                    text: qsTr("Expiry date")
-                                }
-
-                                SubitemText {
-                                    text: listViewDelegate.expiryDate
-                                }
-
-                                SubitemTitle {
-                                    text: qsTr("Effective date")
+                                    text: qsTr("Valid from")
                                 }
 
                                 SubitemText {
@@ -274,12 +266,20 @@ Rectangle {
                                 }
 
                                 SubitemTitle {
-                                    text: qsTr("Fingerprint")
+                                    text: qsTr("Valid to")
+                                }
+
+                                SubitemText {
+                                    text: listViewDelegate.expiryDate
+                                }
+
+                                SubitemTitle {
+                                    text: qsTr("Fingerprint (SHA-256)")
                                 }
 
                                 SubitemText {
                                     text: listViewDelegate.fingerprint
-                                    wrapMode: Text.WrapAnywhere
+                                    wrapMode: Text.Wrap
                                 }
 
                                 SubitemTitle {
@@ -314,7 +314,7 @@ Rectangle {
 
                                 SubitemTitle {
                                     visible: localityNameText.visible
-                                    text: qsTr("Locality name")
+                                    text: qsTr("Locality")
                                 }
 
                                 SubitemText {
@@ -325,7 +325,7 @@ Rectangle {
 
                                 SubitemTitle {
                                     visible: countryNameText.visible
-                                    text: qsTr("Country name")
+                                    text: qsTr("Country")
                                 }
 
                                 SubitemText {
@@ -336,7 +336,7 @@ Rectangle {
 
                                 SubitemTitle {
                                     visible: stateOrProvinceText.visible
-                                    text: qsTr("State or province")
+                                    text: qsTr("State")
                                 }
 
                                 SubitemText {
@@ -360,7 +360,7 @@ Rectangle {
                                 SubitemText {
                                     Layout.bottomMargin: 5
                                     text: listViewDelegate.serialNumber
-                                    wrapMode: Text.WrapAnywhere
+                                    wrapMode: Text.Wrap
                                 }
                             }
                         }

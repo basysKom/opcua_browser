@@ -25,6 +25,11 @@ Item {
         stackLayout.currentIndex = connection.StackLayout.index
     }
 
+    function showMessageView() {
+        stackLayout.lastStoredViewIndex = stackLayout.currentIndex
+        stackLayout.currentIndex = message.StackLayout.index
+    }
+
     function showDashboardView() {
         stackLayout.currentIndex = dashboard.StackLayout.index
     }
@@ -66,6 +71,18 @@ Item {
                 view.showConnectionView()
             }
         }
+
+        function onMessageTypeChanged() {
+            if (BackEnd.messageType === BackEnd.MessageType.NoMessage) {
+                if (stackLayout.currentIndex === message.StackLayout.index) {
+                    view.goBack();
+                }
+            } else {
+                if (stackLayout.currentIndex !== message.StackLayout.index) {
+                    view.showMessageView();
+                }
+            }
+        }
     }
 
     StackLayout {
@@ -78,6 +95,14 @@ Item {
 
         ConnectionView {
             id: connection
+        }
+
+        MessageView {
+            id: message
+
+            selectedHostUrl: connection.selectedHostUrl
+            selectedServerUrl: connection.selectedServerUrl
+            selectedEndpointUrl: connection.selectedEndpointUrl
         }
 
         DashboardConfigurationView {
