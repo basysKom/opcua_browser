@@ -15,7 +15,7 @@ ColumnLayout {
     id: layout
 
     property int textColumnHeight: 15
-    property int comboBoxColumnHeight: 30
+    property int comboBoxColumnHeight: 36
     property alias enabled: comboBox.enabled
     property alias captionText: caption.text
     property alias model: comboBox.model

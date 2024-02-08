@@ -71,18 +71,23 @@ ApplicationWindow {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 48
 
-                IconImage {
-                    id: leftImage
-
-                    readonly property alias showBackButton: contentView.showBackButtonInHeader
-
+                Item {
                     anchors.left: parent.left
-                    anchors.leftMargin: 10
                     anchors.verticalCenter: parent.verticalCenter
-                    sourceSize.width: 24
-                    sourceSize.height: 24
-                    source: leftImage.showBackButton ? "qrc:/icons/back.svg" : "qrc:/icons/menu.svg"
-                    color: window.theme.header.iconColor
+                    width: leftImage.width + 20
+                    height: Math.min(parent.height, leftImage.height + 20)
+
+                    IconImage {
+                        id: leftImage
+
+                        readonly property alias showBackButton: contentView.showBackButtonInHeader
+
+                        anchors.centerIn: parent
+                        sourceSize.width: 24
+                        sourceSize.height: 24
+                        source: leftImage.showBackButton ? "qrc:/icons/back.svg" : "qrc:/icons/menu.svg"
+                        color: window.theme.header.iconColor
+                    }
 
                     MouseArea {
                         anchors.fill: parent

@@ -14,7 +14,7 @@ Button {
     id: button
 
     highlighted: true
-    height: 36
+    implicitHeight: 36
 
     property ThemeButton theme: Style.button
     property int radius: 5
