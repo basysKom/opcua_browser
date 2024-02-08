@@ -16,7 +16,7 @@ ColumnLayout {
     id: layout
 
     property int textColumnHeight: 15
-    property int textFieldColumnHeight: 30
+    property int textFieldColumnHeight: 36
     property alias enabled: textField.enabled
     property alias captionText: caption.text
     property alias text: textField.text
