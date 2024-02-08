@@ -458,6 +458,12 @@ void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpo
         }
         qCDebug(backendLog) << endpoint.endpointUrl() << endpoint.securityLevel()
                             << endpoint.securityMode() << endpoint.securityPolicy();
+
+        for (const auto &token : endpoint.userIdentityTokens()) {
+            qCDebug(backendLog) << token.tokenType() << token.issuedTokenType()
+                                << token.issuerEndpointUrl() << token.policyId()
+                                << token.securityPolicy();
+        }
     }
 
     emit endpointListChanged();

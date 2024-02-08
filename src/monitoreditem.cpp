@@ -83,6 +83,7 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
             }
 
             // Workaround: enableMonitoring always returns QOpcUa::Good => Read in value again
+            // Must be fixed in file qopen62541subscription.cpp line 339
             if (!mHasReadValue) {
                 mHasReadValue = true;
                 mOpcNode->readAttributes(QOpcUa::NodeAttribute::Value);
