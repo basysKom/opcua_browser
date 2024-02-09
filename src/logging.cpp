@@ -6,6 +6,7 @@
  */
 
 #include <QMutex>
+#include <QTimer>
 
 #include "logging.h"
 #include "loggingviewmodel.h"
@@ -23,7 +24,8 @@ void Logging::logMessageHandler(QtMsgType type, const QMessageLogContext &contex
 
     if (loggingModel) {
         const QString logMsg = qFormatLogMessage(type, context, msg);
-        loggingModel->addLogMessage(type, logMsg);
+        // Call function via slot to ensure that the functions are always executed in the GUI thread
+        QTimer::singleShot(0, loggingModel, [=]() { loggingModel->addLogMessage(type, logMsg); });
     }
 
     if (additionalHandler)
