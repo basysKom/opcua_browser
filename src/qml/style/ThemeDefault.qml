@@ -14,6 +14,7 @@ StyleDefinitions {
     property ThemeMessageView messageView: ThemeMessageView {}
     property ThemeImprintView imprintView: ThemeImprintView {}
     property ThemeLoggingView loggingView: ThemeLoggingView {}
+    property ThemeLicenseView licenseView: ThemeLicenseView {}
     property ThemeNodesView nodesView: ThemeNodesView {}
     property ThemeSettingsView settingsView: ThemeSettingsView {}
     property ThemeDashboard dashboard: ThemeDashboard {}

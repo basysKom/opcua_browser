@@ -29,6 +29,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/DashboardConfigurationView.qml
               qml/DashboardView.qml
               qml/ImprintView.qml
+              qml/LicenseView.qml
               qml/LoggingView.qml
               qml/MessageView.qml
               qml/NodeAttributeList.qml
@@ -63,6 +64,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/style/ThemeIconTabButton.qml
               qml/style/ThemeImprintView.qml
               qml/style/ThemeItemSelector.qml
+              qml/style/ThemeLicenseView.qml
               qml/style/ThemeListView.qml
               qml/style/ThemeLoggingView.qml
               qml/style/ThemeMainWindow.qml
@@ -109,6 +111,7 @@ qt_add_resources(appOPC_UA_Browser "icons"
           icons/forward.svg
           icons/info.svg
           icons/inverse.svg
+          icons/license.svg
           icons/log.svg
           icons/logo_basyskom.svg
           icons/menu.svg

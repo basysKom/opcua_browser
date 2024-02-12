@@ -24,6 +24,7 @@ Menu {
     signal showLogSelected
     signal showImprintSelected
     signal showSettingsSelected
+    signal showLicenseSelected
 
     modal: true
     leftPadding: 10
@@ -110,6 +111,12 @@ Menu {
         text: qsTr("Imprint")
         iconSource: "qrc:/icons/info.svg"
         onTriggered: control.showImprintSelected()
+    }
+
+    StyledMenuItem {
+        text: qsTr("License")
+        iconSource: "qrc:/icons/license.svg"
+        onTriggered: control.showLicenseSelected()
     }
 
     Item {
