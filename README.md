@@ -6,7 +6,7 @@
 -->
 # OPC UA Browser
 
-![Provided](https://img.shields.io/badge/provided%20by-basysKom%20GmbH-orange)
+[![Provided](https://img.shields.io/badge/provided%20by-basysKom%20GmbH-orange)](https://www.basyskom.de/)
 
 ![Contributors](https://img.shields.io/github/contributors/basysKom/opcua_browser?style=plastic)
 ![GitHub Downloads (all assets, latest release)](https://img.shields.io/github/downloads-pre/basysKom/opcua_browser/latest/total)
@@ -182,6 +182,26 @@ sudo docker run -it --rm -v "${PWD}:/home/user/project:ro" -v "${PWD}/../build_o
 
 ### iOS
 To be done
+
+## basysKom Toolbox
+The basysKom Toolbox is a state-of-the-art collection of best practices in Agile project management and software development. The toolbox is intended to be used during your kickoff meeting and is available in form of a card game. The cards allow the team to quickly select appropriate approaches and tools right at the beginning of the project, but they also serve as support during the project's execution, for self-reflection, and as a reminder.
+
+You can take a look at the cards on the [basysKom homepage](https://www.basyskom.de/en/toolbox/).
+
+You can find the texts of the cards also directly on [GitHub](https://github.com/basyskom/basyskom_toolbox).
+
+We use the following toolbox cards for this project
+
+[![Avoid deprecate Qt](https://img.shields.io/badge/Avoid%20deprecate%20Qt-orange)](https://www.basyskom.de/en/basyskom/toolbox/avoid-deprecated-qt/)
+[![CI keeps your project healty](https://img.shields.io/badge/CI%20keeps%20your%20project%20healty-gray)](https://www.basyskom.de/en/basyskom/toolbox/ci/)
+[![Do regular tests on the target](https://img.shields.io/badge/Do%20regular%20tests%20on%20the%20target-orange)](https://www.basyskom.de/en/basyskom/toolbox/test-on-target/)
+[![Enable build time checks for your QML files](https://img.shields.io/badge/Enable%20build%20time%20checks%20for%20your%20QML%20files-gray)](https://www.basyskom.de/en/basyskom/toolbox/build-qml/)
+[![Make good use of compiler warnings](https://img.shields.io/badge/Make%20good%20use%20of%20compiler%20warnings-orange)](https://www.basyskom.de/en/basyskom/toolbox/use-warnings/)
+[![Implement QML Best Practices](https://img.shields.io/badge/Implement%20QML%20Best%20Practices-gray)](https://www.basyskom.de/en/basyskom/toolbox/qml-best-practices/)
+[![Proper automated builds](https://img.shields.io/badge/Proper%20automated%20builds-orange)](https://www.basyskom.de/en/basyskom/toolbox/automated-builds/)
+[![Use the AdressSanitizer](https://img.shields.io/badge/Use%20the%20AdressSanitizer-gray)](https://www.basyskom.de/en/basyskom/toolbox/AdressSanitizer/)
+[![Use clazy](https://img.shields.io/badge/Use%20clazy-orange)](https://www.basyskom.de/en/basyskom/toolbox/clazy/)
+[![Valgrind or the MemorySanitizer help to ship reliable software](https://img.shields.io/badge/Valgrind%20or%20the%20MemorySanitizer%20help%20to%20ship%20reliable%20software-gray)](https://www.basyskom.de/en/basyskom/toolbox/valgrind-memorysanitizer/)
 
 ## Contributing
 
