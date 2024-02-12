@@ -22,6 +22,7 @@ ThemeDefault {
     connectionView: currentTheme.connectionView
     imprintView: currentTheme.imprintView
     loggingView: currentTheme.loggingView
+    licenseView: currentTheme.licenseView
     nodesView: currentTheme.nodesView
     settingsView: currentTheme.settingsView
     dashboard: currentTheme.dashboard

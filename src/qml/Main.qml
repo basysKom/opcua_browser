@@ -210,6 +210,7 @@ ApplicationWindow {
         onShowImprintSelected: contentView.showImprintView()
         onShowSettingsSelected: contentView.showSettingsView()
         onShowLogSelected: contentView.showLoggingView()
+        onShowLicenseSelected: contentView.showLicenseView()
     }
 
     ContentView {

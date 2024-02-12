@@ -16,6 +16,7 @@ Item {
 
     readonly property bool showBackButtonInHeader: (stackLayout.currentIndex === imprint.StackLayout.index) ||
                                                    (stackLayout.currentIndex === settings.StackLayout.index) ||
+                                                   (stackLayout.currentIndex === license.StackLayout.index) ||
                                                    (stackLayout.currentIndex === log.StackLayout.index)
     readonly property bool canSaveDashboard: dashboard.canSaveDashboard &&
                                              (stackLayout.currentIndex === dashboard.StackLayout.index)
@@ -52,6 +53,11 @@ Item {
     function showLoggingView() {
         stackLayout.lastStoredViewIndex = stackLayout.currentIndex
         stackLayout.currentIndex = log.StackLayout.index
+    }
+
+    function showLicenseView() {
+        stackLayout.lastStoredViewIndex = stackLayout.currentIndex
+        stackLayout.currentIndex = license.StackLayout.index
     }
 
     function goBack() {
@@ -229,6 +235,10 @@ Item {
 
         LoggingView {
             id: log
+        }
+
+        LicenseView {
+            id: license
         }
     }
 }

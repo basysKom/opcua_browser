@@ -37,6 +37,13 @@ ThemeDefault {
         fatalColor: "#ff7878"
     }
 
+    licenseView {
+        background: light
+        textColor: anthrazite
+        linkColor: "blue"
+        divider: mediumDark
+    }
+
     nodesView {
         backgroundSelected: mediumLight
         textColor: anthrazite
