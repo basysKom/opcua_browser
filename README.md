@@ -36,7 +36,9 @@ The information model of the OPC UA server is displayed as a tree structure usin
 
 ### Android
 
-coming soon in Google Play store
+Google Play Store
+
+[![QR code Play Store](src/android/qr_code-playstore.png)](https://play.google.com/store/apps/details?id=com.basyskom.opcua.app)
 
 ### iOS
 
