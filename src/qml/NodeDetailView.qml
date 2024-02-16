@@ -35,7 +35,7 @@ Item {
         Repeater {
             id: repeater
 
-            model: [qsTr("Attributes"), qsTr("References")]
+            model: [qsTranslate("ExpertMode", "Attributes"), qsTranslate("ExpertMode", "References")]
             StyledTabButton {
                 required property string modelData
                 text: modelData

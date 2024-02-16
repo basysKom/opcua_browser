@@ -65,7 +65,7 @@ Menu {
 
     StyledMenuItem {
         enabled: BackEnd.isConnected
-        text: qsTr("Close connection")
+        text: qsTranslate("Connection", "Close connection")
         iconSource: "qrc:/icons/disconnect.svg"
         onTriggered: control.closeConnectionSelected()
     }
@@ -73,20 +73,20 @@ Menu {
 
     /*StyledMenuItem {
         enabled: BackEnd.isConnected
-        text: qsTr("Add connection")
+        text: qsTranslate("Connection", "Add connection")
         iconSource: "qrc:/icons/connect.svg"
         onTriggered: control.addConnectionSelected()
     }*/
     StyledMenuItem {
         enabled: BackEnd.isConnected
-        text: qsTr("Expert mode")
+        text: qsTranslate("ExpertMode", "Expert mode")
         iconSource: "qrc:/icons/expert.svg"
         onTriggered: control.showExpertModeSelected()
     }
 
     StyledMenuItem {
         enabled: BackEnd.isConnected
-        text: qsTr("Dashboards")
+        text: qsTranslate("Dashboard", "Dashboards")
         iconSource: "qrc:/icons/dashboard.svg"
         onTriggered: control.showDashboardsSelected()
     }
@@ -96,25 +96,25 @@ Menu {
     }
 
     StyledMenuItem {
-        text: qsTr("Settings")
+        text: qsTranslate("General", "Settings")
         iconSource: "qrc:/icons/settings.svg"
         onTriggered: control.showSettingsSelected()
     }
 
     StyledMenuItem {
-        text: qsTr("Log")
+        text: qsTranslate("Logging", "Log")
         iconSource: "qrc:/icons/log.svg"
         onTriggered: control.showLogSelected()
     }
 
     StyledMenuItem {
-        text: qsTr("Imprint")
+        text: qsTranslate("Imprint", "Imprint")
         iconSource: "qrc:/icons/info.svg"
         onTriggered: control.showImprintSelected()
     }
 
     StyledMenuItem {
-        text: qsTr("License")
+        text: qsTranslate("License", "License")
         iconSource: "qrc:/icons/license.svg"
         onTriggered: control.showLicenseSelected()
     }

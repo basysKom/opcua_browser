@@ -8,6 +8,13 @@ Copyright: Karsten Herrler <karsten.herrler@basyskom.com>
 License: GPL-3.0-or-later
 
 Files: .github/workflows/*
-Copyright: Arno Krapf <arno.krapf@basyskom.com>
+Copyright: 2024 Arno Krapf <arno.krapf@basyskom.com>
 License: BSD-3-Clause
 
+Files: src/languages/*.ts src/languages/*.utf8
+Copyright: 2024 Karsten Herrler <karsten.herrler@basyskom.com>
+License: CC0-1.0
+
+Files: src/languages/*.png
+Copyright: 2013 Panayiotis Lipiridis (https://flagicons.lipis.dev/)
+License: MIT

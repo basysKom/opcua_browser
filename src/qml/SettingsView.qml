@@ -31,6 +31,10 @@ Rectangle {
 
     color: theme.background
 
+    LanguageItemModel {
+        id: languageModel
+    }
+
     Flickable {
         anchors.fill: parent
         anchors.bottomMargin: 10
@@ -60,7 +64,7 @@ Rectangle {
                     pointSize: 18
                     bold: true
                 }
-                text: qsTr("Settings")
+                text: qsTranslate("General", "Settings")
             }
 
             // Theme
@@ -74,7 +78,7 @@ Rectangle {
                         pointSize: 14
                         bold: true
                     }
-                    text: qsTr("Theme")
+                    text: qsTranslate("General", "Theme")
                 }
 
                 Row {
@@ -93,7 +97,7 @@ Rectangle {
                         anchors.verticalCenter: darkItemSelector.verticalCenter
                         color: view.theme.textColor
                         font.pointSize: 12
-                        text: qsTr("Dark")
+                        text: qsTranslate("General", "Dark")
                     }
 
                     Item {
@@ -114,7 +118,92 @@ Rectangle {
                         anchors.verticalCenter: brightItemSelector.verticalCenter
                         color: view.theme.textColor
                         font.pointSize: 12
-                        text: qsTr("Bright")
+                        text: qsTranslate("General", "Bright")
+                    }
+                }
+            }
+
+            // Language list view
+            Column {
+                width: parent.width - content.leftPadding - content.rightPadding
+                spacing: 5
+
+                Text {
+                    color: view.theme.textColor
+                    font {
+                        pointSize: 14
+                        bold: true
+                    }
+                    text: qsTranslate("Settings", "Language")
+                }
+
+                Rectangle {
+                    color: view.theme.backgroundListView
+                    radius: 5
+
+                    width: parent.width
+                    height: childrenRect.height
+
+                    ListView {
+                        id: languageListView
+
+                        width: parent.width
+                        height: Math.min(200, contentHeight)
+
+                        clip: true
+
+                        model: languageModel
+                        boundsBehavior: Flickable.StopAtBounds
+                        boundsMovement: Flickable.StopAtBounds
+
+                        ScrollBar.vertical: StyledScrollBar {
+                            policy: ScrollBar.AsNeeded
+                        }
+
+                        delegate: Rectangle {
+                            id: languageListViewDelegate
+
+                            required property int index
+                            required property bool isCurrentItem
+                            required property string displayName
+                            required property string flagFilename
+
+                            radius: 5
+                            width: languageListView.width
+                            implicitHeight: childrenRect.height
+                            color: isCurrentItem ? view.theme.backgroundSelected : "transparent"
+                            clip: true
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: languageModel.setCurrentIndex(languageListViewDelegate.index)
+                            }
+
+                            RowLayout {
+                                width: parent.width
+                                height: 48
+                                spacing: 10
+
+                                Image {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.leftMargin: 5
+                                    Layout.preferredWidth: 32
+                                    Layout.preferredHeight: 32
+                                    source: languageListViewDelegate.flagFilename
+                                    fillMode: Image.PreserveAspectFit
+                                }
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    Layout.rightMargin: 5
+                                    font.pointSize: 14
+                                    text: languageListViewDelegate.displayName
+                                    color: view.theme.textColor
+                                    elide: Text.ElideRight
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -130,7 +219,7 @@ Rectangle {
                         pointSize: 14
                         bold: true
                     }
-                    text: qsTr("Certificates")
+                    text: qsTranslate("Certificate", "Certificates")
                 }
 
                 Rectangle {
@@ -179,9 +268,9 @@ Rectangle {
                             required property int index
                             required property bool isCurrentItem
                             required property string issuerDisplayName
-                            required property string effectiveDate
+                            required property date effectiveDate
                             required property string fingerprint
-                            required property string expiryDate
+                            required property date expiryDate
                             required property string commonName
                             required property string organisation
                             required property string organisationUnit
@@ -242,39 +331,24 @@ Rectangle {
                                     }
                                 }
 
-                                /*Text {
-                                    Layout.leftMargin: 5
-                                    Layout.rightMargin: 5
-                                    Layout.fillWidth: true
-                                    visible: listViewDelegate.isCurrentItem
-                                    verticalAlignment: Qt.AlignVCenter
-                                    text: qsTr("Expiry date")
-                                    elide: Qt.ElideRight
-                                    color: view.theme.textColor
-                                    font {
-                                        pointSize: 11
-                                        bold: true
-                                    }
-                                }*/
-
                                 SubitemTitle {
-                                    text: qsTr("Valid from")
+                                    text: qsTranslate("Certificate", "Valid from")
                                 }
 
                                 SubitemText {
-                                    text: listViewDelegate.effectiveDate
+                                    text: listViewDelegate.effectiveDate.toLocaleString(Qt.locale(), qsTranslate("General", "MM/dd/yyyy"))
                                 }
 
                                 SubitemTitle {
-                                    text: qsTr("Valid to")
+                                    text: qsTranslate("Certificate", "Valid to")
                                 }
 
                                 SubitemText {
-                                    text: listViewDelegate.expiryDate
+                                    text: listViewDelegate.expiryDate.toLocaleString(Qt.locale(), qsTranslate("General", "MM/dd/yyyy"))
                                 }
 
                                 SubitemTitle {
-                                    text: qsTr("Fingerprint (SHA-256)")
+                                    text: qsTranslate("Certificate", "Fingerprint (SHA-256)")
                                 }
 
                                 SubitemText {
@@ -283,7 +357,7 @@ Rectangle {
                                 }
 
                                 SubitemTitle {
-                                    text: qsTr("Common name")
+                                    text: qsTranslate("Certificate", "Common name")
                                 }
 
                                 SubitemText {
@@ -292,7 +366,7 @@ Rectangle {
 
                                 /*SubitemTitle {
                                     visible: organisationText.visible
-                                    text: qsTr("Organization")
+                                    text: qsTranslate("Certificate", "Organization")
                                 }
 
                                 SubitemText {
@@ -303,7 +377,7 @@ Rectangle {
 
                                 SubitemTitle {
                                     visible: organisationUnitText.visible
-                                    text: qsTr("Organization unit")
+                                    text: qsTranslate("Certificate", "Organization unit")
                                 }
 
                                 SubitemText {
@@ -314,7 +388,7 @@ Rectangle {
 
                                 SubitemTitle {
                                     visible: localityNameText.visible
-                                    text: qsTr("Locality")
+                                    text: qsTranslate("Certificate", "Locality")
                                 }
 
                                 SubitemText {
@@ -325,7 +399,7 @@ Rectangle {
 
                                 SubitemTitle {
                                     visible: countryNameText.visible
-                                    text: qsTr("Country")
+                                    text: qsTranslate("Certificate", "Country")
                                 }
 
                                 SubitemText {
@@ -336,7 +410,7 @@ Rectangle {
 
                                 SubitemTitle {
                                     visible: stateOrProvinceText.visible
-                                    text: qsTr("State")
+                                    text: qsTranslate("Certificate", "State")
                                 }
 
                                 SubitemText {
@@ -346,7 +420,7 @@ Rectangle {
                                 }
 
                                 SubitemTitle {
-                                    text: qsTr("Version")
+                                    text: qsTranslate("Certificate", "Version")
                                 }
 
                                 SubitemText {
@@ -354,7 +428,7 @@ Rectangle {
                                 }*/
 
                                 SubitemTitle {
-                                    text: qsTr("Serial number")
+                                    text: qsTranslate("Certificate", "Serial number")
                                 }
 
                                 SubitemText {

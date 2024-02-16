@@ -16,6 +16,7 @@ MenuItem {
     property alias iconSource: control.icon.source
     property ThemeSideMenu theme: Style.sideMenu
 
+    visible: enabled
     height: enabled ? 40 : 0
     width: implicitWidth
     font.pointSize: 14

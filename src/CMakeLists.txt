@@ -81,6 +81,7 @@ qt_add_qml_module(appOPC_UA_Browser
             certificateitemmodel.h certificateitemmodel.cpp
             dashboarditem.h dashboarditem.cpp
             dashboarditemmodel.h dashboarditemmodel.cpp
+            languageitemmodel.h languageitemmodel.cpp
             logging.h logging.cpp
             loggingviewfiltermodel.h loggingviewfiltermodel.cpp
             loggingviewmodel.h loggingviewmodel.cpp
@@ -118,7 +119,15 @@ qt_add_resources(appOPC_UA_Browser "icons"
           icons/plus.svg
           icons/refresh.svg
           icons/save.svg
-          icons/settings.svg)
+          icons/settings.svg
+          languages/English.png
+          languages/English.utf8
+          languages/German.png
+          languages/German.utf8)
+
+qt_add_translations(appOPC_UA_Browser
+          TS_FILES languages/English_en_GB.ts
+                   languages/German_de_DE.ts)
 
 target_compile_options(appOPC_UA_Browser PRIVATE -Wall -Wextra -Wdeprecated)
 

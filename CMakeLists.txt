@@ -5,7 +5,6 @@ SPDX-License-Identifier: BSD-3-Clause
 ]]
 
 cmake_minimum_required(VERSION 3.19)
-include(FetchContent)
 
 project(OPC_UA_Browser
     VERSION 1.0.0
@@ -15,7 +14,7 @@ project(OPC_UA_Browser
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Quick QuickControls2 OpcUa)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core LinguistTools Quick QuickControls2 OpcUa)
 
 if(QT_KNOWN_POLICY_QTP0002)
     qt_policy(SET QTP0002 NEW)

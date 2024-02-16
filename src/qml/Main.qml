@@ -50,7 +50,7 @@ ApplicationWindow {
     height: 640
     visible: true
     color: theme.background
-    title: qsTr("OPC UA Browser")
+    title: "OPC UA Browser"
     header: Rectangle {
         id: headerItem
 
@@ -136,7 +136,7 @@ ApplicationWindow {
                 Layout.preferredHeight: implicitHeight
                 Layout.leftMargin: 10
                 Layout.rightMargin: 10
-                captionText: qsTr("Name")
+                captionText: qsTranslate("General", "Name")
                 text: contentView.currentDashboardName
             }
 
@@ -153,7 +153,7 @@ ApplicationWindow {
                     anchors.left: parent.left
                     width: parent.width / 2 - 5
                     highlighted: false
-                    text: qsTr("Cancel")
+                    text: qsTranslate("General", "Cancel")
 
                     onClicked: {
                         name.text = contentView.currentDashboardName
@@ -164,7 +164,7 @@ ApplicationWindow {
                 StyledButton {
                     anchors.right: parent.right
                     width: parent.width / 2 - 5
-                    text: qsTr("Ok")
+                    text: qsTranslate("General", "Ok")
                     visible: name.text.length > 0
 
                     onClicked: {

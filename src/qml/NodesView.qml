@@ -36,7 +36,7 @@ Item {
         listModel: ListModel {
             ListElement {
                 imageSource: "qrc:/icons/refresh.svg"
-                name: qsTr("Refresh")
+                name: qsTranslate("General", "Refresh")
             }
         }
 

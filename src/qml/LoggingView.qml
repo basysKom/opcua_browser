@@ -17,7 +17,7 @@ import OPC_UA_Browser
 Rectangle {
     id: view
 
-    readonly property var typeString: [ qsTr("Debug"), qsTr("Warning"), qsTr("Critical"), qsTr("Fatal"), qsTr("Info")]
+    readonly property var typeString: [ qsTranslate("Logging", "Debug"), qsTranslate("Logging", "Warning"), qsTranslate("Logging", "Critical"), qsTranslate("Logging", "Fatal"), qsTranslate("Logging", "Info")]
     readonly property var typeColor: [ view.theme.debugColor, view.theme.warningColor, view.theme.criticalColor, view.theme.fatalColor, view.theme.infoColor]
     property ThemeLoggingView theme: Style.loggingView
 

@@ -69,11 +69,9 @@ QVariant CertificateItemModel::data(const QModelIndex &index, int role) const
     case IssuerDisplayNameRole:
         return mItems[index.row()].mSslCertificate.issuerDisplayName();
     case EffectiveDateRole:
-        return mItems[index.row()].mSslCertificate.effectiveDate().toString(
-                QLocale().dateFormat(QLocale::LongFormat));
+        return mItems[index.row()].mSslCertificate.effectiveDate();
     case ExpiryDateRole:
-        return mItems[index.row()].mSslCertificate.expiryDate().toString(
-                QLocale().dateFormat(QLocale::LongFormat));
+        return mItems[index.row()].mSslCertificate.expiryDate();
     case FingerprintRole:
         return mItems[index.row()].mFingerprint;
     case SerialNumberRole:

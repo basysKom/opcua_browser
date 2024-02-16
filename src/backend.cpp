@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QDir>
 #include <QLoggingCategory>
@@ -232,10 +233,8 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
             const QSslCertificate ssl(ba, QSsl::Der);
             mCertificateInfo.mFilename = filename;
             mCertificateInfo.mServerCertificate = ba;
-            mCertificateInfo.mExpiryDate =
-                    ssl.expiryDate().toString(QLocale().dateFormat(QLocale::LongFormat));
-            mCertificateInfo.mEffectiveDate =
-                    ssl.effectiveDate().toString(QLocale().dateFormat(QLocale::LongFormat));
+            mCertificateInfo.mExpiryDate = ssl.expiryDate();
+            mCertificateInfo.mEffectiveDate = ssl.effectiveDate();
             mCertificateInfo.mIssuerCommonName =
                     ssl.issuerInfo(QSslCertificate::CommonName).join(",");
             mCertificateInfo.mIssuerOrganization =

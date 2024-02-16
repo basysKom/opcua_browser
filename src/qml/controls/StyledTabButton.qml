@@ -13,7 +13,7 @@ import OPC_UA_Browser
 TabButton {
     id: button
 
-    readonly property bool isCurrentTab: (TabBar.tabBar.currentIndex == TabBar.index)
+    readonly property bool isCurrentTab: (TabBar.tabBar != null) && (TabBar.tabBar.currentIndex == TabBar.index)
 
     property ThemeTabButton theme: Style.tabButton
 

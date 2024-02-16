@@ -38,26 +38,26 @@ Flickable {
         switch (BackEnd.messageType) {
         case BackEnd.MessageType.UrlMismatch:
         case BackEnd.MessageType.EndpointReplacement:
-            return qsTr("Yes")
+            return qsTranslate("General", "Yes")
         case BackEnd.MessageType.TrustCertificate:
-            return qsTr("Trust")
+            return qsTranslate("Certificate", "Trust")
         default:
             break
         }
 
-        return qsTr("Ok")
+        return qsTranslate("General", "Ok")
     }
 
     function getMessageCancelText() {
         switch (BackEnd.messageType) {
         case BackEnd.MessageType.UrlMismatch:
         case BackEnd.MessageType.EndpointReplacement:
-            return qsTr("No")
+            return qsTranslate("General", "No")
         default:
             break
         }
 
-        return qsTr("Cancel")
+        return qsTranslate("General", "Cancel")
     }
 
     Item
@@ -75,7 +75,7 @@ Flickable {
 
             Text {
                 width: parent.width
-                text: qsTr("GetEndpoints failed using the discovery URL %1 returned from FindServers. Do you want to try the URL %2 with the hostname to discover FindServers?")
+                text: qsTranslate("Certificate", "GetEndpoints failed using the discovery URL %1 returned from FindServers. Do you want to try the URL %2 with the hostname to discover FindServers?")
                             .arg(view.selectedServerUrl).arg(view.selectedHostUrl)
                 color: view.theme.textColor
                 visible: BackEnd.messageType === BackEnd.MessageType.UrlMismatch
@@ -84,7 +84,7 @@ Flickable {
 
             Text {
                 width: parent.width
-                text: qsTr("Connection to endpoint failed using the URL %1 returned from GetEndpoints. Do you want to try the URL %2 with the hostname to discover FindServers?")
+                text: qsTranslate("Certificate", "Connection to endpoint failed using the URL %1 returned from GetEndpoints. Do you want to try the URL %2 with the hostname to discover FindServers?")
                             .arg(view.selectedEndpointUrl).arg(view.selectedHostUrl)
                 color: view.theme.textColor
                 visible: BackEnd.messageType === BackEnd.MessageType.EndpointReplacement
@@ -129,70 +129,70 @@ Flickable {
 
                 Text {
                     Layout.fillWidth: true
-                    text: qsTr("The server certificate is unknown.")
+                    text: qsTranslate("Certificate", "The server certificate is unknown.")
                     color: Style.accent
                     wrapMode: Text.WordWrap
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Common name")
+                    title: qsTranslate("Certificate", "Common name")
                     value: BackEnd.certificateInfo.commonName
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Organization")
+                    title: qsTranslate("Certificate", "Organization")
                     value: BackEnd.certificateInfo.organization
                     visible: value.length > 0
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Organization unit")
+                    title: qsTranslate("Certificate", "Organization unit")
                     value: BackEnd.certificateInfo.organizationUnit
                     visible: value.length > 0
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Locality")
+                    title: qsTranslate("Certificate", "Locality")
                     value: BackEnd.certificateInfo.locality
                     visible: value.length > 0
                 }
 
                 CertificateTextItem {
-                    title: qsTr("State")
+                    title: qsTranslate("Certificate", "State")
                     value: BackEnd.certificateInfo.state
                     visible: value.length > 0
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Country")
+                    title: qsTranslate("Certificate", "Country")
                     value: BackEnd.certificateInfo.country
                     visible: value.length > 0
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Valid from")
-                    value: BackEnd.certificateInfo.effectiveDate
+                    title: qsTranslate("Certificate", "Valid from")
+                    value: BackEnd.certificateInfo.effectiveDate.toLocaleString(Qt.locale(), qsTranslate("General", "MM/dd/yyyy"))
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Valid to")
-                    value: BackEnd.certificateInfo.expiryDate
+                    title: qsTranslate("Certificate", "Valid to")
+                    value: BackEnd.certificateInfo.expiryDate.toLocaleString(Qt.locale(), qsTranslate("General", "MM/dd/yyyy"))
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Fingerprint (SHA-256)")
+                    title: qsTranslate("Certificate", "Fingerprint (SHA-256)")
                     value: BackEnd.certificateInfo.fingerprint
                 }
 
                 CertificateTextItem {
-                    title: qsTr("Serial number")
+                    title: qsTranslate("Certificate", "Serial number")
                     value: BackEnd.certificateInfo.serialNumber
                 }
 
                 Text {
                     Layout.fillWidth: true
                     Layout.topMargin: 20
-                    text: qsTr("Do you want to trust the server certificate?")
+                    text: qsTranslate("Certificate", "Do you want to trust the server certificate?")
                     color: Style.accent
                     wrapMode: Text.WordWrap
                 }

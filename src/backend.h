@@ -35,8 +35,8 @@ struct CertificateInfo
     Q_PROPERTY(QString locality MEMBER mIssuerLocality)
     Q_PROPERTY(QString state MEMBER mIssuerState)
     Q_PROPERTY(QString country MEMBER mIssuerCountry)
-    Q_PROPERTY(QString expiryDate MEMBER mExpiryDate)
-    Q_PROPERTY(QString effectiveDate MEMBER mEffectiveDate)
+    Q_PROPERTY(QDateTime expiryDate MEMBER mExpiryDate)
+    Q_PROPERTY(QDateTime effectiveDate MEMBER mEffectiveDate)
     Q_PROPERTY(QString fingerprint MEMBER mFingerprint)
     Q_PROPERTY(QString serialNumber MEMBER mSerialNumber)
 
@@ -49,8 +49,8 @@ public:
     QString mIssuerLocality;
     QString mIssuerState;
     QString mIssuerCountry;
-    QString mExpiryDate;
-    QString mEffectiveDate;
+    QDateTime mExpiryDate;
+    QDateTime mEffectiveDate;
     QString mSerialNumber;
     QString mFingerprint;
 };

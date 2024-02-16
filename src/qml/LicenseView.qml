@@ -57,7 +57,7 @@ Rectangle {
                         bold: true
                     }
                     wrapMode: Text.WordWrap
-                    text: qsTr("Copyright")
+                    text: qsTranslate("License", "Copyright")
                 }
 
                 Text {
@@ -76,7 +76,7 @@ Rectangle {
                         bold: true
                     }
                     wrapMode: Text.WordWrap
-                    text: qsTr("License")
+                    text: qsTranslate("License", "License")
                 }
 
                 Text {
@@ -84,7 +84,7 @@ Rectangle {
                     color: view.theme.textColor
                     font.pointSize: 12
                     wrapMode: Text.WordWrap
-                    text: "This project is released under the GPLv3.0-or-later License."
+                    text: qsTranslate("License", "This project is released under the GPLv3.0-or-later License.")
                 }
 
                 Text {
@@ -111,7 +111,7 @@ Rectangle {
                         pointSize: 16
                         bold: true
                     }
-                    text: qsTr("Libraries in use")
+                    text: qsTranslate("License", "Libraries in use")
                 }
 
                 Repeater {
@@ -142,8 +142,15 @@ Rectangle {
                             url: "https://github.com/google/material-design-icons"
                         }
                         ListElement {
+                            name: "flag-icons"
+                            copyright: "Copyright (c) 2013 Panayiotis Lipiridis"
+                            licenseId: "MIT"
+                            licenseName: "MIT License"
+                            url: "https://flagicons.lipis.dev/"
+                        }
+                        ListElement {
                             name: "Swansea Font"
-                            copyright: "Copyright (C) 1993 by Roger White"
+                            copyright: "Copyright (c) 1993 by Roger White"
                             licenseId: "PDDL-1.0"
                             licenseName: "Open Data Commons Public Domain Dedication & License 1.0"
                             licenseId2: "GPL-2.0-or-later"

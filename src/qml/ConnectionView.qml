@@ -41,13 +41,13 @@ Item {
             StyledComboBox {
                 id: recentConnections
 
-                captionText: qsTr("Recent connections")
+                captionText: qsTranslate("Connection", "Recent connections")
                 model: BackEnd.recentConnections
             }
 
             StyledButton {
                 Layout.fillWidth: true
-                text: qsTr("Discover")
+                text: qsTranslate("Connection", "Discover")
 
                 onClicked: {
                     view.selectedHostUrl = recentConnections.currentText
@@ -62,7 +62,7 @@ Item {
             StyledTextField {
                 id: hostUrl
 
-                captionText: qsTr("Host")
+                captionText: qsTranslate("Connection", "Host")
                 //text: "opc.tcp://192.168.178.25:43344"
                 //text: "opc.tcp://localhost:43344"
                 //text: "opc.tcp://10.0.2.2:43344"
@@ -72,7 +72,7 @@ Item {
 
             StyledButton {
                 Layout.fillWidth: true
-                text: qsTr("Discover")
+                text: qsTranslate("Connection", "Discover")
 
                 onClicked: {
                     view.selectedHostUrl = hostUrl.text
@@ -91,13 +91,13 @@ Item {
             StyledComboBox {
                 id: serverListBox
 
-                captionText: qsTr("Server")
+                captionText: qsTranslate("Connection", "Server")
                 model: BackEnd.serverList
             }
 
             StyledButton {
                 Layout.fillWidth: true
-                text: qsTr("Browse")
+                text: qsTranslate("Connection", "Browse")
 
                 onClicked: BackEnd.getEndpoints(serverListBox.currentIndex)
             }
@@ -111,7 +111,7 @@ Item {
                 id: endpointListBox
 
                 enabled: !BackEnd.isConnected
-                captionText: qsTr("Endpoint")
+                captionText: qsTranslate("Connection", "Endpoint")
                 model: BackEnd.endpointList
             }
 
@@ -119,8 +119,10 @@ Item {
                 id: authenticationListBox
 
                 enabled: !BackEnd.isConnected
-                captionText: qsTr("Authentication")
-                model: ["Anonymous", "Username" /*, "Certificate"*/ ]
+                captionText: qsTranslate("Connection", "Authentication")
+                model: [qsTranslate("Connection", "Anonymous"),
+                    qsTranslate("Connection", "Username") /*,
+                    qsTranslate("Certificate", "Certificate")*/ ]
             }
 
             StyledTextField {
@@ -128,7 +130,7 @@ Item {
 
                 enabled: authenticationListBox.enabled
                 visible: authenticationListBox.currentIndex === 1
-                captionText: qsTr("Username")
+                captionText: qsTranslate("Connection", "Username")
             }
 
             StyledTextField {
@@ -136,7 +138,7 @@ Item {
 
                 enabled: authenticationListBox.enabled
                 visible: authenticationListBox.currentIndex === 1
-                captionText: qsTr("Password")
+                captionText: qsTranslate("Connection", "Password")
                 echoMode: TextInput.Password
             }
 
@@ -145,7 +147,7 @@ Item {
 
                 enabled: authenticationListBox.enabled
                 visible: authenticationListBox.currentIndex === 2
-                captionText: qsTr("Certificate")
+                captionText: qsTranslate("Certificate", "Certificate")
             }
 
             StyledTextField {
@@ -153,7 +155,7 @@ Item {
 
                 enabled: authenticationListBox.enabled
                 visible: authenticationListBox.currentIndex === 2
-                captionText: qsTr("Private key")
+                captionText: qsTranslate("Connection", "Private key")
             }
 
             RowLayout {
@@ -169,7 +171,7 @@ Item {
 
                 StyledButton {
                     Layout.fillWidth: true
-                    text: BackEnd.isConnected ? qsTr("Disconnect") : qsTr("Connect")
+                    text: BackEnd.isConnected ? qsTranslate("Connection", "Disconnect") : qsTranslate("Connection", "Connect")
 
                     onClicked: {
                         if (BackEnd.isConnected) {
@@ -193,7 +195,7 @@ Item {
         visible: serverListBox.model.length > 0
         width: parent.width / 3
         highlighted: false
-        text: qsTr("Back")
+        text: qsTranslate("General", "Back")
 
         onClicked: {
             if (endpointListBox.model.length === 0) {

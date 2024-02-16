@@ -43,7 +43,7 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            text: qsTr("Use last session")
+            text: qsTranslate("Dashboard", "Use last session")
             visible: view.showLastSessionButton && BackEnd.hasLastDashboards
 
             onClicked: view.useLastSession()
@@ -51,7 +51,7 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            text: qsTr("Add data dashboard")
+            text: qsTranslate("Dashboard", "Add data dashboard")
 
             onClicked: {
                 if ((BackEnd.defaultVariableDashboards.rowCount() === 0)
@@ -65,7 +65,7 @@ Item {
 
         /*StyledButton {
             Layout.fillWidth: true
-            text: qsTr("Add event dashboard")
+            text: qsTranslate("Dashboard", "Add event dashboard")
 
             onClicked: {
                 if ((BackEnd.defaultEventDashboards.rowCount() === 0)
@@ -79,7 +79,7 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            text: qsTr("Add alarms and conditions dashboard")
+            text: qsTranslate("Dashboard", "Add alarms and conditions dashboard")
             // ToDo: Add alarms and conditons handling
             visible: false
 
@@ -97,7 +97,7 @@ Item {
 
         StyledButton {
             Layout.fillWidth: true
-            text: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTr("Select monitored variables manually") : qsTr("Select events manually")
+            text: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTranslate("Dashboard", "Select monitored variables manually") : qsTranslate("Dashboard", "Select events manually")
 
             onClicked: {
                 if (view.type === DashboardConfigurationView.Type.SelectVariables) {
@@ -114,13 +114,13 @@ Item {
             StyledComboBox {
                 id: defaultDashboardListBox
 
-                captionText: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTr("Default data dashboards") : qsTr("Default event dashboards")
+                captionText: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTranslate("Dashboard", "Default data dashboards") : qsTranslate("Dashboard", "Default event dashboards")
                 model: (view.type === DashboardConfigurationView.Type.SelectVariables) ? BackEnd.defaultVariableDashboards : BackEnd.defaultEventDashboards
             }
 
             StyledButton {
                 Layout.fillWidth: true
-                text: qsTr("Add dashboard")
+                text: qsTranslate("Dashboard", "Add dashboard")
 
                 onClicked: {
 
@@ -134,14 +134,14 @@ Item {
             StyledComboBox {
                 id: savedDashboardListBox
 
-                captionText: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTr("Saved data dashboards") : qsTr("Saved event dashboards")
+                captionText: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTranslate("Dashboard", "Saved data dashboards") : qsTranslate("Dashboard", "Saved event dashboards")
                 model: (view.type === DashboardConfigurationView.Type.SelectVariables) ? BackEnd.savedVariableDashboards : BackEnd.savedEventDashboards
                 textRole: "display"
             }
 
             StyledButton {
                 Layout.fillWidth: true
-                text: qsTr("Add dashboard")
+                text: qsTranslate("Dashboard", "Add dashboard")
 
                 onClicked: {
                     if (view.type === DashboardConfigurationView.Type.SelectVariables) {
@@ -163,7 +163,7 @@ Item {
         visible: !selection.visible && !view.showCancelButton
         width: parent.width / 3
         highlighted: false
-        text: qsTr("Back")
+        text: qsTranslate("General", "Back")
 
         onClicked: view.type = DashboardConfigurationView.Type.Unknown
     }
@@ -175,7 +175,7 @@ Item {
         visible: view.showCancelButton
         width: parent.width / 3
         highlighted: false
-        text: qsTr("Cancel")
+        text: qsTranslate("General", "Cancel")
 
         onClicked: view.viewCanceled()
     }

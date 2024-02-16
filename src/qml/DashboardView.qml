@@ -46,6 +46,17 @@ Rectangle {
         tabBar.currentIndex = tabRepeater.count - 2
     }
 
+    function getDefaultNameForDashboardType(type) {
+        switch (type) {
+        case DashboardItem.DashboardType.Variables: return qsTranslate("Dashboard", "Dashboard")
+        case DashboardItem.DashboardType.Events: return qsTranslate("Dashboard", "Event")
+        case DashboardItem.DashboardType.Add: return qsTranslate("Dashboard", "Add")
+        default: break;
+        }
+
+        return "Unknown"
+    }
+
     ContextMenu {
         id: contextMenu
 
@@ -54,7 +65,7 @@ Rectangle {
         listModel: ListModel {
             ListElement {
                 imageSource: "qrc:/icons/delete.svg"
-                name: qsTr("Delete")
+                name: qsTranslate("General", "Delete")
             }
         }
 
@@ -296,7 +307,7 @@ Rectangle {
                 required property int index
 
                 type: model.type
-                text: model.name
+                text: model.name.length > 0 ? model.name : getDefaultNameForDashboardType(type)
 
                 onClicked: {
                     if (type === DashboardItem.DashboardType.Add) {

@@ -75,7 +75,7 @@ Rectangle {
                         Layout.fillHeight: true
                         Layout.preferredWidth: root.width / 3 + 20
                         verticalAlignment: Qt.AlignVCenter
-                        text: qsTr("Reference")
+                        text: qsTranslate("ExpertMode", "Reference")
                         elide: Qt.ElideRight
                         font.bold: true
                         color: root.textColor
@@ -92,7 +92,7 @@ Rectangle {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         verticalAlignment: Qt.AlignVCenter
-                        text: qsTr("Target")
+                        text: qsTranslate("ExpertMode", "Target")
                         elide: Qt.ElideRight
                         font.bold: true
                         color: root.textColor

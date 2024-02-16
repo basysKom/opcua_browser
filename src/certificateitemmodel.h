@@ -37,7 +37,7 @@ private:
 
         Certificate() { }
         Certificate(const QString &filename, const QString &fingerprint,
-                    const QSslCertificate sslCertificate)
+                    const QSslCertificate &sslCertificate)
             : mFilename(filename), mFingerprint(fingerprint), mSslCertificate(sslCertificate)
         {
         }

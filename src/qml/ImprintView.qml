@@ -27,7 +27,7 @@ Rectangle {
                 pointSize: 18
                 bold: true
             }
-            text: qsTr("Imprint")
+            text: qsTranslate("Imprint", "Imprint")
         }
 
         Text {
@@ -39,7 +39,7 @@ Rectangle {
         Text {
             color: view.theme.textColor
             font.pointSize: 10
-            text: "Robert-Bosch-Str. 7<br>64293 Darmstadt<br>" + qsTr("Germany")
+            text: "Robert-Bosch-Str. 7<br>64293 Darmstadt<br>" + qsTranslate("Imprint", "Germany")
         }
 
         Text {
@@ -52,15 +52,15 @@ Rectangle {
         Text {
             color: view.theme.textColor
             font.pointSize: 10
-            text: qsTr("Registration court") + ": Amtsgericht Darmstadt<br>" + qsTr(
-                      "Register number") + ": HRB 9352<br>" + qsTr(
-                      "VAT-ID") + ": DE238913185"
+            text: qsTranslate("Imprint", "Registration court") + ": Amtsgericht Darmstadt<br>" +
+                  qsTranslate("Imprint", "Register number") + ": HRB 9352<br>" +
+                  qsTranslate("Imprint", "VAT-ID") + ": DE238913185"
         }
 
         Text {
             color: view.theme.textColor
             font.pointSize: 10
-            text: "<b>" + "Executive Managers" + ":</b><br>Heike Ziegler, Alexander Sorg"
+            text: "<b>" + qsTranslate("Imprint", "Executive Managers") + ":</b><br>Heike Ziegler, Alexander Sorg"
         }
     }
 }
