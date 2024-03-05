@@ -10,6 +10,8 @@
 #include <QTimer>
 
 #include <QOpcUaClient>
+#include <QOpcUaExtensionObject>
+#include <QOpcUaGenericStructValue>
 #include <QOpcUaNode>
 
 #include "opcuamodel.h"
@@ -48,24 +50,21 @@ OpcUaModel::OpcUaModel(QObject *parent) : QAbstractItemModel{ parent }
 {
     connect(this, &OpcUaModel::browsingForReferenceTypesFinished, this, [=]() {
         mBrowsedTypes.setFlag(EBrowseType::ReferenceTypes);
-        if (mBrowsedTypes.testFlag(EBrowseType::DataTypes)
-            && mBrowsedTypes.testFlag(EBrowseType::EnumStrings)) {
+        if (allLookupsFinished()) {
             resetModel();
         }
     });
 
     connect(this, &OpcUaModel::browsingForDataTypesFinished, this, [=]() {
         mBrowsedTypes.setFlag(EBrowseType::DataTypes);
-        if (mBrowsedTypes.testFlag(EBrowseType::ReferenceTypes)
-            && mBrowsedTypes.testFlags(EBrowseType::EnumStrings)) {
+        if (allLookupsFinished()) {
             resetModel();
         }
     });
 
     connect(this, &OpcUaModel::browsingForEnumStringsFinished, this, [=]() {
         mBrowsedTypes.setFlag(EBrowseType::EnumStrings);
-        if (mBrowsedTypes.testFlag(EBrowseType::DataTypes)
-            && mBrowsedTypes.testFlag(EBrowseType::ReferenceTypes)) {
+        if (allLookupsFinished()) {
             resetModel();
         }
     });
@@ -116,9 +115,27 @@ void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
         auto dataNode =
                 client->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::BaseDataType));
         browseDataTypes(dataNode);
+
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+        mGenericStructHandler.reset(new QOpcUaGenericStructHandler(mOpcUaClient));
+        QObject::connect(mGenericStructHandler.get(),
+                         &QOpcUaGenericStructHandler::initializedChanged, this,
+                         [=](bool initialized) {
+                             Q_UNUSED(initialized)
+                             mBrowsedTypes.setFlag(EBrowseType::GenericStructs);
+
+                             // The generic struct handler must be initialized before enum values
+                             // can be processed
+                             auto enumerationNode = client->node(QOpcUa::namespace0Id(
+                                     QOpcUa::NodeIds::Namespace0::Enumeration));
+                             browseEnumStrings(enumerationNode);
+                         });
+        mGenericStructHandler->initialize();
+#else
         auto enumerationNode =
                 client->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::Enumeration));
         browseEnumStrings(enumerationNode);
+#endif
     } else {
         resetModel();
     }
@@ -677,10 +694,50 @@ void OpcUaModel::browseEnumStrings(QOpcUaNode *node)
                                                 entries[i] = data.at(i)
                                                                      .value<QOpcUaLocalizedText>()
                                                                      .text();
-                                            mEnumStringsList[parentNodeId] = entries;
-                                        } else {
-                                            // TODO: Qt OPC UA 6.7 will allow reading the EnumValues
-                                            // structs too
+                                            if (!entries.isEmpty())
+                                                mEnumStringsList[parentNodeId] = entries;
+                                        } else if (data.first()
+                                                           .canConvert<QOpcUaExtensionObject>()) {
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+                                            if (mGenericStructHandler) {
+                                                QHash<qint32, QString> entries;
+
+                                                const auto displayNameKey =
+                                                        QStringLiteral("DisplayName");
+                                                const auto valueKey = QStringLiteral("Value");
+
+                                                for (const auto &entry : data) {
+                                                    const auto decoded =
+                                                            mGenericStructHandler->decode(
+                                                                    entry.value<
+                                                                            QOpcUaExtensionObject>());
+
+                                                    if (decoded.has_value()) {
+                                                        if (!decoded->fields().contains(
+                                                                    displayNameKey)
+                                                            || !decoded->fields().contains(
+                                                                    valueKey))
+                                                            continue;
+                                                        const auto name =
+                                                                decoded.value()
+                                                                        .fields()
+                                                                        .value(displayNameKey)
+                                                                        .value<QOpcUaLocalizedText>()
+                                                                        .text();
+                                                        const auto value = decoded.value()
+                                                                                   .fields()
+                                                                                   .value(valueKey)
+                                                                                   .value<qint32>();
+
+                                                        if (!name.isEmpty())
+                                                            entries[value] = name;
+                                                    }
+                                                }
+
+                                                if (!entries.isEmpty())
+                                                    mEnumStringsList[parentNodeId] = entries;
+                                            }
+#endif
                                         }
                                     }
 
@@ -703,4 +760,14 @@ void OpcUaModel::browseEnumStrings(QOpcUaNode *node)
         qCWarning(opcuaModelLog) << "Browsing node" << node->nodeId() << "failed";
         deleteNode(node);
     }
+}
+
+bool OpcUaModel::allLookupsFinished() const
+{
+    return mBrowsedTypes.testFlags({ EBrowseType::DataTypes, EBrowseType::EnumStrings,
+                                     EBrowseType::ReferenceTypes,
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+                                     EBrowseType::GenericStructs
+#endif
+    });
 }
