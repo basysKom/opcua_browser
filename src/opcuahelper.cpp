@@ -15,9 +15,12 @@
 #include <QOpcUaEUInformation>
 #include <QOpcUaExpandedNodeId>
 #include <QOpcUaExtensionObject>
+#include <QOpcUaGenericStructValue>
 #include <QOpcUaNode>
 #include <QOpcUaQualifiedName>
 #include <QOpcUaRange>
+#include <QOpcUaStructureDefinition>
+#include <QOpcUaStructureField>
 #include <QOpcUaXValue>
 
 #include "backend.h"
@@ -167,7 +170,7 @@ QStringList writeMaskToStringList(quint32 value)
     return attributes;
 }
 
-QString variantToString(const QVariant &value, const QString &typeNodeId)
+QString variantToString(QOpcUaNode *node, const QVariant &value, const QString &typeNodeId)
 {
     if (value.metaType().id() == QMetaType::QVariantList) {
         const auto list = value.toList();
@@ -175,7 +178,7 @@ QString variantToString(const QVariant &value, const QString &typeNodeId)
         for (int i = 0, size = list.size(); i < size; ++i) {
             if (i)
                 concat.append(QLatin1Char('\n'));
-            concat.append(variantToString(list.at(i), typeNodeId));
+            concat.append(variantToString(node, list.at(i), typeNodeId));
         }
         return concat;
     }
@@ -260,6 +263,43 @@ QString variantToString(const QVariant &value, const QString &typeNodeId)
     }
     if (value.canConvert<QOpcUaExtensionObject>()) {
         const auto obj = value.value<QOpcUaExtensionObject>();
+
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+        std::function<QString(const QOpcUaGenericStructValue)> genericStructToString;
+        genericStructToString = [&genericStructToString,
+                                 node](const QOpcUaGenericStructValue &s) -> QString {
+            QString result = QStringLiteral("[");
+            const auto fields = s.fields();
+            for (auto it = fields.constBegin(); it != fields.constEnd(); ++it) {
+                if (it != fields.constBegin())
+                    result += QStringLiteral(", ");
+
+                result += it.key() + QStringLiteral(": ");
+                if (it.value().canConvert<QOpcUaGenericStructValue>()) {
+                    result += genericStructToString(it.value().value<QOpcUaGenericStructValue>());
+                } else {
+                    for (const auto &field : s.structureDefinition().fields()) {
+                        if (field.name() != it.key())
+                            continue;
+
+                        result += variantToString(node, it.value(), field.dataType());
+                        break;
+                    }
+                }
+            }
+            result += QStringLiteral("]");
+
+            return result;
+        };
+
+        const auto model = BackEnd::getOpcUaModelForNode(node);
+        if (model && model->genericStructHandler()) {
+            const auto decoded = model->genericStructHandler()->decode(obj);
+            if (decoded.has_value())
+                return genericStructToString(decoded.value());
+        }
+#endif
+
         return QStringLiteral("[TypeId: \"%1\", Encoding: %2, Body: 0x%3]")
                 .arg(obj.encodingTypeId(),
                      obj.encoding() == QOpcUaExtensionObject::Encoding::NoBody
@@ -331,7 +371,7 @@ QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribu
     case QOpcUa::NodeAttribute::Value: {
         const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();
         const QVariant attrValue = node->attribute(attr);
-        const auto valueString = variantToString(attrValue, type);
+        const auto valueString = variantToString(node, attrValue, type);
 
         if (!valueString.isEmpty()) {
             const auto model = BackEnd::getOpcUaModelForNode(node);
