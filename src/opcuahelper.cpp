@@ -20,6 +20,7 @@
 #include <QOpcUaRange>
 #include <QOpcUaXValue>
 
+#include "backend.h"
 #include "opcuahelper.h"
 
 template <typename T>
@@ -330,7 +331,22 @@ QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribu
     case QOpcUa::NodeAttribute::Value: {
         const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();
         const QVariant attrValue = node->attribute(attr);
-        return variantToString(attrValue, type);
+        const auto valueString = variantToString(attrValue, type);
+
+        if (!valueString.isEmpty()) {
+            const auto model = BackEnd::getOpcUaModelForNode(node);
+            if (model) {
+                const auto enumCandidate = model->getEnumStringsForDataTypeId(type);
+                if (!enumCandidate.isEmpty()) {
+                    const auto value = node->valueAttribute().value<qint32>();
+                    const auto entry = enumCandidate.constFind(value);
+                    if (entry != enumCandidate.constEnd())
+                        return QStringLiteral("%1 (%2)").arg(valueString, entry.value());
+                }
+            }
+        }
+
+        return valueString;
     }
     case QOpcUa::NodeAttribute::None:
         return QString();

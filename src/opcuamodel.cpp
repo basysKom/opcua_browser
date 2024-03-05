@@ -48,14 +48,24 @@ OpcUaModel::OpcUaModel(QObject *parent) : QAbstractItemModel{ parent }
 {
     connect(this, &OpcUaModel::browsingForReferenceTypesFinished, this, [=]() {
         mBrowsedTypes.setFlag(EBrowseType::ReferenceTypes);
-        if (mBrowsedTypes.testFlag(EBrowseType::DataTypes)) {
+        if (mBrowsedTypes.testFlag(EBrowseType::DataTypes)
+            && mBrowsedTypes.testFlag(EBrowseType::EnumStrings)) {
             resetModel();
         }
     });
 
     connect(this, &OpcUaModel::browsingForDataTypesFinished, this, [=]() {
         mBrowsedTypes.setFlag(EBrowseType::DataTypes);
-        if (mBrowsedTypes.testFlag(EBrowseType::ReferenceTypes)) {
+        if (mBrowsedTypes.testFlag(EBrowseType::ReferenceTypes)
+            && mBrowsedTypes.testFlags(EBrowseType::EnumStrings)) {
+            resetModel();
+        }
+    });
+
+    connect(this, &OpcUaModel::browsingForEnumStringsFinished, this, [=]() {
+        mBrowsedTypes.setFlag(EBrowseType::EnumStrings);
+        if (mBrowsedTypes.testFlag(EBrowseType::DataTypes)
+            && mBrowsedTypes.testFlag(EBrowseType::ReferenceTypes)) {
             resetModel();
         }
     });
@@ -106,6 +116,9 @@ void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
         auto dataNode =
                 client->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::BaseDataType));
         browseDataTypes(dataNode);
+        auto enumerationNode =
+                client->node(QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::Enumeration));
+        browseEnumStrings(enumerationNode);
     } else {
         resetModel();
     }
@@ -139,6 +152,15 @@ QString OpcUaModel::getStringForDataTypeId(const QString &dataTypeId) const
 {
     static QString emptyString;
     return mDataTypesList.value(dataTypeId, emptyString);
+}
+
+QHash<qint32, QString> OpcUaModel::getEnumStringsForDataTypeId(const QString &dataTypeId)
+{
+    const auto entry = mEnumStringsList.constFind(dataTypeId);
+    if (entry == mEnumStringsList.constEnd())
+        return {};
+
+    return entry.value();
 }
 
 bool OpcUaModel::setData(const QModelIndex &index, const QVariant &value, int role)
@@ -587,6 +609,97 @@ void OpcUaModel::browseDataTypes(QOpcUaNode *node)
     cntNodes++;
     // First step: browse for children
     if (!node->browseChildren(QOpcUa::ReferenceTypeId::HasSubtype, QOpcUa::NodeClass::DataType)) {
+        qCWarning(opcuaModelLog) << "Browsing node" << node->nodeId() << "failed";
+        deleteNode(node);
+    }
+}
+
+void OpcUaModel::browseEnumStrings(QOpcUaNode *node)
+{
+    static int cntNodes = 0;
+    static QStringList knownNodeIds;
+
+    auto deleteNode = [=](QOpcUaNode *n) {
+        n->deleteLater();
+        --cntNodes;
+
+        if (0 == cntNodes) {
+            knownNodeIds.clear();
+            // all enum values nodes have been read
+            emit browsingForEnumStringsFinished();
+        }
+    };
+
+    connect(node, &QOpcUaNode::browseFinished, this,
+            [=](const QList<QOpcUaReferenceDescription> &children, QOpcUa::UaStatusCode) {
+                if (nullptr == mOpcUaClient) {
+                    qCWarning(opcuaModelLog) << "OPC UA client is null" << node->nodeId();
+                    deleteNode(node);
+                    return;
+                }
+
+                for (const auto &item : children) {
+                    if (knownNodeIds.contains(item.targetNodeId().nodeId()))
+                        continue;
+
+                    // We only care about subtypes or their EnumStrings/EnumValues properties
+                    if (item.nodeClass() != QOpcUa::NodeClass::DataType
+                        && !(item.nodeClass() == QOpcUa::NodeClass::Variable
+                             && (item.browseName() == QOpcUaQualifiedName(0, "EnumStrings")
+                                 || item.browseName() == QOpcUaQualifiedName(0, "EnumValues"))))
+                        continue;
+
+                    auto childNode = mOpcUaClient->node(item.targetNodeId());
+                    if (!childNode) {
+                        qCWarning(opcuaModelLog)
+                                << "Failed to instantiate node:" << item.targetNodeId().nodeId();
+                        continue;
+                    }
+
+                    if (item.nodeClass() == QOpcUa::NodeClass::DataType) {
+                        // See if there are subtypes or
+                        browseEnumStrings(childNode);
+                    } else {
+                        // Read the value attribute of the EnumStrings/EnumValues property
+                        const auto parentNodeId = node->nodeId();
+                        connect(childNode, &QOpcUaNode::attributeRead, this,
+                                [=](const QOpcUa::NodeAttributes &attributes) {
+                                    Q_UNUSED(attributes)
+                                    const auto data =
+                                            childNode->valueAttribute().canConvert<QVariantList>()
+                                            ? childNode->valueAttribute().toList()
+                                            : QVariantList{ childNode->valueAttribute() };
+
+                                    if (!data.empty()) {
+                                        if (data.first().canConvert<QOpcUaLocalizedText>()) {
+                                            QHash<qint32, QString> entries;
+                                            for (int i = 0; i < data.size(); ++i)
+                                                entries[i] = data.at(i)
+                                                                     .value<QOpcUaLocalizedText>()
+                                                                     .text();
+                                            mEnumStringsList[parentNodeId] = entries;
+                                        } else {
+                                            // TODO: Qt OPC UA 6.7 will allow reading the EnumValues
+                                            // structs too
+                                        }
+                                    }
+
+                                    deleteNode(childNode);
+                                });
+
+                        ++cntNodes;
+                        childNode->readValueAttribute();
+                    }
+                }
+
+                deleteNode(node);
+            });
+
+    knownNodeIds << node->nodeId();
+    cntNodes++;
+
+    if (!node->browseChildren(QOpcUa::ReferenceTypeId::HierarchicalReferences,
+                              QOpcUa::NodeClass::DataType | QOpcUa::NodeClass::Variable)) {
         qCWarning(opcuaModelLog) << "Browsing node" << node->nodeId() << "failed";
         deleteNode(node);
     }

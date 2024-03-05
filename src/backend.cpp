@@ -22,6 +22,8 @@
 
 Q_LOGGING_CATEGORY(backendLog, "opcua_browser.backend");
 
+QHash<QOpcUaClient *, QPointer<BackEnd>> BackEnd::mBackendMapping = {};
+
 static QString defaultPkiPath()
 {
     return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/pki";
@@ -189,6 +191,18 @@ BackEnd::MessageType BackEnd::messageType() const noexcept
 const CertificateInfo &BackEnd::certificateInfo() const noexcept
 {
     return mCertificateInfo;
+}
+
+OpcUaModel *BackEnd::getOpcUaModelForNode(QOpcUaNode *node)
+{
+    if (!node)
+        return nullptr;
+
+    const auto entry = mBackendMapping.constFind(node->client());
+    if (entry == mBackendMapping.constEnd())
+        return nullptr;
+
+    return entry.value() ? entry.value()->mOpcUaModel : nullptr;
 }
 
 void BackEnd::clearServerList()
@@ -487,6 +501,7 @@ void BackEnd::clientDisconnected()
     mDashboardItemModel->clearItems();
 
     mOpcUaClient->deleteLater();
+    mBackendMapping.remove(mOpcUaClient);
     mOpcUaClient = nullptr;
     mOpcUaModel->setOpcUaClient(nullptr);
 }
@@ -544,6 +559,8 @@ void BackEnd::createClient()
             setState(QStringLiteral("Failed to connect to server") % "\n" % message);
             return;
         }
+
+        mBackendMapping.insert(mOpcUaClient, this);
 
         connect(mOpcUaClient, &QOpcUaClient::stateChanged, this, &BackEnd::connectionStateChanged);
         connect(mOpcUaClient, &QOpcUaClient::connectError, this, &BackEnd::clientConnectError);
