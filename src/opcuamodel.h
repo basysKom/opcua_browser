@@ -39,6 +39,10 @@ public:
     QString getStringForDataTypeId(const QString &dataTypeId) const;
     QHash<qint32, QString> getEnumStringsForDataTypeId(const QString &dataTypeId);
 
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+    QOpcUaGenericStructHandler *genericStructHandler() const;
+#endif
+
     virtual QHash<int, QByteArray> roleNames() const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
     virtual QVariant data(const QModelIndex &index, int role) const override;

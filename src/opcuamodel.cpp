@@ -180,6 +180,13 @@ QHash<qint32, QString> OpcUaModel::getEnumStringsForDataTypeId(const QString &da
     return entry.value();
 }
 
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+QOpcUaGenericStructHandler *OpcUaModel::genericStructHandler() const
+{
+    return mGenericStructHandler.get();
+}
+#endif
+
 bool OpcUaModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     if (!index.isValid() || (role != SelectedRole))
