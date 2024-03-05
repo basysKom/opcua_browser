@@ -20,8 +20,8 @@ MonitoredItem::MonitoredItem(QOpcUaNode *node, QObject *parent) : QObject(parent
         connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this,
                 &MonitoredItem::handleAttributes);
 
-        node->readAttributes(QOpcUa::NodeAttribute::BrowseName
-                             | QOpcUa::NodeAttribute::DisplayName);
+        node->readAttributes(QOpcUa::NodeAttribute::BrowseName | QOpcUa::NodeAttribute::DisplayName
+                             | QOpcUa::NodeAttribute::DataType);
 
         QOpcUaMonitoringParameters p(100);
         node->enableMonitoring(QOpcUa::NodeAttribute::Value, p);

@@ -122,6 +122,8 @@ public:
     MessageType messageType() const noexcept;
     const CertificateInfo &certificateInfo() const noexcept;
 
+    static OpcUaModel *getOpcUaModelForNode(QOpcUaNode *node);
+
     Q_INVOKABLE void clearServerList();
     Q_INVOKABLE void clearEndpointList();
 
@@ -224,6 +226,8 @@ private:
         QString mUsername;
         QString mPassword;
     } mConnectionConfiguration;
+
+    static QHash<QOpcUaClient *, QPointer<BackEnd>> mBackendMapping;
 };
 
 #endif // BACKEND_H

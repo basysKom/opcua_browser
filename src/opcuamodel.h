@@ -32,6 +32,7 @@ public:
     bool isHierarchicalReference(const QString &refTypeId) const;
     QString getStringForRefTypeId(const QString &refTypeId, bool isForward) const;
     QString getStringForDataTypeId(const QString &dataTypeId) const;
+    QHash<qint32, QString> getEnumStringsForDataTypeId(const QString &dataTypeId);
 
     virtual QHash<int, QByteArray> roleNames() const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
@@ -56,6 +57,7 @@ signals:
     void hasSelectedItemsChanged();
     void browsingForReferenceTypesFinished();
     void browsingForDataTypesFinished();
+    void browsingForEnumStringsFinished();
     void currentIndexChanged(const QModelIndex &index);
 
 private:
@@ -63,8 +65,14 @@ private:
     void collectInverseNodeIds(const QString &nodeId, bool init = false);
     void browseReferenceTypes(QOpcUaNode *node, bool isHierachical = false);
     void browseDataTypes(QOpcUaNode *node);
+    void browseEnumStrings(QOpcUaNode *node);
 
-    enum class EBrowseType { None = 0x00, ReferenceTypes = 0x01, DataTypes = 0x02 };
+    enum class EBrowseType {
+        None = 0x00,
+        ReferenceTypes = 0x01,
+        DataTypes = 0x02,
+        EnumStrings = 0x04,
+    };
     Q_DECLARE_FLAGS(BrowseTypes, EBrowseType)
 
     struct ReferenceType
@@ -90,6 +98,7 @@ private:
     BrowseTypes mBrowsedTypes = EBrowseType::None;
     QHash<QString, ReferenceType> mReferencesList;
     QHash<QString, QString> mDataTypesList;
+    QHash<QString, QHash<qint32, QString>> mEnumStringsList;
 
     QString mCurrentNodeId;
     QStringList mInverseNodeIds;
