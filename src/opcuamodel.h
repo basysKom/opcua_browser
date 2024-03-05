@@ -11,6 +11,11 @@
 #include <QAbstractItemModel>
 #include <QQmlEngine>
 
+#if __has_include(<QOpcUaGenericStructHandler>)
+#  define HAS_GENERIC_STRUCT_HANDLER
+#  include <QOpcUaGenericStructHandler>
+#endif
+
 #include "treeitem.h"
 
 class QOpcUaClient;
@@ -67,11 +72,14 @@ private:
     void browseDataTypes(QOpcUaNode *node);
     void browseEnumStrings(QOpcUaNode *node);
 
+    bool allLookupsFinished() const;
+
     enum class EBrowseType {
         None = 0x00,
         ReferenceTypes = 0x01,
         DataTypes = 0x02,
         EnumStrings = 0x04,
+        GenericStructs = 0x08
     };
     Q_DECLARE_FLAGS(BrowseTypes, EBrowseType)
 
@@ -99,6 +107,10 @@ private:
     QHash<QString, ReferenceType> mReferencesList;
     QHash<QString, QString> mDataTypesList;
     QHash<QString, QHash<qint32, QString>> mEnumStringsList;
+
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+    std::unique_ptr<QOpcUaGenericStructHandler> mGenericStructHandler;
+#endif
 
     QString mCurrentNodeId;
     QStringList mInverseNodeIds;
