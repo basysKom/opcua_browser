@@ -15,16 +15,19 @@
 #include <QOpcUaEUInformation>
 #include <QOpcUaExpandedNodeId>
 #include <QOpcUaExtensionObject>
-#include <QOpcUaGenericStructValue>
 #include <QOpcUaNode>
 #include <QOpcUaQualifiedName>
 #include <QOpcUaRange>
-#include <QOpcUaStructureDefinition>
-#include <QOpcUaStructureField>
 #include <QOpcUaXValue>
 
 #include "backend.h"
 #include "opcuahelper.h"
+
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+#  include <QOpcUaGenericStructValue>
+#  include <QOpcUaStructureDefinition>
+#  include <QOpcUaStructureField>
+#endif
 
 template <typename T>
 QString numberArrayToString(const QList<T> &vec)

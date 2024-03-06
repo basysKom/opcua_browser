@@ -11,11 +11,14 @@
 
 #include <QOpcUaClient>
 #include <QOpcUaExtensionObject>
-#include <QOpcUaGenericStructValue>
 #include <QOpcUaNode>
 
 #include "opcuamodel.h"
 #include "opcuahelper.h"
+
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+#  include <QOpcUaGenericStructValue>
+#endif
 
 Q_LOGGING_CATEGORY(opcuaModelLog, "opcua_browser.model");
 
