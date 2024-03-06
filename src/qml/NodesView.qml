@@ -93,6 +93,18 @@ Item {
                 }
             }
 
+            onAttributesChanged: {
+                if (isCurrentItem) {
+                    view.attributes = attributes
+                }
+            }
+
+            onReferencesChanged: {
+                if (isCurrentItem) {
+                    view.references = references
+                }
+            }
+
             width: implicitWidth
             implicitWidth: Math.max(
                                view.width,
