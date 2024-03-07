@@ -53,6 +53,7 @@ Item {
 
         anchors.fill: parent
         clip: true
+        reuseItems: false
 
         model: BackEnd.opcUaModel
 
