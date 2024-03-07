@@ -8,6 +8,7 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QDir>
+#include <QFutureWatcher>
 #include <QLoggingCategory>
 #include <QSettings>
 #include <QStandardPaths>
@@ -17,8 +18,10 @@
 
 #include "backend.h"
 #include "constants.h"
+#include "companionspecdashboardcreator.h"
 #include "logging.h"
 #include "monitoreditemmodel.h"
+#include "woodworkingdashboardcreator.h"
 #include "x509certificate.h"
 
 Q_LOGGING_CATEGORY(backendLog, "opcua_browser.backend");
@@ -196,6 +199,11 @@ const CertificateInfo &BackEnd::certificateInfo() const noexcept
     return mCertificateInfo;
 }
 
+const QVector<CompanionSpecDevice> &BackEnd::companionSpecDevices() const noexcept
+{
+    return mCompanionSpecDevices;
+}
+
 OpcUaModel *BackEnd::getOpcUaModelForNode(QOpcUaNode *node)
 {
     if (!node)
@@ -206,6 +214,20 @@ OpcUaModel *BackEnd::getOpcUaModelForNode(QOpcUaNode *node)
         return nullptr;
 
     return entry.value() ? entry.value()->mOpcUaModel : nullptr;
+}
+
+QOpcUaClient *BackEnd::getOpcUaClient()
+{
+    return mOpcUaClient;
+}
+
+void BackEnd::addDefaultVariableDashboard(const QString &name)
+{
+    if (!mDefaultVariableDashboardsModel->stringList().contains(name)) {
+        auto list = mDefaultVariableDashboardsModel->stringList();
+        list << name;
+        mDefaultVariableDashboardsModel->setStringList(list);
+    }
 }
 
 void BackEnd::clearServerList()
@@ -392,6 +414,36 @@ void BackEnd::loadDashboard(const QString &name)
     }
 }
 
+int BackEnd::instantiateDefaultVariableDashboard(const QString &name)
+{
+    if (mCompanionSpecVariableDashboards.contains(name)
+        && !getNodeIdsForCompanionSpecVariableDashboard(name).isEmpty())
+        return instantiateCompanionSpecVariableDashboard(name);
+
+    // Instantiate any other default dashboards here
+
+    return -1;
+}
+
+int BackEnd::instantiateCompanionSpecVariableDashboard(const QString &name)
+{
+    assert(mDashboardItemModel);
+
+    if (!mCompanionSpecVariableDashboards.contains(name)
+        || mCompanionSpecVariableDashboards.value(name).isEmpty())
+        return -1;
+
+    if (mDashboardItemModel->containsItem(name))
+        return mDashboardItemModel->getIndexOfItem(name);
+
+    const auto index = mDashboardItemModel->addItem(DashboardItem::DashboardType::Variables, name);
+
+    for (const auto &id : getNodeIdsForCompanionSpecVariableDashboard(name))
+        monitorNode(mDashboardItemModel->getMonitoredItemModel(index), id);
+
+    return index;
+}
+
 void BackEnd::findServers(const QString &urlString)
 {
     QUrl url(urlString);
@@ -524,6 +576,8 @@ void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)
         qCWarning(backendLog) << "Failed to retrieve the namespaces array";
         return;
     }
+
+    findCompanionSpecObjects();
 
     qCDebug(backendLog) << "namespace array updated" << namespaceArray;
     disconnect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this,
@@ -745,4 +799,164 @@ void BackEnd::saveServerHost(const QString &host)
         settings.setValue(Constants::SettingsKey::Url, mLastServerHosts[i]);
     }
     settings.endArray();
+}
+
+QFuture<QString> BackEnd::findAllSubtypes(const QString &nodeId,
+                                          std::shared_ptr<QSet<QString>> visitedNodes)
+{
+    if (!visitedNodes)
+        visitedNodes = std::make_shared<QSet<QString>>();
+
+    auto promise = std::make_shared<QPromise<QString>>();
+    auto future = promise->future();
+
+    if (visitedNodes->contains(nodeId)) {
+        promise->finish();
+        return future;
+    }
+
+    if (nodeId.isEmpty()) {
+        promise->finish();
+        return future;
+    }
+
+    const auto node = mOpcUaClient->node(nodeId);
+    if (!node) {
+        promise->finish();
+        return future;
+    }
+
+    promise->addResult(nodeId);
+    visitedNodes->insert(nodeId);
+
+    QObject::connect(
+            node, &QOpcUaNode::browseFinished, this,
+            [this, node, promise, visitedNodes](const QList<QOpcUaReferenceDescription> &children,
+                                                QOpcUa::UaStatusCode statusCode) {
+                Q_UNUSED(statusCode)
+
+                if (children.empty()) {
+                    promise->finish();
+                } else {
+                    auto childCount = std::make_shared<int>(children.size());
+
+                    for (const auto &child : children) {
+                        auto childFuture =
+                                findAllSubtypes(child.targetNodeId().nodeId(), visitedNodes);
+
+                        auto watcher = std::make_shared<QFutureWatcher<QString>>();
+                        watcher->setFuture(childFuture);
+                        QObject::connect(watcher.get(), &QFutureWatcher<QString>::finished, this,
+                                         [promise, watcher, childCount]() {
+                                             promise->addResults(watcher->future().results());
+                                             --*childCount;
+                                             if (*childCount == 0)
+                                                 promise->finish();
+                                         });
+                    }
+                }
+
+                node->deleteLater();
+            });
+
+    node->browseChildren(QOpcUa::ReferenceTypeId::HasSubtype, QOpcUa::NodeClass::DataType);
+
+    return future;
+}
+
+CompanionSpecDevice *BackEnd::getCompanionSpecDeviceForNodeId(const QString &nodeId)
+{
+    const auto entry = std::find_if(
+            mCompanionSpecDevices.begin(), mCompanionSpecDevices.end(),
+            [nodeId](const CompanionSpecDevice &entry) { return entry.nodeId() == nodeId; });
+
+    if (entry == mCompanionSpecDevices.end())
+        return nullptr;
+
+    return &*entry;
+}
+
+QStringList BackEnd::getNodeIdsForCompanionSpecVariableDashboard(const QString &name)
+{
+    return mCompanionSpecVariableDashboards.value(name);
+}
+
+void BackEnd::addNodeIdToCompanionSpecVariableDashboard(const QString &name, const QString &nodeId)
+{
+    mCompanionSpecVariableDashboards[name].push_back(nodeId);
+}
+
+void BackEnd::findCompanionSpecObjects()
+{
+    mCompanionSpecDevices.clear();
+    emit companionSpecDevicesChanged();
+
+    if (!mOpcUaClient || mOpcUaClient->namespaceArray().isEmpty())
+        return;
+
+    const QList<CompanionSpecEntryPoint> knownCsEntryPoints{
+        // WwMachineType
+        { QOpcUaExpandedNodeId(Constants::NamespaceUri::Woodworking,
+                               QOpcUa::nodeIdFromInteger(0, 2)),
+          // Objects -> Machines
+          QOpcUaExpandedNodeId(Constants::NamespaceUri::Machinery,
+                               QOpcUa::nodeIdFromInteger(0, 1001)),
+          std::make_shared<WoodworkingDashboardCreator>(this) },
+    };
+
+    for (const auto &entryPoint : knownCsEntryPoints) {
+        bool success = false;
+        const auto resolvedTypeId =
+                mOpcUaClient->resolveExpandedNodeId(entryPoint.typeId, &success);
+
+        if (!success)
+            continue;
+
+        const auto resolvedParentId =
+                mOpcUaClient->resolveExpandedNodeId(entryPoint.parentId, &success);
+
+        if (!success)
+            continue;
+
+        auto watcher = std::make_shared<QFutureWatcher<QString>>();
+        watcher->setFuture(findAllSubtypes(resolvedTypeId));
+        QObject::connect(
+                watcher.get(), &QFutureWatcher<QString>::finished, this,
+                [this, resolvedParentId, watcher, entryPoint]() {
+                    auto node = mOpcUaClient->node(resolvedParentId);
+
+                    if (!node)
+                        return;
+
+                    const auto typeIds = watcher->future().results();
+                    const QSet<QString> permittedSubtypes(typeIds.constBegin(), typeIds.constEnd());
+
+                    QObject::connect(
+                            node, &QOpcUaNode::browseFinished, this,
+                            [this, entryPoint,
+                             permittedSubtypes](const QList<QOpcUaReferenceDescription> &children,
+                                                QOpcUa::UaStatusCode statusCode) {
+                                Q_UNUSED(statusCode)
+                                for (const auto &child : children) {
+                                    if (permittedSubtypes.contains(
+                                                child.typeDefinition().nodeId())) {
+                                        mCompanionSpecDevices.push_back(
+                                                { entryPoint.typeId.namespaceUri(),
+                                                  child.targetNodeId().nodeId(),
+                                                  child.displayName().text().isEmpty()
+                                                          ? child.browseName().name()
+                                                          : child.displayName().text() });
+                                        emit companionSpecDevicesChanged();
+
+                                        if (entryPoint.dashboardCreator)
+                                            entryPoint.dashboardCreator->createDashboardsForObject(
+                                                    child.targetNodeId().nodeId());
+                                    }
+                                }
+                            });
+
+                    node->browseChildren(QOpcUa::ReferenceTypeId::HierarchicalReferences,
+                                         QOpcUa::NodeClass::Object);
+                });
+    }
 }

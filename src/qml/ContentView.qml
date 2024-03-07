@@ -121,6 +121,13 @@ Item {
                 stackLayout.currentIndex = dashboard.StackLayout.index
             }
 
+            onShowDashboardRequested: function (index) {
+                // Go to dashboard view
+                view.showDashboardView()
+                // Switch dashboard to the requested index
+                dashboard.setCurrentDashboardIndex(index)
+            }
+
             onAddMonitoredItems: {
                 // Store index of dashboardConfiguration to return to it when cancelling
                 stackLayout.lastStoredViewIndex = dashboardConfiguration.StackLayout.index

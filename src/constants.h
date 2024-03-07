@@ -60,6 +60,13 @@ public:
     const static QString AlternativeNameDNS;
     const static QString AlternativeNameUri;
 };
+
+class NamespaceUri
+{
+public:
+    const static QString Woodworking;
+    const static QString Machinery;
+};
 } // namespace Constants
 
 #endif // CONSTANTS_H

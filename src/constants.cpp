@@ -45,4 +45,8 @@ const QString CertInfo::OrganizationName = QStringLiteral("basysKom GmbH");
 const QString CertInfo::AlternativeNameDNS = QStringLiteral("foo.com");
 const QString CertInfo::AlternativeNameUri =
         QStringLiteral("urn:foo.com:basysKom%20GmbH:OpcUaBrowser");
+
+const QString NamespaceUri::Woodworking =
+        QStringLiteral("http://opcfoundation.org/UA/Woodworking/");
+const QString NamespaceUri::Machinery = QStringLiteral("http://opcfoundation.org/UA/Machinery/");
 } // namespace Constants
