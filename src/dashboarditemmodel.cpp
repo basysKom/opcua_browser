@@ -60,6 +60,25 @@ QVariant DashboardItemModel::data(const QModelIndex &index, int role) const
     return QVariant();
 }
 
+bool DashboardItemModel::containsItem(const QString &name) const noexcept
+{
+    return std::find_if(mItems.constBegin(), mItems.constEnd(),
+                        [name](const DashboardItem *item) { return item->name() == name; })
+            != mItems.constEnd();
+}
+
+int DashboardItemModel::getIndexOfItem(const QString &name) const noexcept
+{
+    const auto index =
+            std::find_if(mItems.constBegin(), mItems.constEnd(),
+                         [name](const DashboardItem *item) { return item->name() == name; });
+
+    if (index == mItems.constEnd())
+        return -1;
+
+    return std::distance(mItems.constBegin(), index);
+}
+
 int DashboardItemModel::addItem(DashboardItem::DashboardType type, const QString &name)
 {
     const int pos = mItems.size() - 1;

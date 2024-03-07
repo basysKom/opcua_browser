@@ -8,6 +8,7 @@
 #ifndef BACKEND_H
 #define BACKEND_H
 
+#include <QFuture>
 #include <QObject>
 #include <QQmlEngine>
 #include <QStringListModel>
@@ -22,6 +23,7 @@
 #include "loggingviewmodel.h"
 #include "opcuamodel.h"
 
+class CompanionSpecDashboardCreator;
 class MonitoredItemModel;
 
 struct CertificateInfo
@@ -55,12 +57,48 @@ public:
     QString mFingerprint;
 };
 
+struct CompanionSpecDevice
+{
+    Q_GADGET
+    QML_ANONYMOUS
+
+    Q_PROPERTY(QString companionSpecUri READ companionSpecUri)
+    Q_PROPERTY(QString dashboardName READ dashboardName)
+    Q_PROPERTY(QString nodeId READ nodeId)
+    Q_PROPERTY(QString name READ name)
+
+public:
+    CompanionSpecDevice(const QString &companionSpecUri, const QString &nodeId, const QString &name)
+        : mCompanionSpecUri(companionSpecUri), mNodeId(nodeId), mName(name)
+    {
+    }
+
+    QString companionSpecUri() const { return mCompanionSpecUri; }
+    QString nodeId() const { return mNodeId; }
+    QString name() const { return mName; }
+    QString dashboardName() const { return mDashboardName.isEmpty() ? mName : mDashboardName; }
+    void setDashboardName(const QString &dashboardName) { mDashboardName = dashboardName; }
+
+private:
+    QString mCompanionSpecUri;
+    QString mNodeId;
+    QString mName;
+    QString mDashboardName;
+};
+
 // Workaround, otherwise qmllint doesn't recognise the QStringListModel
 struct ThisIsAnnoying
 {
     Q_GADGET
     QML_FOREIGN(QStringListModel)
     QML_ANONYMOUS
+};
+
+struct CompanionSpecEntryPoint
+{
+    QOpcUaExpandedNodeId typeId;
+    QOpcUaExpandedNodeId parentId;
+    std::shared_ptr<CompanionSpecDashboardCreator> dashboardCreator;
 };
 
 class BackEnd : public QObject
@@ -100,6 +138,9 @@ public:
                        savedEventDashboardsChanged FINAL)
     Q_PROPERTY(bool hasLastDashboards READ hasLastDashboards CONSTANT FINAL)
 
+    Q_PROPERTY(QVector<CompanionSpecDevice> companionSpecDevices READ companionSpecDevices NOTIFY
+                       companionSpecDevicesChanged FINAL)
+
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
 
@@ -122,7 +163,16 @@ public:
     MessageType messageType() const noexcept;
     const CertificateInfo &certificateInfo() const noexcept;
 
+    const QVector<CompanionSpecDevice> &companionSpecDevices() const noexcept;
+    CompanionSpecDevice *getCompanionSpecDeviceForNodeId(const QString &nodeId);
+    QStringList getNodeIdsForCompanionSpecVariableDashboard(const QString &name);
+    void addNodeIdToCompanionSpecVariableDashboard(const QString &name, const QString &nodeId);
+    int instantiateCompanionSpecVariableDashboard(const QString &name);
+
     static OpcUaModel *getOpcUaModelForNode(QOpcUaNode *node);
+    QOpcUaClient *getOpcUaClient();
+
+    void addDefaultVariableDashboard(const QString &name);
 
     Q_INVOKABLE void clearServerList();
     Q_INVOKABLE void clearEndpointList();
@@ -138,6 +188,7 @@ public:
 
     Q_INVOKABLE void saveCurrentDashboard(const QString &name);
     Q_INVOKABLE void loadDashboard(const QString &name);
+    Q_INVOKABLE int instantiateDefaultVariableDashboard(const QString &name);
 
     Q_INVOKABLE void loadLastDashboardsFromSettings();
 
@@ -164,6 +215,8 @@ signals:
 
     void messageTypeChanged();
     void certificateInfoChanged();
+
+    void companionSpecDevicesChanged();
 
 private slots:
     void findServersComplete(const QList<QOpcUaApplicationDescription> &servers,
@@ -192,6 +245,10 @@ private:
     void saveLastDashboards();
     void loadLastServerHostsFromSettings();
     void saveServerHost(const QString &host);
+
+    void findCompanionSpecObjects();
+    QFuture<QString> findAllSubtypes(const QString &nodeId,
+                                     std::shared_ptr<QSet<QString>> visitedNodes = nullptr);
 
     CertificateItemModel *mCertificateItemModel;
     LoggingViewModel *mLoggingViewModel;
@@ -228,6 +285,9 @@ private:
     } mConnectionConfiguration;
 
     static QHash<QOpcUaClient *, QPointer<BackEnd>> mBackendMapping;
+
+    QVector<CompanionSpecDevice> mCompanionSpecDevices;
+    QHash<QString, QStringList> mCompanionSpecVariableDashboards;
 };
 
 #endif // BACKEND_H

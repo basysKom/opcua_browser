@@ -29,6 +29,7 @@ Item {
     signal addMonitoredItems
     signal addEvents
     signal viewCanceled
+    signal showDashboardRequested(int index)
 
     signal addSavedVariableDashboard(string name)
     signal addSavedEventDashboard(string name)
@@ -113,6 +114,7 @@ Item {
 
             StyledComboBox {
                 id: defaultDashboardListBox
+                textRole: "display"
 
                 captionText: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTranslate("Dashboard", "Default data dashboards") : qsTranslate("Dashboard", "Default event dashboards")
                 model: (view.type === DashboardConfigurationView.Type.SelectVariables) ? BackEnd.defaultVariableDashboards : BackEnd.defaultEventDashboards
@@ -123,7 +125,11 @@ Item {
                 text: qsTranslate("Dashboard", "Add dashboard")
 
                 onClicked: {
-
+                    if (view.type === DashboardConfigurationView.Type.SelectVariables) {
+                        const index = BackEnd.instantiateDefaultVariableDashboard(defaultDashboardListBox.currentText)
+                        if (index >= 0)
+                            showDashboardRequested(index)
+                    }
                 }
             }
         }

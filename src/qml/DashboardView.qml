@@ -36,6 +36,10 @@ Rectangle {
     signal addEvents
     signal addNewDashboard
 
+    function setCurrentDashboardIndex(index) {
+        tabBar.currentIndex = index;
+    }
+
     function addMonitoredItemsDashboard(name) {
         tabRepeater.model.addItem(DashboardItem.DashboardType.Variables, name)
         tabBar.currentIndex = tabRepeater.count - 2

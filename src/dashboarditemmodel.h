@@ -29,6 +29,7 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
 
     bool containsItem(const QString &name) const noexcept;
+    int getIndexOfItem(const QString &name) const noexcept;
     Q_INVOKABLE int addItem(DashboardItem::DashboardType type, const QString &name = QString());
     Q_INVOKABLE void removeItem(int index);
     void clearItems();
