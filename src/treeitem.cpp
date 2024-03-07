@@ -273,8 +273,8 @@ void TreeItem::refreshAttributes()
 
         mDisplayName = displayName.isEmpty() ? browseName : displayName;
 
-        emit mModel->dataChanged(mModel->createIndex(row(), 0, this),
-                                 mModel->createIndex(row(), 0, this));
+        const QModelIndex index = mModel->createIndex(row(), 0, this);
+        emit mModel->dataChanged(index, index);
 
         node->deleteLater();
     });
