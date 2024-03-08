@@ -332,6 +332,8 @@ Rectangle {
                     if (type === DashboardItem.DashboardType.Add)
                         return
 
+                    contextMenu.headerText = tabButton.text
+
                     var pressedPoint = mapToItem(view, tabButton.pressX,
                                                  tabButton.pressY)
                     var xPos = pressedPoint.x - contextMenu.width / 2

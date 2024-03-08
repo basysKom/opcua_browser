@@ -16,6 +16,7 @@ import OPC_UA_Browser
 Popup {
     id: menu
 
+    property string headerText
     property alias listModel: popupListView.model
     property ThemeContextMenu theme: Style.contextMenu
 
@@ -24,6 +25,16 @@ Popup {
     padding: 0
 
     modal: true
+
+    property int lastImplicitHeight: -1;
+    onImplicitHeightChanged: {
+        if (lastImplicitHeight !== implicitHeight) {
+            if (lastImplicitHeight >= 0) {
+                y += (lastImplicitHeight - implicitHeight)
+            }
+            lastImplicitHeight = implicitHeight
+        }
+    }
 
     signal listItemClicked(int index)
 
@@ -40,61 +51,77 @@ Popup {
         implicitWidth: popupListView.contentWidth
         implicitHeight: popupListView.contentHeight
 
-        ListView {
-            id: popupListView
-
-            implicitWidth: contentItem.childrenRect.width
-            implicitHeight: contentItem.childrenRect.height
+        ColumnLayout {
+            width: 200
             clip: true
 
-            delegate: Item {
-                id: delegateItem
+            Text {
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                text: menu.headerText
+                visible: menu.headerText != null && menu.headerText !== ""
+                Layout.fillWidth: true
+                color: menu.theme.textColor
+                leftPadding: 3
+                font.bold: true
+                font.pointSize: 12
+            }
 
-                height: 36
-                width: 200
+            ListView {
+                id: popupListView
 
-                required property int index
-                required property url imageSource
-                required property string name
+                implicitWidth: contentItem.childrenRect.width
+                implicitHeight: contentItem.childrenRect.height
+                clip: true
 
-                MouseArea {
-                    anchors.fill: parent
-                    hoverEnabled: true
+                delegate: Item {
+                    id: delegateItem
 
-                    onEntered: popupListView.currentIndex = delegateItem.index
-                    onClicked: {
-                        menu.listItemClicked(delegateItem.index)
-                        menu.close()
+                    height: 36
+                    width: 200
+
+                    required property int index
+                    required property url imageSource
+                    required property string name
+
+                    MouseArea {
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onEntered: popupListView.currentIndex = delegateItem.index
+                        onClicked: {
+                            menu.listItemClicked(delegateItem.index)
+                            menu.close()
+                        }
                     }
-                }
 
-                Rectangle {
-                    anchors.fill: parent
-                    radius: transparentBorderRect.radius
-                    color: menu.theme.backgroundSelected
-                    opacity: popupListView.currentIndex === delegateItem.index ? 0.8 : 0
-                }
-
-                RowLayout {
-                    anchors.fill: parent
-                    spacing: 15
-
-                    IconImage {
-                        Layout.leftMargin: 10
-                        Layout.alignment: Qt.AlignVCenter
-                        sourceSize.width: 24
-                        sourceSize.height: 24
-                        source: delegateItem.imageSource
-                        color: menu.theme.textColor
+                    Rectangle {
+                        anchors.fill: parent
+                        radius: transparentBorderRect.radius
+                        color: menu.theme.backgroundSelected
+                        opacity: popupListView.currentIndex === delegateItem.index ? 0.8 : 0
                     }
-                    Text {
-                        Layout.fillHeight: true
-                        Layout.fillWidth: true
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignLeft
-                        color: menu.theme.textColor
-                        font.pointSize: 12
-                        text: delegateItem.name
+
+                    RowLayout {
+                        anchors.fill: parent
+                        spacing: 15
+
+                        IconImage {
+                            Layout.leftMargin: 10
+                            Layout.alignment: Qt.AlignVCenter
+                            sourceSize.width: 24
+                            sourceSize.height: 24
+                            source: delegateItem.imageSource
+                            color: menu.theme.textColor
+                        }
+                        Text {
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            verticalAlignment: Text.AlignVCenter
+                            horizontalAlignment: Text.AlignLeft
+                            color: menu.theme.textColor
+                            font.pointSize: 12
+                            text: delegateItem.name
+                        }
                     }
                 }
             }
