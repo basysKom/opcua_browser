@@ -14,6 +14,7 @@
 #include <QOpcUaX509ExtensionKeyUsage>
 #include <QOpcUaX509ExtensionSubjectAlternativeName>
 
+#include "constants.h"
 #include "x509certificate.h"
 
 bool X509Certificate::createCertificate(const QString &pkiDir)
@@ -47,19 +48,21 @@ bool X509Certificate::createCertificate(const QString &pkiDir)
 
     // Set the subject of the certificate
     QOpcUaX509DistinguishedName dn;
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::CommonName, QStringLiteral("OpcUaBrowser"));
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::CountryName, QStringLiteral("DE"));
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::LocalityName, QStringLiteral("Darmstadt"));
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::StateOrProvinceName, QStringLiteral("Hesse"));
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::CommonName, Constants::CertInfo::CommonName);
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::CountryName, Constants::CertInfo::CountryName);
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::LocalityName, Constants::CertInfo::LocalityName);
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::StateOrProvinceName,
+                Constants::CertInfo::StateOrProvinceName);
     dn.setEntry(QOpcUaX509DistinguishedName::Type::OrganizationName,
-                QStringLiteral("basysKom GmbH"));
+                Constants::CertInfo::OrganizationName);
     csr.setSubject(dn);
 
     // The subject alternative name extension is needed for OPC UA
     QOpcUaX509ExtensionSubjectAlternativeName *san = new QOpcUaX509ExtensionSubjectAlternativeName;
-    san->addEntry(QOpcUaX509ExtensionSubjectAlternativeName::Type::DNS, QStringLiteral("foo.com"));
+    san->addEntry(QOpcUaX509ExtensionSubjectAlternativeName::Type::DNS,
+                  Constants::CertInfo::AlternativeNameDNS);
     san->addEntry(QOpcUaX509ExtensionSubjectAlternativeName::Type::URI,
-                  QStringLiteral("urn:foo.com:basysKom%20GmbH:OpcUaBrowser"));
+                  Constants::CertInfo::AlternativeNameUri);
     san->setCritical(true);
     csr.addExtension(san);
 

@@ -16,6 +16,7 @@
 #include <QOpcUaAuthenticationInformation>
 
 #include "backend.h"
+#include "constants.h"
 #include "logging.h"
 #include "monitoreditemmodel.h"
 #include "x509certificate.h"
@@ -67,20 +68,20 @@ BackEnd::BackEnd(QObject *parent)
     //! [Application Identity]
 
     QSettings settings;
-    settings.beginGroup("dashboards/variables");
+    settings.beginGroup(Constants::SettingsKey::DashboardsVariables);
     QStringList keys = settings.childKeys();
     settings.endGroup();
     keys.sort(Qt::CaseInsensitive);
     mSavedVariableDashboardsModel->setStringList(keys);
 
-    settings.beginGroup("dashboards/events");
+    settings.beginGroup(Constants::SettingsKey::DashboardsEvents);
     keys = settings.childKeys();
     settings.endGroup();
     keys.sort(Qt::CaseInsensitive);
     mSavedEventDashboardsModel->setStringList(keys);
 
     const QStringList childGroups = settings.childGroups();
-    mHasLastDashboards = childGroups.contains(QStringLiteral("lastDashboards"));
+    mHasLastDashboards = childGroups.contains(Constants::SettingsKey::LastDashboards);
 
     loadLastServerHostsFromSettings();
 }
@@ -358,11 +359,14 @@ void BackEnd::saveCurrentDashboard(const QString &name)
     QSettings settings;
     switch (mDashboardItemModel->getCurrentDashboardType()) {
     case DashboardItem::DashboardType::Variables:
-        settings.setValue(QStringLiteral("dashboards/variables/") % name, nodeIds);
+        settings.setValue(Constants::SettingsKey::DashboardsVariables % QChar::fromLatin1('/')
+                                  % name,
+                          nodeIds);
         addItemToStringListModel(mSavedVariableDashboardsModel, name);
         break;
     case DashboardItem::DashboardType::Events:
-        settings.setValue(QStringLiteral("dashboards/events/") % name, nodeIds);
+        settings.setValue(Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % name,
+                          nodeIds);
         addItemToStringListModel(mSavedEventDashboardsModel, name);
         break;
     default:
@@ -380,8 +384,9 @@ void BackEnd::loadDashboard(const QString &name)
         return;
 
     QSettings settings;
-    const QStringList nodeIds =
-            settings.value(QStringLiteral("dashboards/variables/") % name).toStringList();
+    const QStringList nodeIds = settings.value(Constants::SettingsKey::DashboardsVariables
+                                               % QChar::fromLatin1('/') % name)
+                                        .toStringList();
     for (const auto &nodeId : nodeIds) {
         monitorNode(monitoredItemModel, nodeId);
     }
@@ -635,17 +640,18 @@ void BackEnd::loadLastDashboardsFromSettings()
     Q_ASSERT(mDashboardItemModel);
 
     QSettings settings;
-    int size = settings.beginReadArray("lastDashboards");
+    int size = settings.beginReadArray(Constants::SettingsKey::LastDashboards);
     for (int i = 0; i < size; ++i) {
         settings.setArrayIndex(i);
-        const QString name = settings.value("name").toString();
-        const DashboardItem::DashboardType type =
-                static_cast<DashboardItem::DashboardType>(settings.value("type", 0).toInt());
+        const QString name = settings.value(Constants::SettingsKey::Name).toString();
+        const DashboardItem::DashboardType type = static_cast<DashboardItem::DashboardType>(
+                settings.value(Constants::SettingsKey::Type, 0).toInt());
 
         const int index = mDashboardItemModel->addItem(type, name);
         auto model = mDashboardItemModel->getMonitoredItemModel(index);
         if (model != nullptr) {
-            const QStringList nodeIds = settings.value("nodeIDs").toStringList();
+            const QStringList nodeIds =
+                    settings.value(Constants::SettingsKey::NodeIds).toStringList();
             for (const auto &nodeId : nodeIds) {
                 monitorNode(model, nodeId);
             }
