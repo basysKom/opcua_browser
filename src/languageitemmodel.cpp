@@ -13,6 +13,7 @@
 #include <QSettings>
 #include <QTranslator>
 
+#include "constants.h"
 #include "languageitemmodel.h"
 
 Q_LOGGING_CATEGORY(languageLog, "opcua_browser.language");
@@ -30,7 +31,6 @@ LanguageItemModel::LanguageItemModel(QObject *parent) : QAbstractListModel{ pare
     QSettings settings;
     const QString settingsFileame = settings.value(SETTINGS_NAME, {}).toString();
 
-    const QString fallbackLocale = QStringLiteral("en_GB");
     const QString systemLocale = QLocale().name();
     const QString qmDirectory = QStringLiteral(":/i18n/");
     const QStringList qmFiles = QDir(qmDirectory).entryList(QStringList(QStringLiteral("*.qm")));
@@ -53,7 +53,7 @@ LanguageItemModel::LanguageItemModel(QObject *parent) : QAbstractListModel{ pare
             settingsIndex = mItems.size();
         } else if (file.chopped(3).endsWith(systemLocale)) {
             systemLocaleIndex = mItems.size();
-        } else if (file.chopped(3).endsWith(fallbackLocale)) {
+        } else if (file.chopped(3).endsWith(Constants::App::FallbackLocale)) {
             fallbackLocaleIndex = mItems.size();
         }
 

@@ -7,6 +7,7 @@
 
 #include <QSettings>
 
+#include "constants.h"
 #include "dashboarditem.h"
 #include "dashboarditemmodel.h"
 #include "monitoreditemmodel.h"
@@ -148,17 +149,17 @@ void DashboardItemModel::saveDashboardsToSettings() const
         return;
 
     QSettings settings;
-    settings.remove("lastDashboards");
+    settings.remove(Constants::SettingsKey::LastDashboards);
 
-    settings.beginWriteArray("lastDashboards");
+    settings.beginWriteArray(Constants::SettingsKey::LastDashboards);
     for (qsizetype i = 0; i < mItems.count(); ++i) {
         if (mItems[i]->type() == DashboardItem::DashboardType::Add)
             continue;
 
         settings.setArrayIndex(i);
-        settings.setValue("name", mItems[i]->name());
-        settings.setValue("type", (int)mItems[i]->type());
-        settings.setValue("nodeIDs", mItems[i]->getMonitoredNodeIds());
+        settings.setValue(Constants::SettingsKey::Name, mItems[i]->name());
+        settings.setValue(Constants::SettingsKey::Type, (int)mItems[i]->type());
+        settings.setValue(Constants::SettingsKey::NodeIds, mItems[i]->getMonitoredNodeIds());
     }
     settings.endArray();
 }
