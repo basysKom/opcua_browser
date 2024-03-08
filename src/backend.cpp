@@ -26,12 +26,13 @@ QHash<QOpcUaClient *, QPointer<BackEnd>> BackEnd::mBackendMapping = {};
 
 static QString defaultPkiPath()
 {
-    return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/pki";
+    return QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation)
+            + QStringLiteral("/pki");
 }
 
 static QString defaultTrustedCertsPath()
 {
-    return defaultPkiPath() % "/trusted/certs/";
+    return defaultPkiPath() % QStringLiteral("/trusted/certs/");
 }
 
 static void addItemToStringListModel(QStringListModel *model, const QString &name)
@@ -79,7 +80,7 @@ BackEnd::BackEnd(QObject *parent)
     mSavedEventDashboardsModel->setStringList(keys);
 
     const QStringList childGroups = settings.childGroups();
-    mHasLastDashboards = childGroups.contains("lastDashboards");
+    mHasLastDashboards = childGroups.contains(QStringLiteral("lastDashboards"));
 
     loadLastServerHostsFromSettings();
 }
@@ -133,7 +134,8 @@ QVector<QString> BackEnd::endpointList() const
         }
 
         list << QStringLiteral("%1#%2#%3")
-                        .arg(endpoint.securityPolicy(), modes[index], endpoint.endpointUrl());
+                        .arg(endpoint.securityPolicy(), QString::fromUtf8(modes[index]),
+                             endpoint.endpointUrl());
     }
     return list;
 }
@@ -239,7 +241,8 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
     // Automatically add server certificate to the trusted certificates
     const QByteArray ba = mEndpointList[endpointIndex].serverCertificate();
     // Use hash as file name to recognise whether the server certificate is already saved
-    const QString hash = QString(QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex());
+    const QString hash =
+            QString::fromUtf8(QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex());
     const QString trustedCertsPath = defaultTrustedCertsPath();
     if (QDir().mkpath(trustedCertsPath)) {
         const QString filename = trustedCertsPath + QStringLiteral("%1.der").arg(hash);
@@ -250,19 +253,22 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
             mCertificateInfo.mExpiryDate = ssl.expiryDate();
             mCertificateInfo.mEffectiveDate = ssl.effectiveDate();
             mCertificateInfo.mIssuerCommonName =
-                    ssl.issuerInfo(QSslCertificate::CommonName).join(",");
+                    ssl.issuerInfo(QSslCertificate::CommonName).join(QChar::fromLatin1(','));
             mCertificateInfo.mIssuerOrganization =
-                    ssl.issuerInfo(QSslCertificate::Organization).join(",");
+                    ssl.issuerInfo(QSslCertificate::Organization).join(QChar::fromLatin1(','));
             mCertificateInfo.mIssuerOrganizationUnit =
-                    ssl.issuerInfo(QSslCertificate::OrganizationalUnitName).join(",");
+                    ssl.issuerInfo(QSslCertificate::OrganizationalUnitName)
+                            .join(QChar::fromLatin1(','));
             mCertificateInfo.mIssuerLocality =
-                    ssl.issuerInfo(QSslCertificate::LocalityName).join(",");
-            mCertificateInfo.mIssuerState =
-                    ssl.issuerInfo(QSslCertificate::StateOrProvinceName).join(",");
+                    ssl.issuerInfo(QSslCertificate::LocalityName).join(QChar::fromLatin1(','));
+            mCertificateInfo.mIssuerState = ssl.issuerInfo(QSslCertificate::StateOrProvinceName)
+                                                    .join(QChar::fromLatin1(','));
             mCertificateInfo.mIssuerCountry =
-                    ssl.issuerInfo(QSslCertificate::CountryName).join(",");
-            mCertificateInfo.mFingerprint = ssl.digest(QCryptographicHash::Sha256).toHex();
-            mCertificateInfo.mSerialNumber = QString(ssl.serialNumber()).remove(':');
+                    ssl.issuerInfo(QSslCertificate::CountryName).join(QChar::fromLatin1(','));
+            mCertificateInfo.mFingerprint =
+                    QString::fromUtf8(ssl.digest(QCryptographicHash::Sha256).toHex());
+            mCertificateInfo.mSerialNumber =
+                    QString::fromUtf8(ssl.serialNumber()).remove(QChar::fromLatin1(':'));
             emit certificateInfoChanged();
 
             mMessageType = MessageType::TrustCertificate;
@@ -352,11 +358,11 @@ void BackEnd::saveCurrentDashboard(const QString &name)
     QSettings settings;
     switch (mDashboardItemModel->getCurrentDashboardType()) {
     case DashboardItem::DashboardType::Variables:
-        settings.setValue("dashboards/variables/" % name, nodeIds);
+        settings.setValue(QStringLiteral("dashboards/variables/") % name, nodeIds);
         addItemToStringListModel(mSavedVariableDashboardsModel, name);
         break;
     case DashboardItem::DashboardType::Events:
-        settings.setValue("dashboards/events/" % name, nodeIds);
+        settings.setValue(QStringLiteral("dashboards/events/") % name, nodeIds);
         addItemToStringListModel(mSavedEventDashboardsModel, name);
         break;
     default:
@@ -374,7 +380,8 @@ void BackEnd::loadDashboard(const QString &name)
         return;
 
     QSettings settings;
-    const QStringList nodeIds = settings.value("dashboards/variables/" % name).toStringList();
+    const QStringList nodeIds =
+            settings.value(QStringLiteral("dashboards/variables/") % name).toStringList();
     for (const auto &nodeId : nodeIds) {
         monitorNode(monitoredItemModel, nodeId);
     }
@@ -537,7 +544,7 @@ void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
     const QString statuscode = QOpcUa::statusToString(errorState->errorCode());
     const QString msg = errorState->isClientSideError() ? tr("The client reported: ")
                                                         : tr("The server reported: ");
-    setState(tr("Connection Error") % "\n" % msg
+    setState(tr("Connection Error") % QChar::fromLatin1('\n') % msg
              % QStringLiteral("0x%1 (%2)")
                        .arg(errorState->errorCode(), 8, 16, QLatin1Char('0'))
                        .arg(statuscode));
@@ -552,11 +559,12 @@ void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
 void BackEnd::createClient()
 {
     if (mOpcUaClient == nullptr) {
-        mOpcUaClient = mOpcUaProvider->createClient("open62541");
+        mOpcUaClient = mOpcUaProvider->createClient(QStringLiteral("open62541"));
         if (!mOpcUaClient) {
             const QString message(tr("A possible cause could be that the backend "
                                      "could not be loaded as a plugin."));
-            setState(QStringLiteral("Failed to connect to server") % "\n" % message);
+            setState(QStringLiteral("Failed to connect to server") % QChar::fromLatin1('\n')
+                     % message);
             return;
         }
 
@@ -590,8 +598,8 @@ void BackEnd::createClient()
 void BackEnd::setupPkiConfiguration()
 {
     const QString pkiPath = defaultPkiPath();
-    const QString certFileName(pkiPath % "/own/certs/opcuabrowser.der");
-    const QString privateKeyFileName(pkiPath % "/own/private/opcuabrowser.pem");
+    const QString certFileName(pkiPath % QStringLiteral("/own/certs/opcuabrowser.der"));
+    const QString privateKeyFileName(pkiPath % QStringLiteral("/own/private/opcuabrowser.pem"));
 
     const bool createCertificate =
             !QFile::exists(certFileName) || !QFile::exists(privateKeyFileName);
@@ -600,10 +608,10 @@ void BackEnd::setupPkiConfiguration()
 
     mPkiConfig.setClientCertificateFile(certFileName);
     mPkiConfig.setPrivateKeyFile(privateKeyFileName);
-    mPkiConfig.setTrustListDirectory(pkiPath % "/trusted/certs");
-    mPkiConfig.setRevocationListDirectory(pkiPath % "/trusted/crl");
-    mPkiConfig.setIssuerListDirectory(pkiPath % "/issuers/certs");
-    mPkiConfig.setIssuerRevocationListDirectory(pkiPath % "/issuers/crl");
+    mPkiConfig.setTrustListDirectory(pkiPath % QStringLiteral("/trusted/certs"));
+    mPkiConfig.setRevocationListDirectory(pkiPath % QStringLiteral("/trusted/crl"));
+    mPkiConfig.setIssuerListDirectory(pkiPath % QStringLiteral("/issuers/certs"));
+    mPkiConfig.setIssuerRevocationListDirectory(pkiPath % QStringLiteral("/issuers/crl"));
 
     const QStringList toCreate = { mPkiConfig.issuerListDirectory(),
                                    mPkiConfig.issuerRevocationListDirectory() };

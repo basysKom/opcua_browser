@@ -15,8 +15,8 @@
 
 #include "logging.h"
 
-static constexpr auto FontSwansea = "://font/Swansea.ttf";
-static constexpr auto FontSwanseaBold = "://font/SwanseaBold.ttf";
+static const auto FontSwansea = QStringLiteral("://font/Swansea.ttf");
+static const auto FontSwanseaBold = QStringLiteral("://font/SwanseaBold.ttf");
 
 int main(int argc, char *argv[])
 {
@@ -24,13 +24,14 @@ int main(int argc, char *argv[])
     qputenv("ANDROID_OPENSSL_SUFFIX", "_3");
 #endif
 
-    qSetMessagePattern("%{time hh:mm:ss.zzz}|##|"
-                       "%{if-debug}D%{endif}%{if-info}I%{endif}%{if-warning}W%{endif}%{if-critical}"
-                       "C%{endif}%{if-fatal}F%{endif}|##|"
-                       "%{category}|##|"
-                       "%{message}|##|"
-                       "%{function}|##|"
-                       "%{line}");
+    qSetMessagePattern(QStringLiteral(
+            "%{time hh:mm:ss.zzz}|##|"
+            "%{if-debug}D%{endif}%{if-info}I%{endif}%{if-warning}W%{endif}%{if-critical}"
+            "C%{endif}%{if-fatal}F%{endif}|##|"
+            "%{category}|##|"
+            "%{message}|##|"
+            "%{function}|##|"
+            "%{line}"));
     const auto originalHandler = qInstallMessageHandler(Logging::logMessageHandler);
     Logging::setAdditionalMessageHandler(originalHandler);
 
@@ -38,11 +39,11 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     // initialize global settings
-    app.setOrganizationName("basysKom GmbH");
-    app.setApplicationName("OPC UA Browser");
-    app.setApplicationVersion("0.1.0");
+    app.setOrganizationName(QStringLiteral("basysKom GmbH"));
+    app.setApplicationName(QStringLiteral("OPC UA Browser"));
+    app.setApplicationVersion(QStringLiteral("0.1.0"));
 
-    QQuickStyle::setStyle("Basic");
+    QQuickStyle::setStyle(QStringLiteral("Basic"));
 
     Q_ASSERT(QFile::exists(FontSwanseaBold));
     Q_ASSERT(QFile::exists(FontSwansea));
@@ -50,7 +51,7 @@ int main(int argc, char *argv[])
     QFontDatabase::addApplicationFont(FontSwansea);
 
     // Set application font
-    QGuiApplication::setFont(QFont("Swansea"));
+    QGuiApplication::setFont(QFont(QStringLiteral("Swansea")));
 
     QLoggingCategory::setFilterRules(QStringLiteral("qt.qml.binding.removal.info=true"));
 

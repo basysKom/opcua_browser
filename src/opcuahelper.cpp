@@ -38,7 +38,7 @@ QString numberArrayToString(const QList<T> &vec)
         list << QString::number(i);
     }
 
-    return QStringLiteral("[%1]").arg(list.join(';'));
+    return QStringLiteral("[%1]").arg(list.join(QChar::fromLatin1(';')));
 }
 
 QString localizedTextToString(const QOpcUaLocalizedText &text)
@@ -199,7 +199,7 @@ QString variantToString(QOpcUaNode *node, const QVariant &value, const QString &
     if (typeNodeId == QLatin1String("ns=0;i=5")) // UInt16
         return QString::number(value.toUInt());
     if (value.metaType().id() == QMetaType::QByteArray)
-        return QLatin1String("0x") + value.toByteArray().toHex();
+        return QLatin1String("0x") + QString::fromUtf8(value.toByteArray().toHex());
     if (value.metaType().id() == QMetaType::QDateTime)
         return value.toDateTime().toString(Qt::ISODate);
     if (value.canConvert<QOpcUaQualifiedName>()) {
@@ -242,9 +242,10 @@ QString variantToString(QOpcUaNode *node, const QVariant &value, const QString &
                               "AxisSteps: %5]")
                 .arg(euInformationToString(info.engineeringUnits()), rangeToString(info.eURange()),
                      localizedTextToString(info.title()),
-                     info.axisScaleType() == QOpcUa::AxisScale::Linear         ? "Linear"
-                             : (info.axisScaleType() == QOpcUa::AxisScale::Ln) ? "Ln"
-                                                                               : "Log",
+                     info.axisScaleType() == QOpcUa::AxisScale::Linear ? QStringLiteral("Linear")
+                             : (info.axisScaleType() == QOpcUa::AxisScale::Ln)
+                             ? QStringLiteral("Ln")
+                             : QStringLiteral("Log"),
                      numberArrayToString(info.axisSteps()));
     }
     if (value.canConvert<QOpcUaExpandedNodeId>()) {
@@ -306,11 +307,12 @@ QString variantToString(QOpcUaNode *node, const QVariant &value, const QString &
         return QStringLiteral("[TypeId: \"%1\", Encoding: %2, Body: 0x%3]")
                 .arg(obj.encodingTypeId(),
                      obj.encoding() == QOpcUaExtensionObject::Encoding::NoBody
-                             ? "NoBody"
+                             ? QStringLiteral("NoBody")
                              : (obj.encoding() == QOpcUaExtensionObject::Encoding::ByteString
-                                        ? "ByteString"
-                                        : "XML"))
-                .arg(obj.encodedBody().isEmpty() ? "0" : QString(obj.encodedBody().toHex()));
+                                        ? QStringLiteral("ByteString")
+                                        : QStringLiteral("XML")))
+                .arg(obj.encodedBody().isEmpty() ? QChar::fromLatin1('0')
+                                                 : QString::fromUtf8(obj.encodedBody().toHex()));
     }
 
     if (value.canConvert<QString>())
@@ -325,7 +327,7 @@ QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribu
     case QOpcUa::NodeAttribute::NodeClass: {
         const auto nodeClass = node->attribute(attr).value<QOpcUa::NodeClass>();
         const QMetaEnum metaEnum = QMetaEnum::fromType<QOpcUa::NodeClass>();
-        return metaEnum.valueToKey(int(nodeClass));
+        return QString::fromUtf8(metaEnum.valueToKey(int(nodeClass)));
     }
     case QOpcUa::NodeAttribute::BrowseName:
         return node->attribute(attr).value<QOpcUaQualifiedName>().name();
@@ -351,25 +353,25 @@ QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribu
     case QOpcUa::NodeAttribute::EventNotifier: {
         const quint32 byte = node->attribute(attr).toUInt();
         const QStringList eventNotifierTypes = QStringList()
-                << QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'))
+                << QStringLiteral("0b%1").arg(byte, 8, 2, QChar::fromLatin1('0'))
                 << eventNotifierToStringList((quint8)byte);
-        return eventNotifierTypes.join("\n");
+        return eventNotifierTypes.join(QChar::fromLatin1('\n'));
     }
     case QOpcUa::NodeAttribute::AccessLevel:
     case QOpcUa::NodeAttribute::UserAccessLevel: {
         const quint32 byte = node->attribute(attr).toUInt();
         const QStringList accessLevelTypes = QStringList()
-                << QStringLiteral("0b%1").arg(byte, 8, 2, QChar('0'))
+                << QStringLiteral("0b%1").arg(byte, 8, 2, QChar::fromLatin1('0'))
                 << accessLevelToStringList((quint8)byte);
-        return accessLevelTypes.join("\n");
+        return accessLevelTypes.join(QChar::fromLatin1('\n'));
     }
     case QOpcUa::NodeAttribute::WriteMask:
     case QOpcUa::NodeAttribute::UserWriteMask: {
         const quint32 value = node->attribute(attr).toUInt();
         const QStringList accessLevelTypes = QStringList()
-                << QStringLiteral("0x%1").arg(value, 8, 16, QChar('0'))
+                << QStringLiteral("0x%1").arg(value, 8, 16, QChar::fromLatin1('0'))
                 << writeMaskToStringList(value);
-        return accessLevelTypes.join("\n");
+        return accessLevelTypes.join(QChar::fromLatin1('\n'));
     }
     case QOpcUa::NodeAttribute::Value: {
         const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();

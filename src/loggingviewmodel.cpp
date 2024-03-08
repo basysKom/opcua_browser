@@ -65,7 +65,7 @@ LoggingViewFilterModel *LoggingViewModel::getFilteredModel() const noexcept
 
 void LoggingViewModel::addLogMessage(QtMsgType type, const QString &message)
 {
-    const QStringList parts = message.split("|##|");
+    const QStringList parts = message.split(QStringLiteral("|##|"));
     if (parts.count() < 4)
         return;
 

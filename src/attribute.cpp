@@ -12,7 +12,7 @@
 static QString nodeAttributeToString(QOpcUa::NodeAttribute attribute)
 {
     const QMetaEnum metaEnum = QMetaEnum::fromType<QOpcUa::NodeAttribute>();
-    return metaEnum.valueToKey(int(attribute));
+    return QString::fromUtf8(metaEnum.valueToKey(int(attribute)));
 }
 
 Attribute::Attribute(QOpcUa::NodeAttribute attribute, const QString &value)
