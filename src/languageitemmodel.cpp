@@ -28,23 +28,23 @@ enum Roles : int {
 LanguageItemModel::LanguageItemModel(QObject *parent) : QAbstractListModel{ parent }
 {
     QSettings settings;
-    const QString settingsFileame = settings.value(SETTINGS_NAME, "").toString();
+    const QString settingsFileame = settings.value(SETTINGS_NAME, {}).toString();
 
     const QString fallbackLocale = QStringLiteral("en_GB");
     const QString systemLocale = QLocale().name();
     const QString qmDirectory = QStringLiteral(":/i18n/");
-    const QStringList qmFiles = QDir(qmDirectory).entryList(QStringList("*.qm"));
+    const QStringList qmFiles = QDir(qmDirectory).entryList(QStringList(QStringLiteral("*.qm")));
     qCDebug(languageLog) << "installed languages" << qmFiles << systemLocale;
 
     qint32 settingsIndex = -1;
     qint32 systemLocaleIndex = -1;
     qint32 fallbackLocaleIndex = -1;
     for (const auto &file : qmFiles) {
-        QString name = file.split("_").first();
+        QString name = file.split(QChar::fromLatin1('_')).first();
         const QString pngFilename(QStringLiteral("qrc:/languages/%1.png").arg(name));
         QFile utf8File(QStringLiteral(":/languages/%1.utf8").arg(name));
         if (utf8File.open(QIODevice::ReadOnly)) {
-            name = utf8File.readAll();
+            name = QString::fromUtf8(utf8File.readAll());
         } else {
             qCWarning(languageLog) << "could not open language name file" << utf8File.fileName();
         }
@@ -120,9 +120,9 @@ void LanguageItemModel::setLanguage(const QString &langugeFilename)
     }
 
     if (mTranslator->load(langugeFilename)) {
-        static QRegularExpression re("([A-Z,a-z,_]+)_([a-z]{2,2})_([A-Z]{2,2})");
+        static QRegularExpression re(QStringLiteral("([A-Z,a-z,_]+)_([a-z]{2,2})_([A-Z]{2,2})"));
         QRegularExpressionMatch match = re.match(langugeFilename);
-        QLocale locale = QLocale(match.captured(2) % "_" % match.captured(3));
+        QLocale locale = QLocale(match.captured(2) % QChar::fromLatin1('_') % match.captured(3));
         QLocale::setDefault(locale);
 
         if (auto engine = qmlEngine(this))

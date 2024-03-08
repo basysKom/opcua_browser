@@ -672,8 +672,10 @@ void OpcUaModel::browseEnumStrings(QOpcUaNode *node)
                     // We only care about subtypes or their EnumStrings/EnumValues properties
                     if (item.nodeClass() != QOpcUa::NodeClass::DataType
                         && !(item.nodeClass() == QOpcUa::NodeClass::Variable
-                             && (item.browseName() == QOpcUaQualifiedName(0, "EnumStrings")
-                                 || item.browseName() == QOpcUaQualifiedName(0, "EnumValues"))))
+                             && (item.browseName()
+                                         == QOpcUaQualifiedName(0, QStringLiteral("EnumStrings"))
+                                 || item.browseName()
+                                         == QOpcUaQualifiedName(0, QStringLiteral("EnumValues")))))
                         continue;
 
                     auto childNode = mOpcUaClient->node(item.targetNodeId());

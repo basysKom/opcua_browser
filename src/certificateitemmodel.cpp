@@ -75,33 +75,34 @@ QVariant CertificateItemModel::data(const QModelIndex &index, int role) const
     case FingerprintRole:
         return mItems[index.row()].mFingerprint;
     case SerialNumberRole:
-        return QString(mItems[index.row()].mSslCertificate.serialNumber()).remove(':');
+        return QString::fromUtf8(mItems[index.row()].mSslCertificate.serialNumber())
+                .remove(QChar::fromLatin1(':'));
     case VersionRole:
         return mItems[index.row()].mSslCertificate.version();
     case CommonNameRole:
         return mItems[index.row()]
                 .mSslCertificate.issuerInfo(QSslCertificate::CommonName)
-                .join(",");
+                .join(QChar::fromLatin1(','));
     case OrganizationRole:
         return mItems[index.row()]
                 .mSslCertificate.issuerInfo(QSslCertificate::Organization)
-                .join(",");
+                .join(QChar::fromLatin1(','));
     case OrganizationUnitRole:
         return mItems[index.row()]
                 .mSslCertificate.issuerInfo(QSslCertificate::OrganizationalUnitName)
-                .join(",");
+                .join(QChar::fromLatin1(','));
     case LocalityNameRole:
         return mItems[index.row()]
                 .mSslCertificate.issuerInfo(QSslCertificate::LocalityName)
-                .join(",");
+                .join(QChar::fromLatin1(','));
     case CountryNameRole:
         return mItems[index.row()]
                 .mSslCertificate.issuerInfo(QSslCertificate::CountryName)
-                .join(",");
+                .join(QChar::fromLatin1(','));
     case StateOrProvinceNameRole:
         return mItems[index.row()]
                 .mSslCertificate.issuerInfo(QSslCertificate::StateOrProvinceName)
-                .join(",");
+                .join(QChar::fromLatin1(','));
     case CurrentItemRole:
         return mCurrentIndex == index.row();
     }
@@ -124,7 +125,7 @@ void CertificateItemModel::removeCertificate(int index)
     if (index >= mItems.size())
         return;
 
-    const QString filename = mTrustedCertsPath % "/" % mItems[index].mFilename;
+    const QString filename = mTrustedCertsPath % QChar::fromLatin1('/') % mItems[index].mFilename;
     beginRemoveRows(QModelIndex(), index, index);
     auto item = mItems.takeAt(index);
     endRemoveRows();
@@ -148,7 +149,8 @@ void CertificateItemModel::updateCertificateList()
         QFile certificate(mTrustedCertsPath % fileName);
         if (certificate.open(QIODevice::ReadOnly)) {
             const QSslCertificate ssl(certificate.readAll(), QSsl::Der);
-            const QString sha256Fingerprint = ssl.digest(QCryptographicHash::Sha256).toHex();
+            const auto sha256Fingerprint =
+                    QString::fromUtf8(ssl.digest(QCryptographicHash::Sha256).toHex());
             sslCertificates << Certificate(fileName, sha256Fingerprint, ssl);
         } else {
             qCWarning(certificateLog) << "cannot open certificate" << fileName;

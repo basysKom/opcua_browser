@@ -18,8 +18,8 @@
 
 bool X509Certificate::createCertificate(const QString &pkiDir)
 {
-    const QString certsPath = pkiDir % "/own/certs";
-    const QString privatePath = pkiDir % "/own/private";
+    const QString certsPath = pkiDir % QStringLiteral("/own/certs");
+    const QString privatePath = pkiDir % QStringLiteral("/own/private");
     if (!QDir().mkpath(certsPath))
         return false;
 
@@ -34,7 +34,7 @@ bool X509Certificate::createCertificate(const QString &pkiDir)
     const QByteArray keyData =
             key.privateKeyToByteArray(QOpcUaKeyPair::Cipher::Unencrypted, QString());
 
-    QFile keyFile(privatePath % "/opcuabrowser.pem");
+    QFile keyFile(privatePath % QStringLiteral("/opcuabrowser.pem"));
     if (!keyFile.open(QIODevice::WriteOnly))
         return false;
 
@@ -47,18 +47,19 @@ bool X509Certificate::createCertificate(const QString &pkiDir)
 
     // Set the subject of the certificate
     QOpcUaX509DistinguishedName dn;
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::CommonName, "OpcUaBrowser");
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::CountryName, "DE");
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::LocalityName, "Darmstadt");
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::StateOrProvinceName, "Hesse");
-    dn.setEntry(QOpcUaX509DistinguishedName::Type::OrganizationName, "basysKom GmbH");
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::CommonName, QStringLiteral("OpcUaBrowser"));
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::CountryName, QStringLiteral("DE"));
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::LocalityName, QStringLiteral("Darmstadt"));
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::StateOrProvinceName, QStringLiteral("Hesse"));
+    dn.setEntry(QOpcUaX509DistinguishedName::Type::OrganizationName,
+                QStringLiteral("basysKom GmbH"));
     csr.setSubject(dn);
 
     // The subject alternative name extension is needed for OPC UA
     QOpcUaX509ExtensionSubjectAlternativeName *san = new QOpcUaX509ExtensionSubjectAlternativeName;
-    san->addEntry(QOpcUaX509ExtensionSubjectAlternativeName::Type::DNS, "foo.com");
+    san->addEntry(QOpcUaX509ExtensionSubjectAlternativeName::Type::DNS, QStringLiteral("foo.com"));
     san->addEntry(QOpcUaX509ExtensionSubjectAlternativeName::Type::URI,
-                  "urn:foo.com:basysKom%20GmbH:OpcUaBrowser");
+                  QStringLiteral("urn:foo.com:basysKom%20GmbH:OpcUaBrowser"));
     san->setCritical(true);
     csr.addExtension(san);
 
@@ -88,7 +89,7 @@ bool X509Certificate::createCertificate(const QString &pkiDir)
 
     const QByteArray selfSignedCertificateData = csr.createSelfSignedCertificate(key, 365 * 20);
 
-    QFile certFile(certsPath % "/opcuabrowser.der");
+    QFile certFile(certsPath % QStringLiteral("/opcuabrowser.der"));
     if (!certFile.open(QIODevice::WriteOnly))
         return false;
 

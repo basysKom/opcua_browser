@@ -21,7 +21,7 @@ if(QT_KNOWN_POLICY_QTP0002)
 endif()
 
 qt_standard_project_setup(REQUIRES 6.5)
-add_compile_definitions(QT_DISABLE_DEPRECATED_UP_TO=0x060500)
+add_compile_definitions(QT_DISABLE_DEPRECATED_UP_TO=0x060500 QT_NO_CAST_FROM_ASCII)
 
 add_subdirectory(src)
 
