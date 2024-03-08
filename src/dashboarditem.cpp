@@ -20,7 +20,8 @@ DashboardItem::DashboardItem(DashboardItem::DashboardType type, const QString &n
 
 DashboardItem::~DashboardItem()
 {
-    mMonitoredItemModel->deleteLater();
+    if (mMonitoredItemModel)
+        mMonitoredItemModel->deleteLater();
 }
 
 const QString &DashboardItem::name() const noexcept
