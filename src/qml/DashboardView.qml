@@ -109,6 +109,10 @@ Rectangle {
             onClicked: {
                 if (dragArea.isAddItem) {
                     view.addMonitoredItems()
+                } else {
+                    fullPopup.name = dragArea.name;
+                    fullPopup.value = Qt.binding(function() { return dragArea.value })
+                    fullPopup.open()
                 }
             }
 
@@ -262,6 +266,68 @@ Rectangle {
                 id: repeater
 
                 model: visualModel
+            }
+        }
+
+        Popup {
+            id: fullPopup
+            modal: true
+
+            property alias name: nameText.text
+            property alias value: valueText.text
+
+            implicitWidth: popupFlickable.width
+            implicitHeight: popupFlickable.height
+            padding: 0
+
+            clip: true
+
+            anchors.centerIn: parent
+
+            background: Rectangle {
+                radius: 3
+                opacity: 0.8
+                color: Style.contextMenu.backgroundSelected
+            }
+
+            Flickable {
+                id: popupFlickable
+                width: flowListView.width * 0.8
+                height: Math.max(100, Math.min(flowListView.height * 0.8, contentHeight))
+
+                contentWidth: width
+                contentHeight: contentItem.childrenRect.height
+
+                Column {
+                    Text {
+                        width: flowListView.width * 0.8
+                        id: nameText
+                        padding: 3
+                        font {
+                            pointSize: 12
+                            bold: true
+                        }
+                        color: view.theme.item.textColor
+                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    }
+
+                    Text {
+                        width: flowListView.width * 0.8
+                        id: valueText
+                        padding: 3
+                        font {
+                            pointSize: 10
+                        }
+                        color: view.theme.item.textColor
+                        wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                    }
+                }
+
+                TapHandler {
+                    onTapped: function(point, button) { // qmllint disable signal-handler-parameters
+                        fullPopup.close()
+                    }
+                }
             }
         }
     }
