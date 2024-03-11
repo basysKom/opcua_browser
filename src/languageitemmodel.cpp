@@ -18,8 +18,6 @@
 
 Q_LOGGING_CATEGORY(languageLog, "opcua_browser.language");
 
-static constexpr std::string_view SETTINGS_NAME = "language";
-
 enum Roles : int {
     DisplayNameRole = Qt::DisplayRole,
     FlagFilenameRole = Qt::UserRole,
@@ -29,7 +27,7 @@ enum Roles : int {
 LanguageItemModel::LanguageItemModel(QObject *parent) : QAbstractListModel{ parent }
 {
     QSettings settings;
-    const QString settingsFileame = settings.value(SETTINGS_NAME, {}).toString();
+    const QString settingsFileame = settings.value(Constants::SettingsKey::Language, {}).toString();
 
     const QString systemLocale = QLocale().name();
     const QString qmDirectory = QStringLiteral(":/i18n/");
@@ -131,7 +129,7 @@ void LanguageItemModel::setLanguage(const QString &langugeFilename)
         qCDebug(languageLog) << "changed language to" << mItems[mCurrentIndex].mName;
 
         QSettings settings;
-        settings.setValue(SETTINGS_NAME, langugeFilename);
+        settings.setValue(Constants::SettingsKey::Language, langugeFilename);
     } else {
         qCWarning(languageLog) << "could not load language file" << langugeFilename;
     }
