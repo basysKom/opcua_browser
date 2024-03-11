@@ -716,10 +716,10 @@ void BackEnd::loadLastServerHostsFromSettings()
     mLastServerHosts.clear();
 
     QSettings settings;
-    int size = settings.beginReadArray("recentConnections");
+    int size = settings.beginReadArray(Constants::SettingsKey::RecentConnections);
     for (int i = 0; i < size; ++i) {
         settings.setArrayIndex(i);
-        mLastServerHosts << settings.value("url").toString();
+        mLastServerHosts << settings.value(Constants::SettingsKey::Url).toString();
     }
     settings.endArray();
 }
@@ -737,12 +737,12 @@ void BackEnd::saveServerHost(const QString &host)
     emit recentConnectionsChanged();
 
     QSettings settings;
-    settings.remove("recentConnections");
+    settings.remove(Constants::SettingsKey::RecentConnections);
 
-    settings.beginWriteArray("recentConnections");
+    settings.beginWriteArray(Constants::SettingsKey::RecentConnections);
     for (qsizetype i = 0; i < qMin(10, mLastServerHosts.count()); ++i) {
         settings.setArrayIndex(i);
-        settings.setValue("url", mLastServerHosts[i]);
+        settings.setValue(Constants::SettingsKey::Url, mLastServerHosts[i]);
     }
     settings.endArray();
 }

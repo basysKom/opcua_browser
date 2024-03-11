@@ -44,6 +44,9 @@ public:
     const static QString Name;
     const static QString Type;
     const static QString NodeIds;
+    const static QString RecentConnections;
+    const static QString Url;
+    const static QString Language;
 };
 
 class CertInfo
