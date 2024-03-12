@@ -35,7 +35,11 @@ static constexpr QOpcUa::NodeAttributes objectTypeAttributes = QOpcUa::NodeAttri
 static constexpr QOpcUa::NodeAttributes variableTypeAttributes = QOpcUa::NodeAttribute::Value
         | QOpcUa::NodeAttribute::DataType | QOpcUa::NodeAttribute::ValueRank
         | QOpcUa::NodeAttribute::ArrayDimensions | QOpcUa::NodeAttribute::IsAbstract;
-static constexpr QOpcUa::NodeAttributes dataTypeAttributes = QOpcUa::NodeAttribute::IsAbstract;
+static constexpr QOpcUa::NodeAttributes dataTypeAttributes = QOpcUa::NodeAttribute::IsAbstract
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+        | QOpcUa::NodeAttribute::DataTypeDefinition
+#endif
+        ;
 static constexpr QOpcUa::NodeAttributes viewAttributes =
         QOpcUa::NodeAttribute::ContainsNoLoops | QOpcUa::NodeAttribute::EventNotifier;
 
@@ -246,7 +250,11 @@ void TreeItem::refreshAttributes()
     connect(node, &QOpcUaNode::attributeRead, this, [=](const QOpcUa::NodeAttributes &attributes) {
         QString displayName;
         QString browseName;
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+        for (int i = 0; i <= 22; ++i) {
+#else
         for (int i = 0; i <= 21; ++i) {
+#endif
             const QOpcUa::NodeAttribute attr = static_cast<QOpcUa::NodeAttribute>(1 << i);
             if (!attributes.testFlag(attr))
                 continue;
