@@ -208,6 +208,95 @@ Rectangle {
                 }
             }
 
+            // Saved variable dashboards list view
+            Column {
+                width: parent.width - content.leftPadding - content.rightPadding
+                spacing: 5
+
+                Text {
+                    color: view.theme.textColor
+                    font {
+                        pointSize: 14
+                        bold: true
+                    }
+                    text: qsTranslate("Dashboard", "Saved Variable Dashboards")
+                }
+
+                Rectangle {
+                    color: view.theme.backgroundListView
+                    radius: 5
+
+                    width: parent.width
+                    height: childrenRect.height
+
+                    ListView {
+                        id: variableDashboardsListView
+
+                        width: parent.width
+                        height: Math.min(200, contentHeight)
+
+                        clip: true
+
+                        model: BackEnd.savedVariableDashboards
+
+                        boundsBehavior: Flickable.StopAtBounds
+                        boundsMovement: Flickable.StopAtBounds
+
+                        ScrollBar.vertical: StyledScrollBar {
+                            policy: ScrollBar.AsNeeded
+                        }
+
+                        delegate: Rectangle {
+                            id: variableDashboardsListViewDelegate
+
+                            required property int index
+                            required property string display
+
+                            radius: 5
+                            width: variableDashboardsListView.width
+                            implicitHeight: childrenRect.height
+                            color: "transparent"
+                            clip: true
+
+                            RowLayout {
+                                width: parent.width
+                                height: 30
+                                spacing: 10
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    Layout.rightMargin: 5
+                                    Layout.leftMargin: 5
+                                    font {
+                                        pointSize: 11
+                                    }
+                                    text: display
+                                    color: view.theme.textColor
+                                    elide: Text.ElideRight
+                                }
+
+                                IconImage {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.rightMargin: 10
+                                    sourceSize.width: 24
+                                    sourceSize.height: 24
+                                    source: "qrc:/icons/delete.svg"
+                                    color: view.theme.textColor
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: function() {
+                                            BackEnd.removeSavedVariableDashboard(display)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Certificate list view
             Column {
                 width: parent.width - content.leftPadding - content.rightPadding

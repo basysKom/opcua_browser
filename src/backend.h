@@ -137,6 +137,7 @@ public:
     Q_INVOKABLE void monitorSelectedNodes();
 
     Q_INVOKABLE void saveCurrentDashboard(const QString &name);
+    Q_INVOKABLE void removeSavedVariableDashboard(const QString &name);
     Q_INVOKABLE void loadDashboard(const QString &name);
 
     Q_INVOKABLE void loadLastDashboardsFromSettings();
