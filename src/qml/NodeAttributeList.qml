@@ -16,6 +16,8 @@ import OPC_UA_Browser
 Rectangle {
     id: root
 
+    signal popupRequested(name: string, valueText: string)
+
     property alias attributes: attributeList.model
     property ThemeListView theme: Style.listView
 
@@ -75,6 +77,12 @@ Rectangle {
                 width: root.maxDelegateWidth()
                 implicitHeight: childrenRect.height
                 color: ((listViewDelegate.index % 1) == 0) ? root.theme.color1 : root.theme.color2
+
+                TapHandler {
+                    onTapped: function() {
+                        root.popupRequested(attribute, value)
+                    }
+                }
 
                 ColumnLayout {
                     spacing: 0

@@ -19,6 +19,8 @@ Item {
     property alias attributes: attributesTab.attributes
     property alias references: referencesTab.references
 
+    signal popupRequested(name: string, valueText: string)
+
     TabBar {
         id: tabBar
 
@@ -58,6 +60,10 @@ Item {
 
         NodeAttributeList {
             id: attributesTab
+
+            onPopupRequested: function(name, valueText) {
+                root.popupRequested(name, valueText)
+            }
         }
 
         NodeReferenceList {

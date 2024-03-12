@@ -9,4 +9,6 @@ import QtQuick
 
 StyleDefinitions {
     property color background: anthrazite
+    property color popupBackground: accent
+    property color popupTextColor: foreground
 }
