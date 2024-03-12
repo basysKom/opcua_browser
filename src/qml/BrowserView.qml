@@ -6,6 +6,7 @@
  */
 
 import QtQuick
+import QtQuick.Controls
 
 import OPC_UA_Browser
 
@@ -67,6 +68,12 @@ Rectangle {
 
         attributes: nodesView.attributes
         references: nodesView.references
+
+        onPopupRequested: function (name, valueText) {
+            fullPopup.name = name
+            fullPopup.value = valueText
+            fullPopup.open()
+        }
     }
 
     StyledButton {
@@ -94,5 +101,67 @@ Rectangle {
         text: qsTranslate("General", "Ok")
 
         onClicked: view.selectionAccepted()
+    }
+
+    Popup {
+        id: fullPopup
+        modal: true
+
+        property alias name: nameText.text
+        property alias value: valueText.text
+
+        implicitWidth: popupFlickable.width
+        implicitHeight: popupFlickable.height
+        padding: 0
+
+        clip: true
+
+        anchors.centerIn: browser
+
+        background: Rectangle {
+            radius: 3
+            opacity: 0.8
+            color: Style.browserView.popupBackground
+        }
+
+        Flickable {
+            id: popupFlickable
+            width: browser.width * 0.8
+            height: Math.max(100, Math.min(browser.height * 0.8, contentHeight))
+
+            contentWidth: width
+            contentHeight: contentItem.childrenRect.height
+
+            Column {
+                Text {
+                    width: browser.width * 0.8
+                    id: nameText
+                    padding: 3
+                    font {
+                        pointSize: 12
+                        bold: true
+                    }
+                    color: Style.browserView.popupTextColor
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                }
+
+                Text {
+                    width: browser.width * 0.8
+                    id: valueText
+                    padding: 3
+                    font {
+                        pointSize: 10
+                    }
+                    color: Style.browserView.popupTextColor
+                    wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                }
+            }
+
+            TapHandler {
+                onTapped: function(point, button) { // qmllint disable signal-handler-parameters
+                    fullPopup.close()
+                }
+            }
+        }
     }
 }
