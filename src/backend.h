@@ -200,6 +200,8 @@ public:
     Q_INVOKABLE void useHostUrlForEndpointConnection();
     Q_INVOKABLE void trustCertificate();
 
+    Q_INVOKABLE void removeRecentConnection(const QString &name);
+
 signals:
     void recentConnectionsChanged();
     void serverListChanged();

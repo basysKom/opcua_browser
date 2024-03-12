@@ -297,6 +297,95 @@ Rectangle {
                 }
             }
 
+            // Recent connections list view
+            Column {
+                width: parent.width - content.leftPadding - content.rightPadding
+                spacing: 5
+
+                Text {
+                    color: view.theme.textColor
+                    font {
+                        pointSize: 14
+                        bold: true
+                    }
+                    text: qsTranslate("Connection", "Recent connections")
+                }
+
+                Rectangle {
+                    color: view.theme.backgroundListView
+                    radius: 5
+
+                    width: parent.width
+                    height: childrenRect.height
+
+                    ListView {
+                        id: recentConnectionsListView
+
+                        width: parent.width
+                        height: Math.min(200, contentHeight)
+
+                        clip: true
+
+                        model: BackEnd.recentConnections
+
+                        boundsBehavior: Flickable.StopAtBounds
+                        boundsMovement: Flickable.StopAtBounds
+
+                        ScrollBar.vertical: StyledScrollBar {
+                            policy: ScrollBar.AsNeeded
+                        }
+
+                        delegate: Rectangle {
+                            id: recentConnectionsListViewDelegate
+
+                            required property int index
+                            required property string modelData
+
+                            radius: 5
+                            width: recentConnectionsListView.width
+                            implicitHeight: childrenRect.height
+                            color: "transparent"
+                            clip: true
+
+                            RowLayout {
+                                width: parent.width
+                                height: 30
+                                spacing: 10
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    Layout.rightMargin: 5
+                                    Layout.leftMargin: 5
+                                    font {
+                                        pointSize: 11
+                                    }
+                                    text: modelData
+                                    color: view.theme.textColor
+                                    elide: Text.ElideRight
+                                }
+
+                                IconImage {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.rightMargin: 10
+                                    sourceSize.width: 24
+                                    sourceSize.height: 24
+                                    source: "qrc:/icons/delete.svg"
+                                    color: view.theme.textColor
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: function() {
+                                            BackEnd.removeRecentConnection(modelData)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Certificate list view
             Column {
                 width: parent.width - content.leftPadding - content.rightPadding
