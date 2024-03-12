@@ -50,6 +50,17 @@ static void addItemToStringListModel(QStringListModel *model, const QString &nam
     model->setStringList(keys);
 }
 
+static void removeItemFromStringListModel(QStringListModel *model, const QString &name)
+{
+    QStringList keys = model->stringList();
+    if (!keys.contains(name))
+        return;
+
+    keys.removeAll(name);
+    keys.sort(Qt::CaseInsensitive);
+    model->setStringList(keys);
+}
+
 BackEnd::BackEnd(QObject *parent)
     : QObject{ parent },
       mCertificateItemModel(new CertificateItemModel(defaultTrustedCertsPath(), this)),
@@ -395,6 +406,18 @@ void BackEnd::saveCurrentDashboard(const QString &name)
         Q_UNREACHABLE();
         break;
     }
+}
+
+void BackEnd::removeSavedVariableDashboard(const QString &name)
+{
+    Q_ASSERT(mDashboardItemModel);
+
+    if (name.isEmpty())
+        return;
+
+    QSettings settings;
+    settings.remove(Constants::SettingsKey::DashboardsVariables % QChar::fromLatin1('/') % name);
+    removeItemFromStringListModel(mSavedVariableDashboardsModel, name);
 }
 
 void BackEnd::loadDashboard(const QString &name)
