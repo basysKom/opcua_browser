@@ -301,14 +301,26 @@ bool TreeItem::browse()
         return false;
 
     connect(node, &QOpcUaNode::browseFinished, this,
-            [=](const QList<QOpcUaReferenceDescription> &refNodes,
-                QOpcUa::UaStatusCode statusCode) {
+            [=](QList<QOpcUaReferenceDescription> refNodes, QOpcUa::UaStatusCode statusCode) {
                 if (statusCode != QOpcUa::Good) {
                     qCWarning(treeItemLog)
                             << "Browsing node" << node->nodeId() << "finally failed:" << statusCode;
                     node->deleteLater();
                     return;
                 }
+
+                std::sort(refNodes.begin(), refNodes.end(),
+                          [](const QOpcUaReferenceDescription &lhs,
+                             const QOpcUaReferenceDescription &rhs) {
+                              return QString::compare(lhs.displayName().text().isEmpty()
+                                                              ? lhs.browseName().name()
+                                                              : lhs.displayName().text(),
+                                                      rhs.displayName().text().isEmpty()
+                                                              ? rhs.browseName().name()
+                                                              : rhs.displayName().text(),
+                                                      Qt::CaseInsensitive)
+                                      < 0;
+                          });
 
                 const auto index = mModel->createIndex(row(), 0, this);
                 for (const auto &item : refNodes) {
