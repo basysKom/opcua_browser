@@ -24,9 +24,13 @@
 #include "opcuahelper.h"
 
 #ifdef HAS_GENERIC_STRUCT_HANDLER
+#  include <QOpcUaDiagnosticInfo>
+#  include <QOpcUaEnumDefinition>
+#  include <QOpcUaEnumField>
 #  include <QOpcUaGenericStructValue>
 #  include <QOpcUaStructureDefinition>
 #  include <QOpcUaStructureField>
+#  include <QOpcUaVariant>
 #endif
 
 template <typename T>
@@ -315,6 +319,195 @@ QString variantToString(QOpcUaNode *node, const QVariant &value, const QString &
                                                  : QString::fromUtf8(obj.encodedBody().toHex()));
     }
 
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+    if (value.canConvert<QOpcUaStructureDefinition>()) {
+        // return QStringLiteral("StructureDefinition");
+
+        const auto definition = value.value<QOpcUaStructureDefinition>();
+
+        QString structType = QStringLiteral("Unknown");
+        switch (definition.structureType()) {
+        case QOpcUaStructureDefinition::StructureType::Structure:
+            structType = QStringLiteral("Structure");
+            break;
+        case QOpcUaStructureDefinition::StructureType::StructureWithOptionalFields:
+            structType = QStringLiteral("StructureWithOptionalFields");
+            break;
+        case QOpcUaStructureDefinition::StructureType::Union:
+            structType = QStringLiteral("Union");
+            break;
+        }
+
+        QStringList fields;
+        for (const auto &field : definition.fields()) {
+            fields.push_back(variantToString(nullptr, field, {}));
+        }
+
+        return QStringLiteral(
+                       "[DefaultEncodingId: %1, BaseDataType: %2, StructureType: %3, Fields: [%4]]")
+                .arg(definition.defaultEncodingId(), definition.baseDataType(), structType,
+                     fields.join(QStringLiteral(", ")));
+    }
+
+    if (value.canConvert<QOpcUaStructureField>()) {
+        const auto field = value.value<QOpcUaStructureField>();
+
+        QStringList arrayDimensions;
+        for (const auto &entry : field.arrayDimensions())
+            arrayDimensions.push_back(QString::number(entry));
+        return QStringLiteral("[Name: \"%1\", Description: %2, DataType: %3, ValueRank: %4, "
+                              "ArrayDimensions: [%5], MaxStringLength: %6, IsOptional: %7]")
+                .arg(field.name(), variantToString(nullptr, field.description(), {}),
+                     field.dataType())
+                .arg(field.valueRank())
+                .arg(arrayDimensions.join(QStringLiteral(", ")))
+                .arg(field.maxStringLength())
+                .arg(field.isOptional() ? QStringLiteral("true") : QStringLiteral("false"));
+    }
+
+    if (value.canConvert<QOpcUaEnumDefinition>()) {
+        const auto definition = value.value<QOpcUaEnumDefinition>();
+
+        QStringList fields;
+        for (const auto &field : definition.fields()) {
+            fields.push_back(variantToString(nullptr, field, {}));
+        }
+
+        return QStringLiteral("[Fields: [%1]").arg(fields.join(QStringLiteral(", ")));
+    }
+
+    if (value.canConvert<QOpcUaEnumField>()) {
+        const auto field = value.value<QOpcUaEnumField>();
+        return QStringLiteral("[Name: \"%1\", DisplayName: %2, Description: %3, Value: %4]")
+                .arg(field.name(), variantToString(nullptr, field.displayName(), {}),
+                     variantToString(nullptr, field.description(), {}))
+                .arg(field.value());
+    }
+
+    if (value.canConvert<QOpcUaDiagnosticInfo>()) {
+        const auto info = value.value<QOpcUaDiagnosticInfo>();
+        QStringList components;
+
+        if (info.hasSymbolicId())
+            components.push_back(QStringLiteral("SymbolicId: %1").arg(info.symbolicId()));
+        if (info.hasNamespaceUri())
+            components.push_back(QStringLiteral("NamespaceUri: %1").arg(info.namespaceUri()));
+        if (info.hasLocale())
+            components.push_back(QStringLiteral("Locale: %1").arg(info.locale()));
+        if (info.hasLocalizedText())
+            components.push_back(QStringLiteral("LocalizedText: %1").arg(info.localizedText()));
+        if (info.hasAdditionalInfo())
+            components.push_back(QStringLiteral("AdditionalInfo: %1").arg(info.additionalInfo()));
+        if (info.hasInnerStatusCode())
+            components.push_back(QStringLiteral("InnerStatusCode: %1").arg(info.innerStatusCode()));
+        if (info.hasInnerDiagnosticInfo())
+            components.push_back(
+                    QStringLiteral("InnerDiagnosticInfo: [%1]")
+                            .arg(variantToString(nullptr, info.innerDiagnosticInfo(), {})));
+
+        return QStringLiteral("[%1]").arg(components.join(QStringLiteral(", ")));
+    }
+
+    if (value.canConvert<QOpcUaVariant>()) {
+        const auto var = value.value<QOpcUaVariant>();
+
+        QString valueType;
+        QString typeIdString;
+        switch (var.type()) {
+        case QOpcUaVariant::ValueType::Unknown:
+            valueType = QStringLiteral("Unknown");
+            break;
+        case QOpcUaVariant::ValueType::Boolean:
+            valueType = QStringLiteral("Boolean");
+            break;
+        case QOpcUaVariant::ValueType::SByte:
+            valueType = QStringLiteral("SByte");
+            typeIdString = QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::SByte);
+            break;
+        case QOpcUaVariant::ValueType::Byte:
+            valueType = QStringLiteral("Byte");
+            typeIdString = QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::Byte);
+            break;
+        case QOpcUaVariant::ValueType::Int16:
+            valueType = QStringLiteral("Int16");
+            typeIdString = QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::Int16);
+            break;
+        case QOpcUaVariant::ValueType::UInt16:
+            valueType = QStringLiteral("UInt16");
+            typeIdString = QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::UInt16);
+            break;
+        case QOpcUaVariant::ValueType::Int32:
+            valueType = QStringLiteral("Int32");
+            break;
+        case QOpcUaVariant::ValueType::UInt32:
+            valueType = QStringLiteral("UInt32");
+            break;
+        case QOpcUaVariant::ValueType::Int64:
+            valueType = QStringLiteral("Int64");
+            break;
+        case QOpcUaVariant::ValueType::UInt64:
+            valueType = QStringLiteral("UInt64");
+            break;
+        case QOpcUaVariant::ValueType::Float:
+            valueType = QStringLiteral("Float");
+            break;
+        case QOpcUaVariant::ValueType::Double:
+            valueType = QStringLiteral("Double");
+            break;
+        case QOpcUaVariant::ValueType::String:
+            valueType = QStringLiteral("String");
+            break;
+        case QOpcUaVariant::ValueType::DateTime:
+            valueType = QStringLiteral("DateTime");
+            break;
+        case QOpcUaVariant::ValueType::Guid:
+            valueType = QStringLiteral("Guid");
+            break;
+        case QOpcUaVariant::ValueType::ByteString:
+            valueType = QStringLiteral("ByteString");
+            break;
+        case QOpcUaVariant::ValueType::XmlElement:
+            valueType = QStringLiteral("XmlElement");
+            break;
+        case QOpcUaVariant::ValueType::NodeId:
+            valueType = QStringLiteral("NodeId");
+            break;
+        case QOpcUaVariant::ValueType::ExpandedNodeId:
+            valueType = QStringLiteral("ExpandedNodeId");
+            break;
+        case QOpcUaVariant::ValueType::StatusCode:
+            valueType = QStringLiteral("StatusCode");
+            break;
+        case QOpcUaVariant::ValueType::QualifiedName:
+            valueType = QStringLiteral("QualifiedName");
+            break;
+        case QOpcUaVariant::ValueType::LocalizedText:
+            valueType = QStringLiteral("LocalizedText");
+            break;
+        case QOpcUaVariant::ValueType::ExtensionObject:
+            valueType = QStringLiteral("ExtensionObject");
+            break;
+        case QOpcUaVariant::ValueType::DataValue:
+            valueType = QStringLiteral("DataValue");
+            break;
+        case QOpcUaVariant::ValueType::Variant:
+            valueType = QStringLiteral("Variant");
+            break;
+        case QOpcUaVariant::ValueType::DiagnosticInfo:
+            valueType = QStringLiteral("DiagnosticInfo");
+            break;
+        }
+
+        QStringList arrayDimensions;
+        for (const auto &entry : var.arrayDimensions())
+            arrayDimensions.push_back(QString::number(entry));
+
+        return QStringLiteral("[Value: %1, Type: %2, ArrayDimensions: [%3]]")
+                .arg(variantToString(node, var.value(), typeIdString), valueType,
+                     arrayDimensions.join(QStringLiteral(", ")));
+    }
+#endif
+
     if (value.canConvert<QString>())
         return value.toString();
 
@@ -393,6 +586,13 @@ QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribu
 
         return valueString;
     }
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+    case QOpcUa::NodeAttribute::DataTypeDefinition: {
+        const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();
+        const QVariant attrValue = node->attribute(attr);
+        return variantToString(node, attrValue, type);
+    }
+#endif
     case QOpcUa::NodeAttribute::None:
         return QString();
     }
@@ -434,6 +634,9 @@ QString QOpcUaHelper::getFormattedAttributeValue(QOpcUaNode *node, QOpcUa::NodeA
     case QOpcUa::NodeAttribute::AccessLevel:
     case QOpcUa::NodeAttribute::UserAccessLevel:
     case QOpcUa::NodeAttribute::Value:
+#ifdef HAS_GENERIC_STRUCT_HANDLER
+    case QOpcUa::NodeAttribute::DataTypeDefinition:
+#endif
     case QOpcUa::NodeAttribute::None:
         return getRawAttributeValue(node, attr);
     }
