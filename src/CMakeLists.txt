@@ -107,11 +107,13 @@ qt_add_resources(appOPC_UA_Browser "icons"
           font/SwanseaBold.ttf
           icons/arrow_right.svg
           icons/back.svg
+          icons/cancel.svg
           icons/checkmark.svg
           icons/connect.svg
           icons/dashboard.svg
           icons/delete.svg
           icons/disconnect.svg
+          icons/edit.svg
           icons/event.svg
           icons/expert.svg
           icons/forward.svg

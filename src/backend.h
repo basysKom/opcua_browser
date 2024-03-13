@@ -190,6 +190,9 @@ public:
     Q_INVOKABLE void removeSavedVariableDashboard(const QString &name);
     Q_INVOKABLE void loadDashboard(const QString &name);
     Q_INVOKABLE int instantiateDefaultVariableDashboard(const QString &name);
+    Q_INVOKABLE void renameSavedVariableDashboard(const QString &previousName,
+                                                  const QString &newName);
+    Q_INVOKABLE bool hasSavedVariableDashboard(const QString &name) const;
 
     Q_INVOKABLE void loadLastDashboardsFromSettings();
 
