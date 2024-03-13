@@ -787,17 +787,8 @@ void BackEnd::removeRecentConnection(const QString &name)
     if (mLastServerHosts.contains(name)) {
         mLastServerHosts.removeAll(name);
 
-        QSettings settings;
-        settings.remove(Constants::SettingsKey::RecentConnections);
-
-        settings.beginWriteArray(Constants::SettingsKey::RecentConnections);
-        for (qsizetype i = 0; i < qMin(10, mLastServerHosts.count()); ++i) {
-            settings.setArrayIndex(i);
-            settings.setValue(Constants::SettingsKey::Url, mLastServerHosts.at(i));
-        }
-        settings.endArray();
-
         emit recentConnectionsChanged();
+        syncRecentConnectionsToSettings();
     }
 }
 
@@ -831,14 +822,18 @@ void BackEnd::saveServerHost(const QString &host)
 
     mLastServerHosts.prepend(host);
     emit recentConnectionsChanged();
+    syncRecentConnectionsToSettings();
+}
 
+void BackEnd::syncRecentConnectionsToSettings()
+{
     QSettings settings;
     settings.remove(Constants::SettingsKey::RecentConnections);
 
     settings.beginWriteArray(Constants::SettingsKey::RecentConnections);
     for (qsizetype i = 0; i < qMin(10, mLastServerHosts.count()); ++i) {
         settings.setArrayIndex(i);
-        settings.setValue(Constants::SettingsKey::Url, mLastServerHosts[i]);
+        settings.setValue(Constants::SettingsKey::Url, mLastServerHosts.at(i));
     }
     settings.endArray();
 }

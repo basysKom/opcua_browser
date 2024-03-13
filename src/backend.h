@@ -248,6 +248,7 @@ private:
     void saveLastDashboards();
     void loadLastServerHostsFromSettings();
     void saveServerHost(const QString &host);
+    void syncRecentConnectionsToSettings();
 
     void findCompanionSpecObjects();
     QFuture<QString> findAllSubtypes(const QString &nodeId,
