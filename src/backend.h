@@ -195,6 +195,7 @@ private:
     void saveLastDashboards();
     void loadLastServerHostsFromSettings();
     void saveServerHost(const QString &host);
+    void syncRecentConnectionsToSettings();
 
     CertificateItemModel *mCertificateItemModel;
     LoggingViewModel *mLoggingViewModel;
