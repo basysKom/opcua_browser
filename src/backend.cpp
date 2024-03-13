@@ -448,6 +448,36 @@ int BackEnd::instantiateDefaultVariableDashboard(const QString &name)
     return -1;
 }
 
+void BackEnd::renameSavedVariableDashboard(const QString &previousName, const QString &newName)
+{
+
+    QSettings settings;
+    const QString settingsGroupName =
+            Constants::SettingsKey::DashboardsVariables % QChar::fromLatin1('/') % previousName;
+
+    if (previousName == newName
+        || !mSavedVariableDashboardsModel->stringList().contains(previousName)
+        || mSavedVariableDashboardsModel->stringList().contains(newName)
+        || !settings.contains(settingsGroupName))
+        return;
+
+    const auto nodeIds = settings.value(settingsGroupName).toStringList();
+
+    removeSavedVariableDashboard(previousName);
+
+    settings.setValue(Constants::SettingsKey::DashboardsVariables % QChar::fromLatin1('/')
+                              % newName,
+                      nodeIds);
+    addItemToStringListModel(mSavedVariableDashboardsModel, newName);
+
+    mDashboardItemModel->renameItem(previousName, newName);
+}
+
+bool BackEnd::hasSavedVariableDashboard(const QString &name) const
+{
+    return mSavedVariableDashboardsModel->stringList().contains(name);
+}
+
 int BackEnd::instantiateCompanionSpecVariableDashboard(const QString &name)
 {
     assert(mDashboardItemModel);

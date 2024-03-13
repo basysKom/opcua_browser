@@ -91,6 +91,23 @@ int DashboardItemModel::addItem(DashboardItem::DashboardType type, const QString
     return pos;
 }
 
+void DashboardItemModel::renameItem(const QString &previousName, const QString &newName)
+{
+    const auto item =
+            std::find_if(mItems.begin(), mItems.end(), [previousName](const DashboardItem *item) {
+                return item->name() == previousName;
+            });
+
+    if (item == mItems.end())
+        return;
+
+    (*item)->setName(newName);
+    const auto index = createIndex(std::distance(mItems.begin(), item), 0);
+    emit dataChanged(index, index, QList<int>() << DisplayNameRole);
+
+    saveDashboardsToSettings();
+}
+
 void DashboardItemModel::removeItem(int index)
 {
     // Add item is last item

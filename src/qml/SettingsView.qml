@@ -264,6 +264,7 @@ Rectangle {
                                 spacing: 10
 
                                 Text {
+                                    id: dashboardName
                                     Layout.fillWidth: true
                                     Layout.rightMargin: 5
                                     Layout.leftMargin: 5
@@ -273,6 +274,22 @@ Rectangle {
                                     text: display
                                     color: view.theme.textColor
                                     elide: Text.ElideRight
+                                }
+
+                                IconImage {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    sourceSize.width: 24
+                                    sourceSize.height: 24
+                                    source: "qrc:/icons/edit.svg"
+                                    color: view.theme.textColor
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: function() {
+                                            dashboardNameEditPopup.showEdit(display)
+                                        }
+                                    }
                                 }
 
                                 IconImage {
@@ -615,6 +632,105 @@ Rectangle {
                                     wrapMode: Text.Wrap
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Popup {
+        id: dashboardNameEditPopup
+        modal: true
+
+        implicitWidth: contentColumn.width
+        implicitHeight: contentColumn.height
+        padding: 0
+
+        clip: true
+        closePolicy: Popup.NoAutoClose
+
+        anchors.centerIn: parent
+
+        property string previousName
+
+        function showEdit(currentName: string) {
+            previousName = currentName
+            nameTextEdit.text = currentName
+            nameTextEdit.cursorPosition = currentName.length
+            open()
+            nameTextEdit.forceActiveFocus()
+        }
+
+        background: Rectangle {
+            radius: 3
+            opacity: 0.8
+            color: view.theme.popupBackground
+        }
+
+        ColumnLayout {
+            width: view.width - 50
+            id: contentColumn
+            Text {
+                padding: 3
+                font {
+                    pointSize: 12
+                    bold: true
+                }
+                color: view.theme.textColor
+                text: qsTranslate("Settings", "Enter new dashboard name")
+            }
+
+            TextEdit {
+                Layout.maximumWidth: contentColumn.width
+                id: nameTextEdit
+                padding: 3
+                font {
+                    pointSize: 10
+                }
+                color: view.theme.textColor
+                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                cursorVisible: true
+            }
+
+            RowLayout {
+                IconImage {
+                    Layout.margins: 5
+                    Layout.alignment: Qt.AlignVCenter
+                    sourceSize.width: 24
+                    sourceSize.height: 24
+                    source: "qrc:/icons/cancel.svg"
+                    color: view.theme.textColor
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: function() {
+                            dashboardNameEditPopup.close()
+                        }
+                    }
+                }
+
+                Item {
+                    Layout.fillWidth: true
+                    height: 24
+                }
+
+                IconImage {
+                    Layout.margins: 5
+                    Layout.alignment: Qt.AlignVCenter
+                    sourceSize.width: 24
+                    sourceSize.height: 24
+                    source: "qrc:/icons/checkmark.svg"
+                    color: enabled ? view.theme.textColor : "lightgrey"
+                    enabled: nameTextEdit.text !== "" && !BackEnd.hasSavedVariableDashboard(nameTextEdit.text)
+
+                    MouseArea {
+                        anchors.fill: parent
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: function() {
+                            BackEnd.renameSavedVariableDashboard(dashboardNameEditPopup.previousName, nameTextEdit.text)
+                            dashboardNameEditPopup.close()
                         }
                     }
                 }

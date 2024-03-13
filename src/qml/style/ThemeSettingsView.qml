@@ -12,4 +12,5 @@ StyleDefinitions {
     property color backgroundListView: dark
     property color backgroundSelected: mediumDark
     property color textColor: foreground
+    property color popupBackground: accent
 }
