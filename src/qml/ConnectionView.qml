@@ -66,16 +66,22 @@ Item {
                 //text: "opc.tcp://192.168.178.25:43344"
                 //text: "opc.tcp://localhost:43344"
                 //text: "opc.tcp://10.0.2.2:43344"
-                placeholderText: "opc.tcp://localhost:4080"
+                placeholderText: "localhost:4840"
                 inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+                prefixText: "opc.tcp://"
+                validator: RegularExpressionValidator {
+                    regularExpression: /[^\/].*/
+                }
             }
 
             StyledButton {
                 Layout.fillWidth: true
                 text: qsTranslate("Connection", "Discover")
+                enabled: hostUrl.acceptableInput
+                highlighted: enabled
 
                 onClicked: {
-                    view.selectedHostUrl = hostUrl.text
+                    view.selectedHostUrl = hostUrl.prefixText + hostUrl.text
                     BackEnd.findServers(view.selectedHostUrl)
                 }
             }

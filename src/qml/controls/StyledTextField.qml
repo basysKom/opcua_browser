@@ -24,6 +24,9 @@ ColumnLayout {
     property alias echoMode: textField.echoMode
     property alias inputMethodHints: textField.inputMethodHints
     property ThemeTextField theme: Style.textField
+    property alias validator: textField.validator
+    property alias acceptableInput: textField.acceptableInput
+    property alias prefixText: prefixTextField.text
 
     Text {
         id: caption
@@ -34,18 +37,26 @@ ColumnLayout {
         font.bold: true
     }
 
-    TextField {
-        id: textField
+    RowLayout {
+        Text {
+            id: prefixTextField
+            visible: text && text !== ""
+            color: layout.theme.captionTextColor
+        }
 
-        Layout.fillWidth: true
-        Layout.preferredHeight: layout.textFieldColumnHeight
-        verticalAlignment: Qt.AlignVCenter
+        TextField {
+            id: textField
 
-        passwordCharacter: "*"
-        passwordMaskDelay: 500
+            Layout.fillWidth: true
+            Layout.preferredHeight: layout.textFieldColumnHeight
+            verticalAlignment: Qt.AlignVCenter
 
-        background: Rectangle {
-            color: layout.theme.background
+            passwordCharacter: "*"
+            passwordMaskDelay: 500
+
+            background: Rectangle {
+                color: layout.theme.background
+            }
         }
     }
 }
