@@ -219,7 +219,7 @@ Rectangle {
                         pointSize: 14
                         bold: true
                     }
-                    text: qsTranslate("Dashboard", "Saved Variable Dashboards")
+                    text: qsTranslate("Dashboard", "Saved variable dashboards")
                 }
 
                 Rectangle {
