@@ -112,6 +112,7 @@ TreeItem::TreeItem(const QString &nodeId, OpcUaModel *model,
     if (mDisplayName.isEmpty()) {
         mDisplayName = browsingData.browseName().name();
     }
+    mBrowseName = browsingData.browseName();
 }
 
 TreeItem::~TreeItem()
@@ -186,6 +187,22 @@ bool TreeItem::canMonitored() const noexcept
 bool TreeItem::hasEventNotifier() const noexcept
 {
     return (mEventNotifier == 1);
+}
+
+bool TreeItem::isEventTypeChildVariable() const noexcept
+{
+    if (mNodeClass != QOpcUa::NodeClass::Variable)
+        return false;
+
+    auto parentItem = mParentItem;
+    while (parentItem) {
+        if (parentItem->nodeId()
+            == QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::BaseEventType))
+            return true;
+        parentItem = parentItem->parentItem();
+    }
+
+    return false;
 }
 
 int TreeItem::row() const
@@ -291,6 +308,29 @@ void TreeItem::refreshAttributes()
         qCWarning(treeItemLog) << "Reading attributes" << node->nodeId() << "failed";
         node->deleteLater();
     }
+}
+
+std::optional<QOpcUaSimpleAttributeOperand> TreeItem::calculateBrowsePathToEventType() const
+{
+    QOpcUaSimpleAttributeOperand result;
+    result.setAttributeId(QOpcUa::NodeAttribute::Value);
+
+    auto currentItem = this;
+    while (currentItem) {
+        if (!currentItem->mParentItem)
+            return {};
+
+        result.browsePathRef().push_front(currentItem->mBrowseName);
+
+        if (currentItem->mParentItem->mNodeClass == QOpcUa::NodeClass::ObjectType) {
+            result.setTypeId(currentItem->mParentItem->nodeId());
+            return result;
+        }
+
+        currentItem = currentItem->mParentItem;
+    }
+
+    return {};
 }
 
 void TreeItem::addItemToReferenceModel(const QOpcUaReferenceDescription &item)

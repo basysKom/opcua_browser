@@ -10,7 +10,9 @@
 
 #include <QObject>
 
+#include <QOpcUaQualifiedName>
 #include <QOpcUaReferenceDescription>
+#include <QOpcUaSimpleAttributeOperand>
 
 class AttributeModel;
 class ReferenceModel;
@@ -45,9 +47,12 @@ public:
     const QString &value() const noexcept;
     bool canMonitored() const noexcept;
     bool hasEventNotifier() const noexcept;
+    bool isEventTypeChildVariable() const noexcept;
 
     void refresh();
     void refreshAttributes();
+
+    std::optional<QOpcUaSimpleAttributeOperand> calculateBrowsePathToEventType() const;
 
 private:
     void addItemToReferenceModel(const QOpcUaReferenceDescription &item);
@@ -69,6 +74,8 @@ private:
     QOpcUa::NodeClass mNodeClass = QOpcUa::NodeClass::Undefined;
     QString mValue;
     quint32 mEventNotifier = 0;
+
+    QOpcUaQualifiedName mBrowseName;
 };
 
 #endif // TREEITEM_H

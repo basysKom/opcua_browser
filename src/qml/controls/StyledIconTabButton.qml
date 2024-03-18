@@ -37,7 +37,7 @@ TabButton {
             sourceSize.width: 40
             sourceSize.height: 40
             source: (DashboardItem.DashboardType.Add === control.type) ? "qrc:/icons/plus.svg" :
-                    (DashboardItem.DashboardType.Events === control.type) ? "qrc:/icons/event.svg" : "qrc:/icons/dashboard.svg"
+                    (DashboardItem.DashboardType.Events === control.type) ? "qrc:/icons/bolt.svg" : "qrc:/icons/dashboard.svg"
             color: label.color
         }
 

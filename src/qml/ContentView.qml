@@ -128,13 +128,13 @@ Item {
                 dashboard.setCurrentDashboardIndex(index)
             }
 
-            onAddMonitoredItems: {
+            onAddVariables: {
                 // Store index of dashboardConfiguration to return to it when cancelling
                 stackLayout.lastStoredViewIndex = dashboardConfiguration.StackLayout.index
                 // Go to browser view
                 stackLayout.currentIndex = browser.StackLayout.index
                 browser.addDashboardOnAccepted = true
-                browser.type = BrowserView.Type.SelectMonitoredItem
+                browser.type = BrowserView.Type.SelectVariable
             }
 
             onAddEvents: {
@@ -148,7 +148,7 @@ Item {
 
             onAddSavedVariableDashboard: function (name) {
                 // Add new variables dashboard
-                dashboard.addMonitoredItemsDashboard(name)
+                dashboard.addVariablesDashboard(name)
                 // Load node IDs for saved dashboard name to current dashboard
                 BackEnd.loadDashboard(name)
                 // Go to dashboard view
@@ -184,11 +184,18 @@ Item {
             onSelectionAccepted: {
                 // Add new dashboard if necessary
                 if (addDashboardOnAccepted) {
-                    if (browser.type === BrowserView.Type.SelectMonitoredItem) {
-                        dashboard.addMonitoredItemsDashboard("")
-                    } else if (browser.type === BrowserView.Type.SelectEvents) {
+                    if (browser.type === BrowserView.Type.SelectVariable) {
+                        dashboard.addVariablesDashboard("")
+                    } else if (browser.type === BrowserView.Type.SelectEventFields) {
                         dashboard.addEventsDashboard("")
                     }
+                }
+
+                if (browser.type === BrowserView.Type.SelectEvents) {
+                    BackEnd.cacheSelectedEventSourceNodes();
+                    BackEnd.opcUaModel.clearSelectionList()
+                    browser.type = BrowserView.Type.SelectEventFields
+                    return
                 }
 
                 // Add selected node IDs to current dashboard
@@ -203,13 +210,13 @@ Item {
         DashboardView {
             id: dashboard
 
-            onAddMonitoredItems: {
+            onAddVariables: {
                 // Store index of dashboard to return to it when cancelling
                 stackLayout.lastStoredViewIndex = dashboard.StackLayout.index
                 // Go to browser view
                 stackLayout.currentIndex = browser.StackLayout.index
                 browser.addDashboardOnAccepted = false
-                browser.type = BrowserView.Type.SelectMonitoredItem
+                browser.type = BrowserView.Type.SelectVariable
             }
 
             onAddEvents: {

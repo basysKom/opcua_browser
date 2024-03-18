@@ -185,14 +185,18 @@ public:
     Q_INVOKABLE void disconnectFromEndpoint();
 
     Q_INVOKABLE void monitorSelectedNodes();
+    Q_INVOKABLE void cacheSelectedEventSourceNodes();
 
     Q_INVOKABLE void saveCurrentDashboard(const QString &name);
     Q_INVOKABLE void removeSavedVariableDashboard(const QString &name);
+    Q_INVOKABLE void removeSavedEventDashboard(const QString &name);
     Q_INVOKABLE void loadDashboard(const QString &name);
     Q_INVOKABLE int instantiateDefaultVariableDashboard(const QString &name);
     Q_INVOKABLE void renameSavedVariableDashboard(const QString &previousName,
                                                   const QString &newName);
+    Q_INVOKABLE void renameSavedEventDashboard(const QString &previousName, const QString &newName);
     Q_INVOKABLE bool hasSavedVariableDashboard(const QString &name) const;
+    Q_INVOKABLE bool hasSavedEventDashboard(const QString &name) const;
 
     Q_INVOKABLE void loadLastDashboardsFromSettings();
 
@@ -241,7 +245,9 @@ private:
     void setupPkiConfiguration();
     void setState(const QString &state);
 
-    void monitorNode(MonitoredItemModel *model, const QString &nodeId);
+    void
+    monitorNode(MonitoredItemModel *model, const QString &nodeId,
+                const std::optional<QOpcUaMonitoringParameters::EventFilter> &eventFilter = {});
 
     void requestEndpoints(const QString &serverUrl);
     void connectToEndpoint(const QOpcUaEndpointDescription &endpoint, bool usePassword,
@@ -295,6 +301,8 @@ private:
 
     QVector<CompanionSpecDevice> mCompanionSpecDevices;
     QHash<QString, QStringList> mCompanionSpecVariableDashboards;
+
+    QStringList mSelectedEventSourceNodes;
 };
 
 #endif // BACKEND_H
