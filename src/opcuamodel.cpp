@@ -31,7 +31,8 @@ enum Roles : int {
     SelectedRole,
     CurrentItemRole,
     CanMonitoringRole,
-    HasEventNotifierRole
+    HasEventNotifierRole,
+    IsEventTypeChildVariableRole,
 };
 
 QHash<int, QByteArray> OpcUaModel::roleNames() const
@@ -46,6 +47,7 @@ QHash<int, QByteArray> OpcUaModel::roleNames() const
     names[CurrentItemRole] = "isCurrentItem";
     names[CanMonitoringRole] = "canMonitoring";
     names[HasEventNotifierRole] = "hasEventNotifier";
+    names[IsEventTypeChildVariableRole] = "isEventTypeChildVariable";
     return names;
 }
 
@@ -201,9 +203,11 @@ bool OpcUaModel::setData(const QModelIndex &index, const QVariant &value, int ro
         const bool isSelected = value.toBool();
         if (isSelected && !mSelectedNodeIds.contains(nodeId)) {
             mSelectedNodeIds << nodeId;
+            mSelectedIndices << index;
             emit dataChanged(index, index, QList<int>() << SelectedRole);
         } else if (!isSelected && mSelectedNodeIds.contains(nodeId)) {
             mSelectedNodeIds.removeAll(nodeId);
+            mSelectedIndices.removeAll(index);
             emit dataChanged(index, index, QList<int>() << SelectedRole);
         }
         emit hasSelectedItemsChanged();
@@ -240,6 +244,8 @@ QVariant OpcUaModel::data(const QModelIndex &index, int role) const
         return item->canMonitored();
     case HasEventNotifierRole:
         return item->hasEventNotifier();
+    case IsEventTypeChildVariableRole:
+        return item->isEventTypeChildVariable();
     default:
         break;
     }
@@ -364,6 +370,7 @@ void OpcUaModel::clearSelectionList()
     // after resetting the selected nodes, the list mSelectedNodeIds should be empty
     Q_ASSERT(mSelectedNodeIds.isEmpty());
     mSelectedNodeIds.clear();
+    mSelectedIndices.clear();
     emit hasSelectedItemsChanged();
 }
 
@@ -377,9 +384,20 @@ const QStringList &OpcUaModel::selectedNodes() const noexcept
     return mSelectedNodeIds;
 }
 
+const QList<QPersistentModelIndex> &OpcUaModel::selectedIndices() const noexcept
+{
+    return mSelectedIndices;
+}
+
+TreeItem *OpcUaModel::itemForIndex(const QModelIndex &index) const noexcept
+{
+    return static_cast<TreeItem *>(index.internalPointer());
+}
+
 void OpcUaModel::resetModel()
 {
     mSelectedNodeIds.clear();
+    mSelectedIndices.clear();
     emit hasSelectedItemsChanged();
 
     beginResetModel();

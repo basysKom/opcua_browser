@@ -285,7 +285,7 @@ Rectangle {
                                         anchors.fill: parent
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: function() {
-                                            dashboardNameEditPopup.showEdit(display)
+                                            dashboardNameEditPopup.showEdit(display, false)
                                         }
                                     }
                                 }
@@ -303,6 +303,112 @@ Rectangle {
                                         cursorShape: Qt.PointingHandCursor
                                         onClicked: function() {
                                             BackEnd.removeSavedVariableDashboard(display)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Saved event dashboards list view
+            Column {
+                width: parent.width - content.leftPadding - content.rightPadding
+                spacing: 5
+
+                Text {
+                    color: view.theme.textColor
+                    font {
+                        pointSize: 14
+                        bold: true
+                    }
+                    text: qsTranslate("Dashboard", "Saved event dashboards")
+                }
+
+                Rectangle {
+                    color: view.theme.backgroundListView
+                    radius: 5
+
+                    width: parent.width
+                    height: childrenRect.height
+
+                    ListView {
+                        id: eventDashboardsListView
+
+                        width: parent.width
+                        height: Math.min(200, contentHeight)
+
+                        clip: true
+
+                        model: BackEnd.savedEventDashboards
+
+                        boundsBehavior: Flickable.StopAtBounds
+                        boundsMovement: Flickable.StopAtBounds
+
+                        ScrollBar.vertical: StyledScrollBar {
+                            policy: ScrollBar.AsNeeded
+                        }
+
+                        delegate: Rectangle {
+                            id: eventDashboardsListViewDelegate
+
+                            required property int index
+                            required property string display
+
+                            radius: 5
+                            width: eventDashboardsListView.width
+                            implicitHeight: childrenRect.height
+                            color: "transparent"
+                            clip: true
+
+                            RowLayout {
+                                width: parent.width
+                                height: 30
+                                spacing: 10
+
+                                Text {
+                                    id: eventDashboardName
+                                    Layout.fillWidth: true
+                                    Layout.rightMargin: 5
+                                    Layout.leftMargin: 5
+                                    font {
+                                        pointSize: 11
+                                    }
+                                    text: display
+                                    color: view.theme.textColor
+                                    elide: Text.ElideRight
+                                }
+
+                                IconImage {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    sourceSize.width: 24
+                                    sourceSize.height: 24
+                                    source: "qrc:/icons/edit.svg"
+                                    color: view.theme.textColor
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: function() {
+                                            dashboardNameEditPopup.showEdit(display, true)
+                                        }
+                                    }
+                                }
+
+                                IconImage {
+                                    Layout.alignment: Qt.AlignVCenter
+                                    Layout.rightMargin: 10
+                                    sourceSize.width: 24
+                                    sourceSize.height: 24
+                                    source: "qrc:/icons/delete.svg"
+                                    color: view.theme.textColor
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        cursorShape: Qt.PointingHandCursor
+                                        onClicked: function() {
+                                            BackEnd.removeSavedEventDashboard(display)
                                         }
                                     }
                                 }
@@ -648,11 +754,14 @@ Rectangle {
         clip: true
         closePolicy: Popup.NoAutoClose
 
+        property bool isEventDashboard
+
         anchors.centerIn: parent
 
         property string previousName
 
-        function showEdit(currentName: string) {
+        function showEdit(currentName: string, isEvent: bool) {
+            isEventDashboard = isEvent
             previousName = currentName
             nameTextEdit.text = currentName
             nameTextEdit.cursorPosition = currentName.length
@@ -721,13 +830,17 @@ Rectangle {
                     sourceSize.height: 24
                     source: "qrc:/icons/checkmark.svg"
                     color: enabled ? view.theme.textColor : "lightgrey"
-                    enabled: nameTextEdit.text !== "" && !BackEnd.hasSavedVariableDashboard(nameTextEdit.text)
+                    enabled: nameTextEdit.text !== "" && ((!dashboardNameEditPopup.isEventDashboard && !BackEnd.hasSavedVariableDashboard(nameTextEdit.text))
+                                                          || (dashboardNameEditPopup.isEventDashboard && !BackEnd.hasSavedEventDashboard(nameTextEdit.text)))
 
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
                         onClicked: function() {
-                            BackEnd.renameSavedVariableDashboard(dashboardNameEditPopup.previousName, nameTextEdit.text)
+                            if (dashboardNameEditPopup.isEventDashboard)
+                                BackEnd.renameSavedEventDashboard(dashboardNameEditPopup.previousName, nameTextEdit.text)
+                            else
+                                BackEnd.renameSavedVariableDashboard(dashboardNameEditPopup.previousName, nameTextEdit.text)
                             dashboardNameEditPopup.close()
                         }
                     }

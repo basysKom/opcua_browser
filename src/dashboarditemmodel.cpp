@@ -196,6 +196,17 @@ void DashboardItemModel::saveDashboardsToSettings() const
         settings.setValue(Constants::SettingsKey::Name, mItems[i]->name());
         settings.setValue(Constants::SettingsKey::Type, (int)mItems[i]->type());
         settings.setValue(Constants::SettingsKey::NodeIds, mItems[i]->getMonitoredNodeIds());
+
+        if (mItems[i]->type() == DashboardItem::DashboardType::Events) {
+            const auto eventFilters =
+                    static_cast<MonitoredItemModel *>(mItems[i]->monitoredItemModel())
+                            ->eventFilters();
+            QList<QList<QOpcUaSimpleAttributeOperand>> selectClauses;
+            for (const auto &filter : eventFilters)
+                selectClauses.push_back(filter.selectClauses());
+            settings.setValue(Constants::SettingsKey::EventFilters,
+                              QVariant::fromValue(selectClauses));
+        }
     }
     settings.endArray();
 }

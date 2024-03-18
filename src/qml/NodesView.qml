@@ -19,6 +19,7 @@ Item {
     property var references
     property bool canSelectVariables: false
     property bool canSelectEvents: false
+    property bool canSelectEventFields: false
     property ThemeNodesView theme: Style.nodesView
 
     Connections {
@@ -80,6 +81,7 @@ Item {
             required property bool isSelected
             required property bool canMonitoring
             required property bool hasEventNotifier
+            required property bool isEventTypeChildVariable
             required property color indicatorColor
             required property string display
             required property string value
@@ -188,6 +190,7 @@ Item {
                 checkState: treeDelegate.isSelected ? Qt.Checked : Qt.Unchecked
                 visible: (view.canSelectVariables && treeDelegate.canMonitoring)
                          || (view.canSelectEvents && treeDelegate.hasEventNotifier)
+                         || (view.canSelectEventFields && treeDelegate.isEventTypeChildVariable)
 
                 onToggled: treeDelegate.model.isSelected = !treeDelegate.isSelected
             }

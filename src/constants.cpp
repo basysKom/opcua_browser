@@ -33,6 +33,7 @@ const QString SettingsKey::DashboardsEvents = QStringLiteral("dashboards/events"
 const QString SettingsKey::Name = QStringLiteral("name");
 const QString SettingsKey::Type = QStringLiteral("type");
 const QString SettingsKey::NodeIds = QStringLiteral("nodeIDs");
+const QString SettingsKey::EventFilters = QStringLiteral("eventFilters");
 const QString SettingsKey::RecentConnections = QStringLiteral("recentConnections");
 const QString SettingsKey::Url = QStringLiteral("url");
 const QString SettingsKey::Language = QStringLiteral("language");

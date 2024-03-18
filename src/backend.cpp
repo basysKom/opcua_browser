@@ -319,7 +319,8 @@ void BackEnd::disconnectFromEndpoint()
     mOpcUaClient->disconnectFromEndpoint();
 }
 
-void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId)
+void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId,
+                          const std::optional<QOpcUaMonitoringParameters::EventFilter> &eventFilter)
 {
     if ((model == nullptr) || model->containsItem(nodeId))
         return;
@@ -338,7 +339,10 @@ void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId)
         return;
     }
 
-    model->addItem(node);
+    if (!eventFilter.has_value())
+        model->addItem(node);
+    else
+        model->addEventItem(node, eventFilter.value());
 }
 
 void BackEnd::connectToEndpoint()
@@ -366,10 +370,38 @@ void BackEnd::monitorSelectedNodes()
     if (monitoredItemModel == nullptr)
         return;
 
-    const QStringList nodeIdList = mOpcUaModel->selectedNodes();
-    for (const auto &nodeId : nodeIdList.toList()) {
-        monitorNode(monitoredItemModel, nodeId);
+    if (mDashboardItemModel->getCurrentDashboardType() == DashboardItem::DashboardType::Events) {
+        if (mSelectedEventSourceNodes.isEmpty())
+            return;
+
+        QOpcUaMonitoringParameters::EventFilter filter;
+
+        for (const auto &index : mOpcUaModel->selectedIndices()) {
+            const auto item = mOpcUaModel->itemForIndex(index);
+            if (!item)
+                continue;
+
+            const auto operand = item->calculateBrowsePathToEventType();
+            if (!operand.has_value())
+                continue;
+
+            filter << operand.value();
+        }
+
+        for (const auto &nodeId : mSelectedEventSourceNodes) {
+            monitorNode(monitoredItemModel, nodeId, filter);
+        }
+    } else {
+        const QStringList nodeIdList = mOpcUaModel->selectedNodes();
+        for (const auto &nodeId : nodeIdList.toList()) {
+            monitorNode(monitoredItemModel, nodeId);
+        }
     }
+}
+
+void BackEnd::cacheSelectedEventSourceNodes()
+{
+    mSelectedEventSourceNodes = mOpcUaModel->selectedNodes();
 }
 
 void BackEnd::saveCurrentDashboard(const QString &name)
@@ -397,11 +429,22 @@ void BackEnd::saveCurrentDashboard(const QString &name)
                           nodeIds);
         addItemToStringListModel(mSavedVariableDashboardsModel, name);
         break;
-    case DashboardItem::DashboardType::Events:
+    case DashboardItem::DashboardType::Events: {
         settings.setValue(Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % name,
                           nodeIds);
+
+        QList<QList<QOpcUaSimpleAttributeOperand>> selectClauses;
+        const auto eventFilters = monitoredItemModel->eventFilters();
+        for (const auto &filter : eventFilters)
+            selectClauses.push_back(filter.selectClauses());
+
+        settings.setValue(Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % name
+                                  % QChar::fromLatin1('/') % Constants::SettingsKey::EventFilters,
+                          QVariant::fromValue(selectClauses));
+
         addItemToStringListModel(mSavedEventDashboardsModel, name);
         break;
+    }
     default:
         Q_UNREACHABLE();
         break;
@@ -420,6 +463,20 @@ void BackEnd::removeSavedVariableDashboard(const QString &name)
     removeItemFromStringListModel(mSavedVariableDashboardsModel, name);
 }
 
+void BackEnd::removeSavedEventDashboard(const QString &name)
+{
+    Q_ASSERT(mDashboardItemModel);
+
+    if (name.isEmpty())
+        return;
+
+    QSettings settings;
+    settings.remove(Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % name);
+    settings.remove(Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % name
+                    % QChar::fromLatin1('/') % Constants::SettingsKey::EventFilters);
+    removeItemFromStringListModel(mSavedEventDashboardsModel, name);
+}
+
 void BackEnd::loadDashboard(const QString &name)
 {
     Q_ASSERT(mDashboardItemModel);
@@ -428,12 +485,34 @@ void BackEnd::loadDashboard(const QString &name)
     if (monitoredItemModel == nullptr)
         return;
 
+    const QString variableCandidate =
+            Constants::SettingsKey::DashboardsVariables % QChar::fromLatin1('/') % name;
+    const QString eventCandidate =
+            Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % name;
+
     QSettings settings;
-    const QStringList nodeIds = settings.value(Constants::SettingsKey::DashboardsVariables
-                                               % QChar::fromLatin1('/') % name)
-                                        .toStringList();
-    for (const auto &nodeId : nodeIds) {
-        monitorNode(monitoredItemModel, nodeId);
+    QStringList nodeIds = settings.value(variableCandidate).toStringList();
+    if (!nodeIds.empty()) {
+        for (const auto &nodeId : nodeIds) {
+            monitorNode(monitoredItemModel, nodeId);
+        }
+    } else {
+        nodeIds = settings.value(eventCandidate).toStringList();
+        if (!nodeIds.isEmpty()) {
+            const auto selectClauses = settings.value(eventCandidate % QChar::fromLatin1('/')
+                                                      % Constants::SettingsKey::EventFilters)
+                                               .value<QList<QList<QOpcUaSimpleAttributeOperand>>>();
+            if (!selectClauses.isEmpty()) {
+                for (int i = 0; i < nodeIds.size(); ++i) {
+                    if (selectClauses.size() - 1 < i || selectClauses.at(i).isEmpty())
+                        continue;
+
+                    QOpcUaMonitoringParameters::EventFilter filter;
+                    filter.setSelectClauses(selectClauses.at(i));
+                    monitorNode(monitoredItemModel, nodeIds.at(i), filter);
+                }
+            }
+        }
     }
 }
 
@@ -473,9 +552,41 @@ void BackEnd::renameSavedVariableDashboard(const QString &previousName, const QS
     mDashboardItemModel->renameItem(previousName, newName);
 }
 
+void BackEnd::renameSavedEventDashboard(const QString &previousName, const QString &newName)
+{
+    QSettings settings;
+    const QString settingsGroupName =
+            Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % previousName;
+
+    if (previousName == newName || !mSavedEventDashboardsModel->stringList().contains(previousName)
+        || mSavedEventDashboardsModel->stringList().contains(newName)
+        || !settings.contains(settingsGroupName))
+        return;
+
+    const auto nodeIds = settings.value(settingsGroupName).toStringList();
+    const auto eventFilter = settings.value(settingsGroupName % QChar::fromLatin1('/')
+                                            + Constants::SettingsKey::EventFilters);
+
+    removeSavedEventDashboard(previousName);
+
+    settings.setValue(Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % newName,
+                      nodeIds);
+    settings.setValue(Constants::SettingsKey::DashboardsEvents % QChar::fromLatin1('/') % newName
+                              % QChar::fromLatin1('/') % Constants::SettingsKey::EventFilters,
+                      eventFilter);
+    addItemToStringListModel(mSavedEventDashboardsModel, newName);
+
+    mDashboardItemModel->renameItem(previousName, newName);
+}
+
 bool BackEnd::hasSavedVariableDashboard(const QString &name) const
 {
     return mSavedVariableDashboardsModel->stringList().contains(name);
+}
+
+bool BackEnd::hasSavedEventDashboard(const QString &name) const
+{
+    return mSavedEventDashboardsModel->stringList().contains(name);
 }
 
 int BackEnd::instantiateCompanionSpecVariableDashboard(const QString &name)
@@ -759,8 +870,20 @@ void BackEnd::loadLastDashboardsFromSettings()
         if (model != nullptr) {
             const QStringList nodeIds =
                     settings.value(Constants::SettingsKey::NodeIds).toStringList();
-            for (const auto &nodeId : nodeIds) {
-                monitorNode(model, nodeId);
+            const auto selectClauses = settings.value(Constants::SettingsKey::EventFilters)
+                                               .value<QList<QList<QOpcUaSimpleAttributeOperand>>>();
+
+            for (int j = 0; j < nodeIds.size(); ++j) {
+                if (type == DashboardItem::DashboardType::Events) {
+                    QOpcUaMonitoringParameters::EventFilter filter;
+                    if (selectClauses.size() - 1 < j || selectClauses.at(j).isEmpty())
+                        continue;
+
+                    filter.setSelectClauses(selectClauses.at(j));
+                    monitorNode(model, nodeIds.at(j), filter);
+                } else {
+                    monitorNode(model, nodeIds.at(j));
+                }
             }
         }
     }

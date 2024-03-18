@@ -26,7 +26,7 @@ Item {
     property bool showCancelButton: false
 
     signal useLastSession
-    signal addMonitoredItems
+    signal addVariables
     signal addEvents
     signal viewCanceled
     signal showDashboardRequested(int index)
@@ -57,14 +57,14 @@ Item {
             onClicked: {
                 if ((BackEnd.defaultVariableDashboards.rowCount() === 0)
                         && (BackEnd.savedVariableDashboards.rowCount() === 0)) {
-                    view.addMonitoredItems()
+                    view.addVariables()
                 } else {
                     view.type = DashboardConfigurationView.Type.SelectVariables
                 }
             }
         }
 
-        /*StyledButton {
+        StyledButton {
             Layout.fillWidth: true
             text: qsTranslate("Dashboard", "Add event dashboard")
 
@@ -76,7 +76,7 @@ Item {
                     view.type = DashboardConfigurationView.Type.SelectEvents
                 }
             }
-        }*/
+        }
 
         StyledButton {
             Layout.fillWidth: true
@@ -102,7 +102,7 @@ Item {
 
             onClicked: {
                 if (view.type === DashboardConfigurationView.Type.SelectVariables) {
-                    view.addMonitoredItems()
+                    view.addVariables()
                 } else {
                     view.addEvents()
                 }

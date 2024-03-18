@@ -177,7 +177,8 @@ QStringList writeMaskToStringList(quint32 value)
     return attributes;
 }
 
-QString variantToString(QOpcUaNode *node, const QVariant &value, const QString &typeNodeId)
+QString QOpcUaHelper::variantToString(QOpcUaNode *node, const QVariant &value,
+                                      const QString &typeNodeId)
 {
     if (value.metaType().id() == QMetaType::QVariantList) {
         const auto list = value.toList();

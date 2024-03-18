@@ -6,11 +6,13 @@
  */
 
 #include <QOpcUaNode>
+#include <QOpcUaQualifiedName>
 
 #include "monitoreditem.h"
 #include "opcuahelper.h"
 
-MonitoredItem::MonitoredItem(QOpcUaNode *node, QObject *parent) : QObject(parent), mOpcNode(node)
+MonitoredItem::MonitoredItem(QOpcUaNode *node, QObject *parent)
+    : QObject(parent), mOpcNode(node), mType(Type::Variable)
 {
     // Add item in dashboard has a null pointer
     if (node != nullptr) {
@@ -25,6 +27,37 @@ MonitoredItem::MonitoredItem(QOpcUaNode *node, QObject *parent) : QObject(parent
 
         QOpcUaMonitoringParameters p(100);
         node->enableMonitoring(QOpcUa::NodeAttribute::Value, p);
+    }
+}
+
+MonitoredItem::MonitoredItem(QOpcUaNode *node,
+                             const QOpcUaMonitoringParameters::EventFilter &eventFilter,
+                             QObject *parent)
+    : QObject(parent), mOpcNode(node), mType(Type::Event), mEventFilter(eventFilter)
+{
+    // Extract event field names from the event filter's select clauses
+    for (const auto &field : eventFilter.selectClauses()) {
+        if (!field.browsePath().isEmpty())
+            mEventFieldNames.push_back(field.browsePath().constLast().name());
+        else // Make sure there is at least an empty string so the event fields are not off if
+             // somebody passes a select clause with empty browse path
+            mEventFieldNames.push_back({});
+    }
+
+    if (node != nullptr) {
+        mNodeId = node->nodeId();
+
+        connect(mOpcNode.get(), &QOpcUaNode::eventOccurred, this, &MonitoredItem::handleEvent);
+        connect(mOpcNode.get(), &QOpcUaNode::attributeUpdated, this,
+                &MonitoredItem::handleAttributes);
+
+        node->readAttributes(QOpcUa::NodeAttribute::BrowseName
+                             | QOpcUa::NodeAttribute::DisplayName);
+
+        QOpcUaMonitoringParameters p(0);
+        p.setQueueSize(50);
+        p.setFilter(eventFilter);
+        node->enableMonitoring(QOpcUa::NodeAttribute::EventNotifier, p);
     }
 }
 
@@ -92,6 +125,27 @@ void MonitoredItem::handleAttributes(const QOpcUa::NodeAttributes &attributes)
     }
 }
 
+void MonitoredItem::handleEvent(const QVariantList &eventFields)
+{
+    if (eventFields.length() != mEventFieldNames.length())
+        return;
+
+    QVariantMap eventStrings;
+
+    for (int i = 0; i < eventFields.length(); ++i) {
+        if (!eventFields.at(i).isNull()) {
+            const auto stringValue = QOpcUaHelper::variantToString(nullptr, eventFields.at(i), {});
+            eventStrings[mEventFieldNames.at(i)] = stringValue;
+        }
+    }
+
+    mLastEvents.push_front(eventStrings);
+    if (mLastEvents.length() > 25)
+        mLastEvents.pop_back();
+
+    emit lastEventsChanged();
+}
+
 void MonitoredItem::setStatusCode(QOpcUa::UaStatusCode statusCode)
 {
     if (mStatusCode != statusCode) {
@@ -103,4 +157,25 @@ void MonitoredItem::setStatusCode(QOpcUa::UaStatusCode statusCode)
             emit hasErrorChanged();
         }
     }
+}
+
+QOpcUaMonitoringParameters::EventFilter MonitoredItem::getEventFilter() const
+{
+    return mEventFilter;
+}
+
+const QList<QVariantMap> &MonitoredItem::lastEvents() const
+{
+    return mLastEvents;
+}
+
+void MonitoredItem::clearEvents()
+{
+    mLastEvents.clear();
+    emit lastEventsChanged();
+}
+
+MonitoredItem::Type MonitoredItem::type() const
+{
+    return mType;
 }

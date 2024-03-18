@@ -17,6 +17,8 @@ class QOpcUaNode;
 class QOpcUaHelper
 {
 public:
+    static QString variantToString(QOpcUaNode *node, const QVariant &value,
+                                   const QString &typeNodeId);
     static QString getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr);
     static QString getFormattedAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribute attr);
 };

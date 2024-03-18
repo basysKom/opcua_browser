@@ -9,6 +9,7 @@
 #define MONITOREDITEMMODEL_H
 
 #include <QAbstractListModel>
+#include <QOpcUaMonitoringParameters>
 
 class QOpcUaNode;
 class MonitoredItem;
@@ -27,11 +28,16 @@ public:
 
     bool containsItem(const QString &nodeId) const noexcept;
     void addItem(QOpcUaNode *node);
+    void addEventItem(QOpcUaNode *node, const QOpcUaMonitoringParameters::EventFilter &eventFilter);
     void clearItems();
+
+    Q_INVOKABLE void clearEventsForItem(int index);
 
     QStringList getNodeIds() const;
 
     Q_INVOKABLE void disableMonitoring(int index);
+
+    QList<QOpcUaMonitoringParameters::EventFilter> eventFilters();
 
 private:
     QList<MonitoredItem *> mItems;

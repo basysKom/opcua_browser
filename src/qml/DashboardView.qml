@@ -32,7 +32,7 @@ Rectangle {
 
     color: theme.background
 
-    signal addMonitoredItems
+    signal addVariables
     signal addEvents
     signal addNewDashboard
 
@@ -40,7 +40,7 @@ Rectangle {
         tabBar.currentIndex = index;
     }
 
-    function addMonitoredItemsDashboard(name) {
+    function addVariablesDashboard(name) {
         tabRepeater.model.addItem(DashboardItem.DashboardType.Variables, name)
         tabBar.currentIndex = tabRepeater.count - 2
     }
@@ -112,7 +112,7 @@ Rectangle {
             onReleased: held = false
             onClicked: {
                 if (dragArea.isAddItem) {
-                    view.addMonitoredItems()
+                    view.addVariables()
                 } else {
                     fullPopup.name = dragArea.name;
                     fullPopup.value = Qt.binding(function() { return dragArea.value })
@@ -238,11 +238,226 @@ Rectangle {
         }
     }
 
+    Component {
+        id: eventDragDelegate
+
+        MouseArea {
+            id: eventDragArea
+
+            property bool held: false
+            required property string name
+            required property string value
+            required property string status
+            required property bool isAddItem
+            required property bool hasError
+            required property int index
+            required property var lastEvents
+
+            property list<string> lastEventStrings
+
+            onLastEventsChanged: function() {
+                lastEventStrings = ""
+                if (!lastEvents.length)
+                    return;
+
+                var strings = []
+
+                for (const event of lastEvents) {
+                    var str = ""
+
+                    const addField = (name) => {
+                        if (!event[name])
+                            return;
+
+                        if (str.length > 0)
+                            str += ", "
+                        str += "<b>" + name + "</b>" + ": " + event[name]
+                    }
+
+                    const explicitlyHandledFields = ["Time", "Message", "Severity"]
+                    for (const priorityField of explicitlyHandledFields)
+                        addField(priorityField)
+
+                    for (const field in event) {
+                        if (!explicitlyHandledFields.includes(field))
+                            addField(field)
+                    }
+
+                    strings.push(str)
+                }
+
+                lastEventStrings = strings
+            }
+
+            height: content.height
+            width: content.width
+            cursorShape: eventDragArea.isAddItem ? Qt.PointingHandCursor : Qt.ArrowCursor
+
+            drag.target: held ? content : undefined
+
+            onPressAndHold: held = !eventDragArea.isAddItem
+            onReleased: held = false
+
+            onClicked: {
+                if (eventDragArea.isAddItem) {
+                    view.addEvents()
+                }
+            }
+
+            Rectangle {
+                id: content
+
+                Drag.active: eventDragArea.held
+                Drag.source: eventDragArea
+                Drag.hotSpot.x: width / 2
+                Drag.hotSpot.y: height / 2
+
+                width: itemWidth * 2 + 10
+                implicitHeight: Math.max(80, eventColumn.height)
+                radius: 5
+                color: eventDragArea.held ? view.theme.item.backgroundHeld : eventDragArea.hasError ? view.theme.item.backgroundError : view.theme.item.background
+
+                Behavior on color {
+                    ColorAnimation {
+                        duration: 100
+                    }
+                }
+
+                states: State {
+                    when: eventDragArea.held
+
+                    ParentChange {
+                        target: content
+                        parent: view
+                    }
+                    AnchorChanges {
+                        target: content
+                        anchors {
+                            horizontalCenter: undefined
+                            verticalCenter: undefined
+                        }
+                    }
+                }
+
+                Column {
+                    id: eventColumn
+
+                    width: parent.width
+                    padding: 5
+                    spacing: 5
+                    visible: !eventDragArea.isAddItem
+
+                    RowLayout {
+                        id: eventRow
+                        width: parent.width - 2 * parent.padding
+
+                        Text {
+                            Layout.fillWidth: true
+                            color: view.theme.item.textColor
+                            text: eventDragArea.name
+                            font {
+                                pointSize: 12
+                                bold: true
+                            }
+                            elide: Text.ElideRight
+                        }
+
+                        IconImage {
+                            Layout.alignment: Qt.AlignVCenter
+                            sourceSize.width: 24
+                            sourceSize.height: 24
+                            source: "qrc:/icons/clear_all.svg"
+                            color: view.theme.item.textColor
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: visualModel.model.clearEventsForItem(
+                                               eventDragArea.index)
+                            }
+                        }
+
+                        IconImage {
+                            Layout.alignment: Qt.AlignVCenter
+                            sourceSize.width: 24
+                            sourceSize.height: 24
+                            source: "qrc:/icons/delete.svg"
+                            color: view.theme.item.textColor
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: visualModel.model.disableMonitoring(
+                                               eventDragArea.index)
+                            }
+                        }
+                    }
+
+                    Repeater {
+                        model: eventDragArea.lastEventStrings
+
+                        delegate: Rectangle {
+                            required property string modelData
+
+                            color: theme.background
+                            radius: 5
+
+                            width: eventRow.width
+                            height: 65
+
+                            Text {
+                                padding: 5
+                                anchors.fill: parent
+                                font.pointSize: 10
+                                color: view.theme.item.textColor
+                                text: modelData
+                                wrapMode: Text.WrapAtWordBoundaryOrAnywhere
+                                elide: Qt.ElideRight
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+
+                                onClicked: {
+                                    fullPopup.name = qsTranslate("Dashboard", "All selected event fields")
+                                    fullPopup.value = modelData
+                                    fullPopup.open()
+                                }
+                            }
+                        }
+                    }
+                }
+
+                IconImage {
+                    anchors.centerIn: parent
+                    sourceSize.width: 48
+                    sourceSize.height: 48
+                    visible: eventDragArea.isAddItem
+                    source: "qrc:/icons/plus.svg"
+                    color: view.theme.item.textColor
+                }
+            }
+
+            DropArea {
+                anchors.fill: parent
+                anchors.margins: 10
+
+                onEntered: drag => {
+                               if (!eventDragArea.isAddItem) {
+                                   visualModel.items.move(
+                                       drag.source.DelegateModel.itemsIndex,
+                                       eventDragArea.DelegateModel.itemsIndex)
+                               }
+                           }
+            }
+        }
+    }
+
     DelegateModel {
         id: visualModel
 
         model: (tabBar.currentItem === null) ? null : tabBar.currentMonitoringModel
-        delegate: dragDelegate
+        delegate: tabBar.currentType === DashboardItem.DashboardType.Events ? eventDragDelegate : dragDelegate
     }
 
     Flickable {
@@ -343,6 +558,7 @@ Rectangle {
         property bool allowSelectingAddItem: false
         property string currentText
         property var currentMonitoringModel
+        property var currentType
 
         anchors.left: parent.left
         anchors.right: parent.right
@@ -389,6 +605,7 @@ Rectangle {
                     if (isCurrentTab) {
                         tabBar.currentText = tabButton.text
                         tabBar.currentMonitoringModel = tabButton.monitoringModel
+                        tabBar.currentType = type
                     }
                 }
 

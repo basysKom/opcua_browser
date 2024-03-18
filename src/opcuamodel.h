@@ -61,6 +61,9 @@ public:
 
     bool hasSelectedItems() const noexcept;
     const QStringList &selectedNodes() const noexcept;
+    const QList<QPersistentModelIndex> &selectedIndices() const noexcept;
+
+    TreeItem *itemForIndex(const QModelIndex &index) const noexcept;
 
 signals:
     void hasSelectedItemsChanged();
@@ -119,6 +122,7 @@ private:
     QString mCurrentNodeId;
     QStringList mInverseNodeIds;
     QStringList mSelectedNodeIds;
+    QList<QPersistentModelIndex> mSelectedIndices;
 
     friend class TreeItem;
 };
