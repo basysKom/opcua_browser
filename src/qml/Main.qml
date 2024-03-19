@@ -8,6 +8,7 @@
 import QtCore
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.impl // IconImage
 import QtQuick.Layouts
 
 import OPC_UA_Browser
