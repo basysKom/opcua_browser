@@ -9,6 +9,7 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Controls.impl // IconImage
 
 import OPC_UA_Browser
 
