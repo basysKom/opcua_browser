@@ -4,7 +4,72 @@
 <context>
     <name>BackEnd</name>
     <message>
-        <location filename="../backend.cpp" line="+523"/>
+        <location filename="../backend.cpp" line="+260"/>
+        <source>endpoint index out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+90"/>
+        <source>connect with security policy &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+264"/>
+        <source>Discovering servers on &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+19"/>
+        <source>servers detection failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1 server(s) detected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>server index out of range</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Request endpoints for &quot;%1&quot;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>request of endpoints failed</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>%1 endpoint(s) received</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>client connected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
+        <source>client disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>client error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>client state changed: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>The client reported: </source>
         <translation type="unfinished"></translation>
     </message>
@@ -23,11 +88,16 @@
         <source>A possible cause could be that the backend could not be loaded as a plugin.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+2"/>
+        <source>Failed to connect to server</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Certificate</name>
     <message>
-        <location filename="../qml/ConnectionView.qml" line="+150"/>
+        <location filename="../qml/ConnectionView.qml" line="+157"/>
         <location/>
         <source>Certificate</source>
         <translation type="unfinished"></translation>
@@ -58,7 +128,7 @@
     </message>
     <message>
         <location line="+6"/>
-        <location filename="../qml/SettingsView.qml" line="+360"/>
+        <location filename="../qml/SettingsView.qml" line="+659"/>
         <location/>
         <source>Common name</source>
         <translation type="unfinished"></translation>
@@ -137,26 +207,27 @@
 <context>
     <name>Connection</name>
     <message>
-        <location filename="../qml/ConnectionView.qml" line="-106"/>
+        <location filename="../qml/ConnectionView.qml" line="-112"/>
+        <location filename="../qml/SettingsView.qml" line="-89"/>
         <location/>
         <source>Recent connections</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
-        <location line="+25"/>
+        <location line="+29"/>
         <location/>
         <source>Discover</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-10"/>
+        <location line="-14"/>
         <location/>
         <source>Host</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+29"/>
+        <location line="+35"/>
         <location/>
         <source>Server</source>
         <translation type="unfinished"></translation>
@@ -226,7 +297,7 @@
 <context>
     <name>Dashboard</name>
     <message>
-        <location filename="../qml/DashboardConfigurationView.qml" line="+46"/>
+        <location filename="../qml/DashboardConfigurationView.qml" line="+47"/>
         <location/>
         <source>Use last session</source>
         <translation type="unfinished"></translation>
@@ -238,7 +309,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+14"/>
+        <location/>
+        <source>Add event dashboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <location/>
         <source>Add alarms and conditions dashboard</source>
         <translation type="unfinished"></translation>
@@ -256,7 +333,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+18"/>
         <location/>
         <source>Default data dashboards</source>
         <translation type="unfinished"></translation>
@@ -269,7 +346,7 @@
     </message>
     <message>
         <location line="+6"/>
-        <location line="+21"/>
+        <location line="+25"/>
         <location/>
         <source>Add dashboard</source>
         <translation type="unfinished"></translation>
@@ -282,6 +359,7 @@
     </message>
     <message>
         <location line="+0"/>
+        <location filename="../qml/SettingsView.qml" line="-106"/>
         <location/>
         <source>Saved event dashboards</source>
         <translation type="unfinished"></translation>
@@ -293,7 +371,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DashboardView.qml" line="+51"/>
+        <location filename="../qml/DashboardView.qml" line="+55"/>
         <location/>
         <source>Dashboard</source>
         <translation type="unfinished"></translation>
@@ -310,11 +388,47 @@
         <source>Add</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <location line="+365"/>
+        <location/>
+        <source>All selected event fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/SettingsView.qml" line="-106"/>
+        <location/>
+        <source>Saved variable dashboards</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../qml/BrowserView.qml" line="+47"/>
+        <location/>
+        <source>Select event source nodes</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location/>
+        <source>Select objects to create event monitored items for and then press OK</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+8"/>
+        <location/>
+        <source>Select event fields</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location/>
+        <source>Select event fields to retrieve for events and then press OK</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ExpertMode</name>
     <message>
-        <location filename="../qml/NodeDetailView.qml" line="+38"/>
+        <location filename="../qml/NodeDetailView.qml" line="+40"/>
         <location/>
         <source>Attributes</source>
         <translation type="unfinished"></translation>
@@ -354,7 +468,7 @@
     </message>
     <message>
         <location line="+17"/>
-        <location filename="../qml/BrowserView.qml" line="+81"/>
+        <location filename="../qml/BrowserView.qml" line="+51"/>
         <location filename="../qml/DashboardConfigurationView.qml" line="+41"/>
         <location filename="../qml/MessageView.qml" line="-135"/>
         <location/>
@@ -377,7 +491,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DashboardView.qml" line="+15"/>
+        <location filename="../qml/DashboardView.qml" line="-350"/>
         <location/>
         <source>Delete</source>
         <translation type="unfinished"></translation>
@@ -395,13 +509,13 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/NodesView.qml" line="+39"/>
+        <location filename="../qml/NodesView.qml" line="+40"/>
         <location/>
         <source>Refresh</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/SettingsView.qml" line="-155"/>
+        <location filename="../qml/SettingsView.qml" line="-160"/>
         <location filename="../qml/controls/SideMenu.qml" line="+17"/>
         <location/>
         <source>Settings</source>
@@ -414,7 +528,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+19"/>
+        <location line="+24"/>
         <location/>
         <source>Dark</source>
         <translation type="unfinished"></translation>
@@ -428,7 +542,7 @@
     <message>
         <location filename="../qml/MessageView.qml" line="+119"/>
         <location line="+5"/>
-        <location filename="../qml/SettingsView.qml" line="+218"/>
+        <location filename="../qml/SettingsView.qml" line="+519"/>
         <location line="+8"/>
         <location/>
         <source>MM/dd/yyyy</source>
@@ -545,9 +659,15 @@
 <context>
     <name>Settings</name>
     <message>
-        <location filename="../qml/SettingsView.qml" line="-210"/>
+        <location filename="../qml/SettingsView.qml" line="-511"/>
         <location/>
         <source>Language</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+653"/>
+        <location/>
+        <source>Enter new dashboard name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

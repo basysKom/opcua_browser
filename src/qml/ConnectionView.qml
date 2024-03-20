@@ -33,6 +33,7 @@ Item {
             Layout.fillWidth: true
             text: BackEnd.stateText
             color: Style.accent
+            wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
 
         ColumnLayout {

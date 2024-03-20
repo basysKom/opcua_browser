@@ -257,7 +257,7 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
                                 const QString &password)
 {
     if ((endpointIndex < 0) || (endpointIndex >= mEndpointList.size())) {
-        setState(QStringLiteral("endpoint index out of range"));
+        setState(tr("endpoint index out of range"));
         qCCritical(backendLog)
                 << QStringLiteral("endpoint index out of range, index: %1, endpoint list size: %2")
                            .arg(endpointIndex)
@@ -347,7 +347,7 @@ void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId,
 
 void BackEnd::connectToEndpoint()
 {
-    setState(QStringLiteral("connected to client \"%1\"")
+    setState(tr("connect with security policy \"%1\"")
                      .arg(mConnectionConfiguration.mEndpoint.securityPolicy()));
 
     createClient();
@@ -611,7 +611,7 @@ int BackEnd::instantiateCompanionSpecVariableDashboard(const QString &name)
 void BackEnd::findServers(const QString &urlString)
 {
     QUrl url(urlString);
-    setState(QStringLiteral("Discovering servers on \"%1\"").arg(urlString));
+    setState(tr("Discovering servers on \"%1\"").arg(urlString));
 
     createClient();
     // set default port if missing
@@ -630,11 +630,11 @@ void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &ser
 {
     if (!isSuccessStatus(statusCode)) {
         qCWarning(backendLog) << "servers detection failed " << statusCode;
-        setState(QStringLiteral("servers detection failed"));
+        setState(tr("servers detection failed"));
         return;
     }
 
-    const QString state = QStringLiteral("%1 server(s) detected").arg(servers.size());
+    const QString state = tr("%1 server(s) detected").arg(servers.size());
     qCDebug(backendLog) << state;
     setState(state);
     saveServerHost(mHostUrl.toString());
@@ -651,7 +651,7 @@ void BackEnd::findServersComplete(const QList<QOpcUaApplicationDescription> &ser
 void BackEnd::getEndpoints(int serverIndex)
 {
     if ((serverIndex < 0) || (serverIndex >= mServerList.size())) {
-        setState(QStringLiteral("server index out of range"));
+        setState(tr("server index out of range"));
         qCCritical(backendLog)
                 << QStringLiteral("server index out of range, index: %1, server list size: %2")
                            .arg(serverIndex)
@@ -665,7 +665,7 @@ void BackEnd::getEndpoints(int serverIndex)
 void BackEnd::requestEndpoints(const QString &serverUrl)
 {
     mServerUrl = serverUrl;
-    setState(QStringLiteral("Request endpoints for \"%1\"").arg(mServerUrl.toString()));
+    setState(tr("Request endpoints for \"%1\"").arg(mServerUrl.toString()));
     qCDebug(backendLog) << "Request endpoints for " << mServerUrl.toString();
     createClient();
     mOpcUaClient->requestEndpoints(mServerUrl.toString());
@@ -682,11 +682,11 @@ void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpo
             return;
         }
 
-        setState(QStringLiteral("request of endpoints failed"));
+        setState(tr("request of endpoints failed"));
         return;
     }
 
-    const QString state = QStringLiteral("%1 endpoint(s) received").arg(endpoints.size());
+    const QString state = tr("%1 endpoint(s) received").arg(endpoints.size());
     qCDebug(backendLog) << state;
     setState(state);
     mEndpointList = endpoints;
@@ -713,7 +713,7 @@ void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpo
 void BackEnd::clientConnected()
 {
     qCDebug(backendLog) << "client connected";
-    setState(QStringLiteral("client connected"));
+    setState(tr("client connected"));
 
     connect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this,
             &BackEnd::namespacesArrayUpdated);
@@ -723,7 +723,7 @@ void BackEnd::clientConnected()
 void BackEnd::clientDisconnected()
 {
     qCDebug(backendLog) << "client disconnected";
-    setState(QStringLiteral("client disconnected"));
+    setState(tr("client disconnected"));
 
     saveLastDashboards();
     mDashboardItemModel->clearItems();
@@ -753,13 +753,13 @@ void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)
 void BackEnd::clientError(QOpcUaClient::ClientError error)
 {
     qCDebug(backendLog) << "client error:" << error;
-    setState(QStringLiteral("client error: %1").arg(error));
+    setState(tr("client error: %1").arg(error));
 }
 
 void BackEnd::clientState(QOpcUaClient::ClientState state)
 {
     qCDebug(backendLog) << "client state:" << state;
-    setState(QStringLiteral("client state changed: %1").arg(state));
+    setState(tr("client state changed: %1").arg(state));
 }
 
 void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
@@ -786,8 +786,7 @@ void BackEnd::createClient()
         if (!mOpcUaClient) {
             const QString message(tr("A possible cause could be that the backend "
                                      "could not be loaded as a plugin."));
-            setState(QStringLiteral("Failed to connect to server") % QChar::fromLatin1('\n')
-                     % message);
+            setState(tr("Failed to connect to server") % QChar::fromLatin1('\n') % message);
             return;
         }
 

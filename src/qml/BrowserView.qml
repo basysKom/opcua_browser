@@ -44,8 +44,8 @@ Rectangle {
         onCanSelectEventsChanged: function () {
             if (canSelectEvents) {
                 BackEnd.opcUaModel.setCurrentNodeId("ns=0;i=85") // Root -> Objects
-                fullPopup.name = qsTranslate("General", "Select event source nodes")
-                fullPopup.value = qsTranslate("General", "Select objects to create event monitored items for and then press OK")
+                fullPopup.name = qsTranslate("Dashboard", "Select event source nodes")
+                fullPopup.value = qsTranslate("Dashboard", "Select objects to create event monitored items for and then press OK")
                 fullPopup.open()
             }
         }
@@ -53,8 +53,8 @@ Rectangle {
         onCanSelectEventFieldsChanged: function () {
             if (canSelectEventFields) {
                 BackEnd.opcUaModel.setCurrentNodeId("ns=0;i=2050") // BaseEventType -> Message
-                fullPopup.name = qsTranslate("General", "Select event fields")
-                fullPopup.value = qsTranslate("General", "Select event fields to retrieve for events and then press OK")
+                fullPopup.name = qsTranslate("Dashboard", "Select event fields")
+                fullPopup.value = qsTranslate("Dashboard", "Select event fields to retrieve for events and then press OK")
                 fullPopup.open()
             }
         }
