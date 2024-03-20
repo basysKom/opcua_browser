@@ -591,6 +591,9 @@ Rectangle {
                 required property var model
                 required property var monitoringModel
                 required property int index
+                required property bool hasBackgroundActivity
+
+                showActivityIndicator: hasBackgroundActivity && type !== DashboardItem.DashboardType.Add && !isCurrentTab
 
                 type: model.type
                 text: model.name.length > 0 ? model.name : getDefaultNameForDashboardType(type)

@@ -35,10 +35,20 @@ public:
     QAbstractListModel *monitoredItemModel() const noexcept;
     QStringList getMonitoredNodeIds() const;
 
+    bool hasBackgroundActivity() const;
+
+    void setIsCurrentItem(bool isCurrentItem);
+
+signals:
+    void hasBackgroundActivityChanged();
+
 private:
     QString mName;
     DashboardItem::DashboardType mType;
     MonitoredItemModel *mMonitoredItemModel = nullptr;
+    bool mHasBackgroundActivity = false;
+
+    bool mIsCurrentItem = false;
 };
 
 #endif // DASHBOARDITEM_H

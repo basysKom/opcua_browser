@@ -39,6 +39,9 @@ public:
 
     QList<QOpcUaMonitoringParameters::EventFilter> eventFilters();
 
+signals:
+    void updated();
+
 private:
     QList<MonitoredItem *> mItems;
 };

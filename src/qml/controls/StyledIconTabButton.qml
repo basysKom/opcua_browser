@@ -21,6 +21,8 @@ TabButton {
 
     property int type: DashboardItem.DashboardType.Variables
 
+    property alias showActivityIndicator: activityIndicator.visible
+
     width: 80
 
     background: Rectangle {
@@ -39,6 +41,18 @@ TabButton {
             source: (DashboardItem.DashboardType.Add === control.type) ? "qrc:/icons/plus.svg" :
                     (DashboardItem.DashboardType.Events === control.type) ? "qrc:/icons/bolt.svg" : "qrc:/icons/dashboard.svg"
             color: label.color
+
+            Rectangle {
+                id: activityIndicator
+                width: 10
+                height: 10
+                radius: 5
+
+                color: control.theme.textColorSelected
+
+                anchors.right: parent.right
+                anchors.top: parent.top
+            }
         }
 
         Text {
