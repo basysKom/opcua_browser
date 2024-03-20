@@ -1000,10 +1000,11 @@ void BackEnd::findCompanionSpecObjects()
 
                     QObject::connect(
                             node, &QOpcUaNode::browseFinished, this,
-                            [this, entryPoint,
-                             permittedSubtypes](const QList<QOpcUaReferenceDescription> &children,
-                                                QOpcUa::UaStatusCode statusCode) {
+                            [this, entryPoint, permittedSubtypes,
+                             node](const QList<QOpcUaReferenceDescription> &children,
+                                   QOpcUa::UaStatusCode statusCode) {
                                 Q_UNUSED(statusCode)
+                                node->deleteLater();
                                 for (const auto &child : children) {
                                     if (permittedSubtypes.contains(
                                                 child.typeDefinition().nodeId())) {
