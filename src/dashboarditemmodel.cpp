@@ -15,7 +15,8 @@
 enum Roles : int {
     DisplayNameRole = Qt::DisplayRole,
     TypeRole = Qt::UserRole,
-    MonitoringModelRole
+    MonitoringModelRole,
+    HasBackgroundActivity,
 };
 
 DashboardItemModel::DashboardItemModel(QObject *parent) : QAbstractListModel{ parent }
@@ -35,6 +36,7 @@ QHash<int, QByteArray> DashboardItemModel::roleNames() const
         { DisplayNameRole, "name" },
         { TypeRole, "type" },
         { MonitoringModelRole, "monitoringModel" },
+        { HasBackgroundActivity, "hasBackgroundActivity" },
     };
 }
 
@@ -55,6 +57,8 @@ QVariant DashboardItemModel::data(const QModelIndex &index, int role) const
         return static_cast<int>(mItems[index.row()]->type());
     case MonitoringModelRole:
         return QVariant::fromValue<QObject *>(mItems[index.row()]->monitoredItemModel());
+    case HasBackgroundActivity:
+        return mItems[index.row()]->hasBackgroundActivity();
     }
 
     return QVariant();
@@ -87,6 +91,15 @@ int DashboardItemModel::addItem(DashboardItem::DashboardType type, const QString
     beginInsertRows(QModelIndex(), pos, pos);
     mItems.insert(pos, item);
     endInsertRows();
+
+    QObject::connect(item, &DashboardItem::hasBackgroundActivityChanged, this, [this, item]() {
+        const auto pos = mItems.indexOf(item);
+        if (pos == -1)
+            return;
+
+        const auto index = createIndex(pos, 0);
+        emit dataChanged(index, index, QList<int>() << HasBackgroundActivity);
+    });
 
     return pos;
 }
@@ -173,8 +186,14 @@ bool DashboardItemModel::isAddItem(uint index) const
 
 void DashboardItemModel::setCurrentIndex(uint index)
 {
+    for (const auto &item : mItems) {
+        if (item)
+            item->setIsCurrentItem(false);
+    }
+
     if (index < mItems.size()) {
         mCurrentIndex = index;
+        mItems.at(index)->setIsCurrentItem(true);
     }
 }
 

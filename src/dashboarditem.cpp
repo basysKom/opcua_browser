@@ -15,6 +15,13 @@ DashboardItem::DashboardItem(DashboardItem::DashboardType type, const QString &n
 {
     if (type != DashboardItem::DashboardType::Add) {
         mMonitoredItemModel = new MonitoredItemModel();
+
+        QObject::connect(mMonitoredItemModel, &MonitoredItemModel::updated, this, [this]() {
+            if (!mHasBackgroundActivity && !mIsCurrentItem) {
+                mHasBackgroundActivity = true;
+                emit hasBackgroundActivityChanged();
+            }
+        });
     }
 }
 
@@ -50,4 +57,21 @@ QStringList DashboardItem::getMonitoredNodeIds() const
         return QStringList();
 
     return mMonitoredItemModel->getNodeIds();
+}
+
+bool DashboardItem::hasBackgroundActivity() const
+{
+    return mHasBackgroundActivity;
+}
+
+void DashboardItem::setIsCurrentItem(bool isCurrentItem)
+{
+    if (isCurrentItem != mIsCurrentItem) {
+        mIsCurrentItem = isCurrentItem;
+
+        if (isCurrentItem && mHasBackgroundActivity) {
+            mHasBackgroundActivity = false;
+            emit hasBackgroundActivityChanged();
+        }
+    }
 }

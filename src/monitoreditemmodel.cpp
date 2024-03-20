@@ -74,17 +74,25 @@ void MonitoredItemModel::addItem(QOpcUaNode *node)
 {
     const int pos = mItems.size() - 1;
     MonitoredItem *monitoredItem = new MonitoredItem(node);
-    connect(monitoredItem, &MonitoredItem::displayNameChanged, this,
-            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << DisplayNameRole); });
+    connect(monitoredItem, &MonitoredItem::displayNameChanged, this, [=]() {
+        emit dataChanged(index(pos), index(pos), QList<int>() << DisplayNameRole);
+        emit updated();
+    });
 
-    connect(monitoredItem, &MonitoredItem::valueChanged, this,
-            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << ValueRole); });
+    connect(monitoredItem, &MonitoredItem::valueChanged, this, [=]() {
+        emit dataChanged(index(pos), index(pos), QList<int>() << ValueRole);
+        emit updated();
+    });
 
-    connect(monitoredItem, &MonitoredItem::hasErrorChanged, this,
-            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << HasErrorRole); });
+    connect(monitoredItem, &MonitoredItem::hasErrorChanged, this, [=]() {
+        emit dataChanged(index(pos), index(pos), QList<int>() << HasErrorRole);
+        emit updated();
+    });
 
-    connect(monitoredItem, &MonitoredItem::statusChanged, this,
-            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << StatusRole); });
+    connect(monitoredItem, &MonitoredItem::statusChanged, this, [=]() {
+        emit dataChanged(index(pos), index(pos), QList<int>() << StatusRole);
+        emit updated();
+    });
 
     beginInsertRows(QModelIndex(), pos, pos);
     mItems.insert(pos, monitoredItem);
@@ -96,11 +104,15 @@ void MonitoredItemModel::addEventItem(QOpcUaNode *node,
 {
     const int pos = mItems.size() - 1;
     MonitoredItem *monitoredItem = new MonitoredItem(node, eventFilter);
-    connect(monitoredItem, &MonitoredItem::displayNameChanged, this,
-            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << DisplayNameRole); });
+    connect(monitoredItem, &MonitoredItem::displayNameChanged, this, [=]() {
+        emit dataChanged(index(pos), index(pos), QList<int>() << DisplayNameRole);
+        emit updated();
+    });
 
-    connect(monitoredItem, &MonitoredItem::lastEventsChanged, this,
-            [=]() { emit dataChanged(index(pos), index(pos), QList<int>() << LastEventsRole); });
+    connect(monitoredItem, &MonitoredItem::lastEventsChanged, this, [=]() {
+        emit dataChanged(index(pos), index(pos), QList<int>() << LastEventsRole);
+        emit updated();
+    });
 
     beginInsertRows(QModelIndex(), pos, pos);
     mItems.insert(pos, monitoredItem);
