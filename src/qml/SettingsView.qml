@@ -20,13 +20,6 @@ Rectangle {
 
     function setTheme(index) {
         Style.currentThemeIndex = index
-        if (index === 0) {
-            darkItemSelector.checkState = Qt.Checked
-            brightItemSelector.checkState = Qt.Unchecked
-        } else {
-            darkItemSelector.checkState = Qt.Unchecked
-            brightItemSelector.checkState = Qt.Checked
-        }
     }
 
     color: theme.background
@@ -81,8 +74,13 @@ Rectangle {
                     text: qsTranslate("General", "Theme")
                 }
 
+                ButtonGroup {
+                    buttons: buttonRow.children
+                }
+
                 Row {
                     spacing: 5
+                    id: buttonRow
 
                     StyledItemSelector {
                         id: darkItemSelector
