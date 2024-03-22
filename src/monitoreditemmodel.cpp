@@ -176,3 +176,14 @@ QList<QOpcUaMonitoringParameters::EventFilter> MonitoredItemModel::eventFilters(
 
     return filters;
 }
+
+void MonitoredItemModel::moveItem(int currentIndex, int newIndex)
+{
+    if (currentIndex < 0 || newIndex < 0 || newIndex == currentIndex || newIndex >= mItems.size())
+        return;
+
+    beginMoveRows(QModelIndex(), currentIndex, currentIndex, QModelIndex(),
+                  newIndex > currentIndex ? newIndex + 1 : newIndex);
+    mItems.move(currentIndex, newIndex);
+    endMoveRows();
+}

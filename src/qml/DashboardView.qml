@@ -239,10 +239,10 @@ Rectangle {
     }
 
     Component {
-        id: eventDragDelegate
+        id: eventDelegate
 
         MouseArea {
-            id: eventDragArea
+            id: eventMouseArea
 
             property bool held: false
             required property string name
@@ -291,15 +291,10 @@ Rectangle {
 
             height: content.height
             width: content.width
-            cursorShape: eventDragArea.isAddItem ? Qt.PointingHandCursor : Qt.ArrowCursor
-
-            drag.target: held ? content : undefined
-
-            onPressAndHold: held = !eventDragArea.isAddItem
-            onReleased: held = false
+            cursorShape: eventMouseArea.isAddItem ? Qt.PointingHandCursor : Qt.ArrowCursor
 
             onClicked: {
-                if (eventDragArea.isAddItem) {
+                if (eventMouseArea.isAddItem) {
                     view.addEvents()
                 }
             }
@@ -307,35 +302,14 @@ Rectangle {
             Rectangle {
                 id: content
 
-                Drag.active: eventDragArea.held
-                Drag.source: eventDragArea
-                Drag.hotSpot.x: width / 2
-                Drag.hotSpot.y: height / 2
-
                 width: itemWidth * 2 + 10
                 implicitHeight: Math.max(80, eventColumn.height)
                 radius: 5
-                color: eventDragArea.held ? view.theme.item.backgroundHeld : eventDragArea.hasError ? view.theme.item.backgroundError : view.theme.item.background
+                color: eventMouseArea.hasError ? view.theme.item.backgroundError : view.theme.item.background
 
                 Behavior on color {
                     ColorAnimation {
                         duration: 100
-                    }
-                }
-
-                states: State {
-                    when: eventDragArea.held
-
-                    ParentChange {
-                        target: content
-                        parent: view
-                    }
-                    AnchorChanges {
-                        target: content
-                        anchors {
-                            horizontalCenter: undefined
-                            verticalCenter: undefined
-                        }
                     }
                 }
 
@@ -345,7 +319,7 @@ Rectangle {
                     width: parent.width
                     padding: 5
                     spacing: 5
-                    visible: !eventDragArea.isAddItem
+                    visible: !eventMouseArea.isAddItem
 
                     RowLayout {
                         id: eventRow
@@ -354,12 +328,42 @@ Rectangle {
                         Text {
                             Layout.fillWidth: true
                             color: view.theme.item.textColor
-                            text: eventDragArea.name
+                            text: eventMouseArea.name
                             font {
                                 pointSize: 12
                                 bold: true
                             }
                             elide: Text.ElideRight
+                        }
+
+                        IconImage {
+                            Layout.alignment: Qt.AlignVCenter
+                            sourceSize.width: 24
+                            sourceSize.height: 24
+                            source: "qrc:/icons/keyboard_arrow_down.svg"
+                            color: view.theme.item.textColor
+                            visible: index !== visualModel.count - 2
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: visualModel.model.moveItem(index, index + 1)
+                            }
+                        }
+
+                        IconImage {
+                            Layout.alignment: Qt.AlignVCenter
+                            sourceSize.width: 24
+                            sourceSize.height: 24
+                            source: "qrc:/icons/keyboard_arrow_up.svg"
+                            color: view.theme.item.textColor
+                            visible: index !== 0
+
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: visualModel.model.moveItem(index, index - 1)
+                            }
                         }
 
                         IconImage {
@@ -373,7 +377,7 @@ Rectangle {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: visualModel.model.clearEventsForItem(
-                                               eventDragArea.index)
+                                               eventMouseArea.index)
                             }
                         }
 
@@ -388,13 +392,13 @@ Rectangle {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
                                 onClicked: visualModel.model.disableMonitoring(
-                                               eventDragArea.index)
+                                               eventMouseArea.index)
                             }
                         }
                     }
 
                     Repeater {
-                        model: eventDragArea.lastEventStrings
+                        model: eventMouseArea.lastEventStrings
 
                         delegate: Rectangle {
                             required property string modelData
@@ -432,23 +436,10 @@ Rectangle {
                     anchors.centerIn: parent
                     sourceSize.width: 48
                     sourceSize.height: 48
-                    visible: eventDragArea.isAddItem
+                    visible: eventMouseArea.isAddItem
                     source: "qrc:/icons/plus.svg"
                     color: view.theme.item.textColor
                 }
-            }
-
-            DropArea {
-                anchors.fill: parent
-                anchors.margins: 10
-
-                onEntered: drag => {
-                               if (!eventDragArea.isAddItem) {
-                                   visualModel.items.move(
-                                       drag.source.DelegateModel.itemsIndex,
-                                       eventDragArea.DelegateModel.itemsIndex)
-                               }
-                           }
             }
         }
     }
@@ -457,7 +448,7 @@ Rectangle {
         id: visualModel
 
         model: (tabBar.currentItem === null) ? null : tabBar.currentMonitoringModel
-        delegate: tabBar.currentType === DashboardItem.DashboardType.Events ? eventDragDelegate : dragDelegate
+        delegate: tabBar.currentType === DashboardItem.DashboardType.Events ? eventDelegate : dragDelegate
     }
 
     Flickable {

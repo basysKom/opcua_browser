@@ -389,7 +389,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <location/>
         <source>All selected event fields</source>
         <translation type="unfinished"></translation>
@@ -491,7 +491,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/DashboardView.qml" line="-350"/>
+        <location filename="../qml/DashboardView.qml" line="-354"/>
         <location/>
         <source>Delete</source>
         <translation type="unfinished"></translation>

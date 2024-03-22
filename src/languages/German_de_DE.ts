@@ -389,7 +389,7 @@
         <translation>Hinzufügen</translation>
     </message>
     <message>
-        <location line="+365"/>
+        <location line="+369"/>
         <location/>
         <source>All selected event fields</source>
         <translation>Alle ausgewählten Eventfelder</translation>
@@ -491,7 +491,7 @@
         <translation>Zurück</translation>
     </message>
     <message>
-        <location filename="../qml/DashboardView.qml" line="-350"/>
+        <location filename="../qml/DashboardView.qml" line="-354"/>
         <location/>
         <source>Delete</source>
         <translation>Löschen</translation>
