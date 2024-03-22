@@ -39,6 +39,8 @@ public:
 
     QList<QOpcUaMonitoringParameters::EventFilter> eventFilters();
 
+    Q_INVOKABLE void moveItem(int currentIndex, int newIndex);
+
 signals:
     void updated();
 

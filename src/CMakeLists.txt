@@ -105,7 +105,9 @@ qt_add_resources(appOPC_UA_Browser "icons"
     PREFIX "/"
     FILES font/Swansea.ttf
           font/SwanseaBold.ttf
+          icons/keyboard_arrow_down.svg
           icons/arrow_right.svg
+          icons/keyboard_arrow_up.svg
           icons/back.svg
           icons/bolt.svg
           icons/cancel.svg
