@@ -229,9 +229,9 @@ Rectangle {
 
                 onEntered: drag => {
                                if (!dragArea.isAddItem) {
-                                   visualModel.items.move(
-                                       drag.source.DelegateModel.itemsIndex,
-                                       dragArea.DelegateModel.itemsIndex)
+                                   visualModel.model.moveItem(
+                                       drag.source.index,
+                                       dragArea.index)
                                }
                            }
             }
