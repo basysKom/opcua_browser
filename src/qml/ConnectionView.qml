@@ -100,6 +100,13 @@ Item {
 
                 captionText: qsTranslate("Connection", "Server")
                 model: BackEnd.serverList
+
+                onModelChanged: {
+                    const urlIndex = serverListBox._comboBox.find(selectedHostUrl, Qt.MatchStartsWith)
+
+                    if (urlIndex !== -1)
+                        serverListBox.currentIndex = urlIndex
+                }
             }
 
             StyledButton {
