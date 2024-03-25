@@ -137,7 +137,8 @@ qt_add_resources(appOPC_UA_Browser "icons"
 
 qt_add_translations(appOPC_UA_Browser
           TS_FILES languages/English_en_GB.ts
-                   languages/German_de_DE.ts)
+                   languages/German_de_DE.ts
+          LUPDATE_OPTIONS -locations none)
 
 target_compile_options(appOPC_UA_Browser PRIVATE -Wall -Wextra -Wdeprecated)
 
