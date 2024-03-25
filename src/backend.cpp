@@ -1037,7 +1037,13 @@ QFuture<QString> BackEnd::findAllSubtypes(const QString &nodeId,
                         watcher->setFuture(childFuture);
                         QObject::connect(watcher.get(), &QFutureWatcher<QString>::finished, this,
                                          [promise, watcher, childCount]() {
+#if QT_VERSION < QT_VERSION_CHECK(6, 6, 0)
+                                             const auto results = watcher->future().results();
+                                             for (const auto &res : results)
+                                                 promise->addResult(res);
+#else
                                              promise->addResults(watcher->future().results());
+#endif
                                              --*childCount;
                                              if (*childCount == 0)
                                                  promise->finish();
