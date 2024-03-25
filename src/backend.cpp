@@ -241,6 +241,15 @@ void BackEnd::addDefaultVariableDashboard(const QString &name)
     }
 }
 
+void BackEnd::addDefaultEventDashboard(const QString &name)
+{
+    if (!mDefaultEventDashboardsModel->stringList().contains(name)) {
+        auto list = mDefaultEventDashboardsModel->stringList();
+        list << name;
+        mDefaultEventDashboardsModel->setStringList(list);
+    }
+}
+
 void BackEnd::clearServerList()
 {
     mServerList.clear();
@@ -527,6 +536,14 @@ int BackEnd::instantiateDefaultVariableDashboard(const QString &name)
     return -1;
 }
 
+int BackEnd::instantiateDefaultEventDashboard(const QString &name)
+{
+    if (mCompanionSpecEventDashboards.contains(name))
+        return instantiateCompanionSpecEventDashboard(name);
+
+    return -1;
+}
+
 void BackEnd::renameSavedVariableDashboard(const QString &previousName, const QString &newName)
 {
 
@@ -604,6 +621,31 @@ int BackEnd::instantiateCompanionSpecVariableDashboard(const QString &name)
 
     for (const auto &id : getNodeIdsForCompanionSpecVariableDashboard(name))
         monitorNode(mDashboardItemModel->getMonitoredItemModel(index), id);
+
+    return index;
+}
+
+void BackEnd::addObjectToCompanionSpecEventDashboard(const QString &name,
+                                                     const DefaultEventDashboardNode &obj)
+{
+    mCompanionSpecEventDashboards[name].push_back(obj);
+}
+
+int BackEnd::instantiateCompanionSpecEventDashboard(const QString &name)
+{
+    assert(mDashboardItemModel);
+
+    if (!mCompanionSpecEventDashboards.contains(name)
+        || mCompanionSpecEventDashboards.value(name).isEmpty())
+        return -1;
+
+    if (mDashboardItemModel->containsItem(name))
+        return mDashboardItemModel->getIndexOfItem(name);
+
+    const auto index = mDashboardItemModel->addItem(DashboardItem::DashboardType::Events, name);
+
+    for (const auto &entry : getObjectsForCompanionSpecEventDashboard(name))
+        monitorNode(mDashboardItemModel->getMonitoredItemModel(index), entry.first, entry.second);
 
     return index;
 }
@@ -1074,6 +1116,12 @@ CompanionSpecDevice *BackEnd::getCompanionSpecDeviceForNodeId(const QString &nod
 QStringList BackEnd::getNodeIdsForCompanionSpecVariableDashboard(const QString &name)
 {
     return mCompanionSpecVariableDashboards.value(name);
+}
+
+QList<BackEnd::DefaultEventDashboardNode>
+BackEnd::getObjectsForCompanionSpecEventDashboard(const QString &name)
+{
+    return mCompanionSpecEventDashboards.value(name);
 }
 
 void BackEnd::addNodeIdToCompanionSpecVariableDashboard(const QString &name, const QString &nodeId)
