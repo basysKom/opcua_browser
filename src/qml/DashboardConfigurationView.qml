@@ -117,7 +117,16 @@ Item {
                 textRole: "display"
 
                 captionText: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTranslate("Dashboard", "Default data dashboards") : qsTranslate("Dashboard", "Default event dashboards")
-                model: (view.type === DashboardConfigurationView.Type.SelectVariables) ? BackEnd.defaultVariableDashboards : BackEnd.defaultEventDashboards
+
+                Connections {
+                    target: view
+
+                    // For some reason, using a property binding to switch the model doesn't work with Qt 6.5 and 6.6
+                    function onTypeChanged() {
+                        defaultDashboardListBox.model = view.type === DashboardConfigurationView.Type.SelectVariables ?
+                                    BackEnd.defaultVariableDashboards : BackEnd.defaultEventDashboards
+                    }
+                }
             }
 
             StyledButton {
@@ -127,6 +136,10 @@ Item {
                 onClicked: {
                     if (view.type === DashboardConfigurationView.Type.SelectVariables) {
                         const index = BackEnd.instantiateDefaultVariableDashboard(defaultDashboardListBox.currentText)
+                        if (index >= 0)
+                            showDashboardRequested(index)
+                    } else if (view.type === DashboardConfigurationView.Type.SelectEvents) {
+                        const index = BackEnd.instantiateDefaultEventDashboard(defaultDashboardListBox.currentText)
                         if (index >= 0)
                             showDashboardRequested(index)
                     }

@@ -111,6 +111,8 @@ public:
     enum class MessageType { NoMessage, UrlMismatch, EndpointReplacement, TrustCertificate };
     Q_ENUM(MessageType)
 
+    using DefaultEventDashboardNode = QPair<QString, QOpcUaMonitoringParameters::EventFilter>;
+
     Q_PROPERTY(QString stateText READ stateText NOTIFY stateTextChanged FINAL)
     Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionStateChanged FINAL)
     Q_PROPERTY(MessageType messageType READ messageType NOTIFY messageTypeChanged FINAL)
@@ -165,14 +167,21 @@ public:
 
     const QVector<CompanionSpecDevice> &companionSpecDevices() const noexcept;
     CompanionSpecDevice *getCompanionSpecDeviceForNodeId(const QString &nodeId);
+
     QStringList getNodeIdsForCompanionSpecVariableDashboard(const QString &name);
     void addNodeIdToCompanionSpecVariableDashboard(const QString &name, const QString &nodeId);
     int instantiateCompanionSpecVariableDashboard(const QString &name);
+
+    void addObjectToCompanionSpecEventDashboard(const QString &name,
+                                                const DefaultEventDashboardNode &obj);
+    QList<DefaultEventDashboardNode> getObjectsForCompanionSpecEventDashboard(const QString &name);
+    int instantiateCompanionSpecEventDashboard(const QString &name);
 
     static OpcUaModel *getOpcUaModelForNode(QOpcUaNode *node);
     QOpcUaClient *getOpcUaClient();
 
     void addDefaultVariableDashboard(const QString &name);
+    void addDefaultEventDashboard(const QString &name);
 
     Q_INVOKABLE void clearServerList();
     Q_INVOKABLE void clearEndpointList();
@@ -192,6 +201,7 @@ public:
     Q_INVOKABLE void removeSavedEventDashboard(const QString &name);
     Q_INVOKABLE void loadDashboard(const QString &name);
     Q_INVOKABLE int instantiateDefaultVariableDashboard(const QString &name);
+    Q_INVOKABLE int instantiateDefaultEventDashboard(const QString &name);
     Q_INVOKABLE void renameSavedVariableDashboard(const QString &previousName,
                                                   const QString &newName);
     Q_INVOKABLE void renameSavedEventDashboard(const QString &previousName, const QString &newName);
@@ -301,6 +311,7 @@ private:
 
     QVector<CompanionSpecDevice> mCompanionSpecDevices;
     QHash<QString, QStringList> mCompanionSpecVariableDashboards;
+    QHash<QString, QList<DefaultEventDashboardNode>> mCompanionSpecEventDashboards;
 
     QStringList mSelectedEventSourceNodes;
 };
