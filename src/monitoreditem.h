@@ -53,6 +53,8 @@ private slots:
     void handleAttributes(const QOpcUa::NodeAttributes &attributes);
     void handleEvent(const QVariantList &eventFields);
 
+    void eventFieldTypeLookup();
+
 private:
     void setStatusCode(QOpcUa::UaStatusCode statusCode);
 
@@ -65,6 +67,7 @@ private:
     Type mType;
 
     QStringList mEventFieldNames;
+    QStringList mEventFieldTypeNodeIds;
     QList<QVariantMap> mLastEvents;
     QOpcUaMonitoringParameters::EventFilter mEventFilter;
 };

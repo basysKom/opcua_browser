@@ -191,6 +191,20 @@ QString QOpcUaHelper::variantToString(QOpcUaNode *node, const QVariant &value,
         return concat;
     }
 
+    // Handle enum strings
+    if (!typeNodeId.isEmpty()) {
+        const auto model = BackEnd::getOpcUaModelForNode(node);
+        if (model) {
+            const auto enumCandidate = model->getEnumStringsForDataTypeId(typeNodeId);
+            if (!enumCandidate.isEmpty()) {
+                const auto numericValue = value.value<qint32>();
+                const auto entry = enumCandidate.constFind(numericValue);
+                if (entry != enumCandidate.constEnd())
+                    return QStringLiteral("%1 (%2)").arg(numericValue).arg(entry.value());
+            }
+        }
+    }
+
     if (typeNodeId == QLatin1String("ns=0;i=19")) { // StatusCode
         const char *name = QMetaEnum::fromType<QOpcUa::UaStatusCode>().valueToKey(value.toInt());
         return name ? QLatin1String(name) : QLatin1String("Unknown StatusCode");
@@ -571,19 +585,6 @@ QString QOpcUaHelper::getRawAttributeValue(QOpcUaNode *node, QOpcUa::NodeAttribu
         const QString type = node->attribute(QOpcUa::NodeAttribute::DataType).toString();
         const QVariant attrValue = node->attribute(attr);
         const auto valueString = variantToString(node, attrValue, type);
-
-        if (!valueString.isEmpty()) {
-            const auto model = BackEnd::getOpcUaModelForNode(node);
-            if (model) {
-                const auto enumCandidate = model->getEnumStringsForDataTypeId(type);
-                if (!enumCandidate.isEmpty()) {
-                    const auto value = node->valueAttribute().value<qint32>();
-                    const auto entry = enumCandidate.constFind(value);
-                    if (entry != enumCandidate.constEnd())
-                        return QStringLiteral("%1 (%2)").arg(valueString, entry.value());
-                }
-            }
-        }
 
         return valueString;
     }
