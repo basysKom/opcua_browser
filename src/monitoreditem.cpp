@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+#include <QOpcUaClient>
 #include <QOpcUaNode>
 #include <QOpcUaQualifiedName>
 
@@ -43,6 +44,8 @@ MonitoredItem::MonitoredItem(QOpcUaNode *node,
              // somebody passes a select clause with empty browse path
             mEventFieldNames.push_back({});
     }
+
+    eventFieldTypeLookup();
 
     if (node != nullptr) {
         mNodeId = node->nodeId();
@@ -134,7 +137,9 @@ void MonitoredItem::handleEvent(const QVariantList &eventFields)
 
     for (int i = 0; i < eventFields.length(); ++i) {
         if (!eventFields.at(i).isNull()) {
-            const auto stringValue = QOpcUaHelper::variantToString(nullptr, eventFields.at(i), {});
+
+            const auto stringValue = QOpcUaHelper::variantToString(
+                    mOpcNode.get(), eventFields.at(i), mEventFieldTypeNodeIds.at(i));
             eventStrings[mEventFieldNames.at(i)] = stringValue;
         }
     }
@@ -144,6 +149,81 @@ void MonitoredItem::handleEvent(const QVariantList &eventFields)
         mLastEvents.pop_back();
 
     emit lastEventsChanged();
+}
+
+void MonitoredItem::eventFieldTypeLookup()
+{
+    if (mType != Type::Event || !mOpcNode)
+        return;
+
+    if (mEventFieldNames.isEmpty())
+        return;
+
+    mEventFieldTypeNodeIds = QStringList(mEventFieldNames.size(), {});
+
+    for (int i = 0; i < mEventFilter.selectClauses().size(); ++i) {
+        if (mEventFilter.selectClauses().at(i).browsePath().isEmpty())
+            continue;
+
+        auto eventTypeId = mEventFilter.selectClauses().at(i).typeId();
+        if (eventTypeId.isEmpty())
+            eventTypeId = QOpcUa::namespace0Id(QOpcUa::NodeIds::Namespace0::BaseEventType);
+
+        auto typeNode = mOpcNode->client()->node(eventTypeId);
+
+        if (!typeNode)
+            continue;
+
+        QList<QOpcUaRelativePathElement> pathElements;
+        for (const auto &element : mEventFilter.selectClauses().at(i).browsePath()) {
+            QOpcUaRelativePathElement pathElement(
+                    QOpcUaQualifiedName(element.namespaceIndex(), element.name()),
+                    QOpcUa::ReferenceTypeId::HierarchicalReferences);
+            pathElement.setIncludeSubtypes(true);
+            pathElements.push_back(pathElement);
+        }
+
+        QObject::connect(
+                typeNode, &QOpcUaNode::resolveBrowsePathFinished, this,
+                [this, typeNode, i](const QList<QOpcUaBrowsePathTarget> &targets,
+                                    const QList<QOpcUaRelativePathElement> &path,
+                                    QOpcUa::UaStatusCode statusCode) {
+                    Q_UNUSED(path)
+                    Q_UNUSED(statusCode)
+
+                    if (!targets.isEmpty() && targets.constFirst().isFullyResolved()
+                        && !targets.constFirst().targetId().nodeId().isEmpty()) {
+                        auto fieldNode =
+                                typeNode->client()->node(targets.constFirst().targetId().nodeId());
+
+                        typeNode->deleteLater();
+
+                        if (!fieldNode)
+                            return;
+
+                        QObject::connect(
+                                fieldNode, &QOpcUaNode::attributeRead, this,
+                                [this, fieldNode, i](const QOpcUa::NodeAttributes &attributes) {
+                                    if (attributes & QOpcUa::NodeAttribute::DataType)
+                                        mEventFieldTypeNodeIds[i] =
+                                                fieldNode
+                                                        ->attribute(QOpcUa::NodeAttribute::DataType)
+                                                        .toString();
+
+                                    fieldNode->deleteLater();
+                                });
+
+                        const auto success =
+                                fieldNode->readAttributes(QOpcUa::NodeAttribute::DataType);
+                        if (!success)
+                            fieldNode->deleteLater();
+                    }
+                });
+
+        const auto success = typeNode->resolveBrowsePath(pathElements);
+        if (!success)
+            typeNode->deleteLater();
+    }
 }
 
 void MonitoredItem::setStatusCode(QOpcUa::UaStatusCode statusCode)
