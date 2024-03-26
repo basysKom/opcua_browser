@@ -82,6 +82,11 @@ BackEnd::BackEnd(QObject *parent)
     //! [Application Identity]
 
     QSettings settings;
+
+    mMaxEventsPerObject = settings.value(Constants::SettingsKey::MaxEventPerObject,
+                                         Constants::Defaults::MaxEventsPerObject)
+                                  .toInt();
+
     settings.beginGroup(Constants::SettingsKey::DashboardsVariables);
     QStringList keys = settings.childKeys();
     settings.endGroup();
@@ -217,6 +222,13 @@ const QVector<CompanionSpecDevice> &BackEnd::companionSpecDevices() const noexce
 
 OpcUaModel *BackEnd::getOpcUaModelForNode(QOpcUaNode *node)
 {
+    const auto backend = getBackEndForNode(node);
+
+    return backend ? backend->mOpcUaModel : nullptr;
+}
+
+BackEnd *BackEnd::getBackEndForNode(QOpcUaNode *node)
+{
     if (!node)
         return nullptr;
 
@@ -224,7 +236,7 @@ OpcUaModel *BackEnd::getOpcUaModelForNode(QOpcUaNode *node)
     if (entry == mBackendMapping.constEnd())
         return nullptr;
 
-    return entry.value() ? entry.value()->mOpcUaModel : nullptr;
+    return entry.value();
 }
 
 QOpcUaClient *BackEnd::getOpcUaClient()
@@ -1099,6 +1111,24 @@ QFuture<QString> BackEnd::findAllSubtypes(const QString &nodeId,
     node->browseChildren(QOpcUa::ReferenceTypeId::HasSubtype, QOpcUa::NodeClass::DataType);
 
     return future;
+}
+
+int BackEnd::maxEventsPerObject() const
+{
+    return mMaxEventsPerObject;
+}
+
+void BackEnd::setMaxEventsPerObject(int newMaxEventsPerObject)
+{
+    if (mMaxEventsPerObject == newMaxEventsPerObject)
+        return;
+
+    mMaxEventsPerObject = newMaxEventsPerObject;
+
+    QSettings settings;
+    settings.setValue(Constants::SettingsKey::MaxEventPerObject, newMaxEventsPerObject);
+
+    emit maxEventsPerObjectChanged();
 }
 
 CompanionSpecDevice *BackEnd::getCompanionSpecDeviceForNodeId(const QString &nodeId)
