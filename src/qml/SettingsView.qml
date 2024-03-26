@@ -507,6 +507,29 @@ Rectangle {
                 }
             }
 
+            // Dashboard settings
+            Column {
+                width: parent.width - content.leftPadding - content.rightPadding
+                spacing: 5
+
+                Text {
+                    color: view.theme.textColor
+                    font {
+                        pointSize: 14
+                        bold: true
+                    }
+                    text: qsTranslate("Dashboard", "Dashboard")
+                }
+
+                StyledSpinBox {
+                    captionText: qsTranslate("Settings", "Max. events per object")
+                    from: 1
+                    to: 150
+                    value: BackEnd.maxEventsPerObject
+                    onValueChanged: BackEnd.maxEventsPerObject = value
+                }
+            }
+
             // Certificate list view
             Column {
                 width: parent.width - content.leftPadding - content.rightPadding

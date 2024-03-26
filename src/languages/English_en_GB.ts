@@ -454,5 +454,9 @@
         <source>Enter new dashboard name</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Max. events per object</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 </TS>

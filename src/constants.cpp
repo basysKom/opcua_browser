@@ -37,6 +37,7 @@ const QString SettingsKey::EventFilters = QStringLiteral("eventFilters");
 const QString SettingsKey::RecentConnections = QStringLiteral("recentConnections");
 const QString SettingsKey::Url = QStringLiteral("url");
 const QString SettingsKey::Language = QStringLiteral("language");
+const QString SettingsKey::MaxEventPerObject = QStringLiteral("maxEventsPerObject");
 
 const QString CertInfo::CommonName = QStringLiteral("OpcUaBrowser");
 const QString CertInfo::CountryName = QStringLiteral("DE");

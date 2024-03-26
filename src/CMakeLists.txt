@@ -46,6 +46,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/controls/StyledMenuItem.qml
               qml/controls/StyledMenuSeparator.qml
               qml/controls/StyledScrollBar.qml
+              qml/controls/StyledSpinBox.qml
               qml/controls/StyledTabButton.qml
               qml/controls/StyledTextField.qml
               qml/style/Style.qml
@@ -73,6 +74,7 @@ qt_add_qml_module(appOPC_UA_Browser
               qml/style/ThemeScrollBar.qml
               qml/style/ThemeSettingsView.qml
               qml/style/ThemeSideMenu.qml
+              qml/style/ThemeSpinBox.qml
               qml/style/ThemeTabButton.qml
               qml/style/ThemeTextField.qml
     SOURCES attribute.h attribute.cpp
@@ -128,6 +130,7 @@ qt_add_resources(appOPC_UA_Browser "icons"
           icons/menu.svg
           icons/plus.svg
           icons/refresh.svg
+          icons/minus.svg
           icons/save.svg
           icons/settings.svg
           languages/English.png

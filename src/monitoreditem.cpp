@@ -9,6 +9,8 @@
 #include <QOpcUaNode>
 #include <QOpcUaQualifiedName>
 
+#include "backend.h"
+#include "constants.h"
 #include "monitoreditem.h"
 #include "opcuahelper.h"
 
@@ -145,8 +147,13 @@ void MonitoredItem::handleEvent(const QVariantList &eventFields)
     }
 
     mLastEvents.push_front(eventStrings);
-    if (mLastEvents.length() > 25)
-        mLastEvents.pop_back();
+
+    const auto backend = BackEnd::getBackEndForNode(mOpcNode.get());
+    const auto maxEvents =
+            backend ? backend->maxEventsPerObject() : Constants::Defaults::MaxEventsPerObject;
+
+    if (mLastEvents.length() > maxEvents)
+        mLastEvents.resize(maxEvents);
 
     emit lastEventsChanged();
 }

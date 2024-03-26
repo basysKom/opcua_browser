@@ -454,5 +454,9 @@
         <source>Enter new dashboard name</source>
         <translation>Neuen Dashboardnamen eingeben</translation>
     </message>
+    <message>
+        <source>Max. events per object</source>
+        <translation>Max. Events pro Objekt</translation>
+    </message>
 </context>
 </TS>

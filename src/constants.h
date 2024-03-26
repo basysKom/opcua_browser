@@ -48,6 +48,7 @@ public:
     const static QString RecentConnections;
     const static QString Url;
     const static QString Language;
+    const static QString MaxEventPerObject;
 };
 
 class CertInfo
@@ -67,6 +68,12 @@ class NamespaceUri
 public:
     const static QString Woodworking;
     const static QString Machinery;
+};
+
+class Defaults
+{
+public:
+    const static int MaxEventsPerObject = 25;
 };
 } // namespace Constants
 
