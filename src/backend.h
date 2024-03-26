@@ -143,6 +143,9 @@ public:
     Q_PROPERTY(QVector<CompanionSpecDevice> companionSpecDevices READ companionSpecDevices NOTIFY
                        companionSpecDevicesChanged FINAL)
 
+    Q_PROPERTY(int maxEventsPerObject READ maxEventsPerObject WRITE setMaxEventsPerObject NOTIFY
+                       maxEventsPerObjectChanged FINAL)
+
     explicit BackEnd(QObject *parent = nullptr);
     ~BackEnd();
 
@@ -178,6 +181,7 @@ public:
     int instantiateCompanionSpecEventDashboard(const QString &name);
 
     static OpcUaModel *getOpcUaModelForNode(QOpcUaNode *node);
+    static BackEnd *getBackEndForNode(QOpcUaNode *node);
     QOpcUaClient *getOpcUaClient();
 
     void addDefaultVariableDashboard(const QString &name);
@@ -219,6 +223,9 @@ public:
 
     Q_INVOKABLE void removeRecentConnection(const QString &name);
 
+    int maxEventsPerObject() const;
+    void setMaxEventsPerObject(int newMaxEventsPerObject);
+
 signals:
     void recentConnectionsChanged();
     void serverListChanged();
@@ -237,6 +244,8 @@ signals:
     void certificateInfoChanged();
 
     void companionSpecDevicesChanged();
+
+    void maxEventsPerObjectChanged();
 
 private slots:
     void findServersComplete(const QList<QOpcUaApplicationDescription> &servers,
@@ -314,6 +323,8 @@ private:
     QHash<QString, QList<DefaultEventDashboardNode>> mCompanionSpecEventDashboards;
 
     QStringList mSelectedEventSourceNodes;
+
+    int mMaxEventsPerObject = 0;
 };
 
 #endif // BACKEND_H

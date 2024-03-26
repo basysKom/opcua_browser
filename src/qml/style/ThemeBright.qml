@@ -99,6 +99,16 @@ ThemeDefault {
         background: mediumLight
     }
 
+    spinBox {
+        textColor: anthrazite
+
+        buttonBackground: foreground
+        buttonBackgroundSelected: mediumLight
+
+        textBackground: foreground
+        textBackgroundSelected: mediumLight
+    }
+
     textField {
         captionTextColor: anthrazite
         background: foreground

@@ -31,6 +31,7 @@ ThemeDefault {
     listView: currentTheme.listView
     button: currentTheme.button
     comboBox: currentTheme.comboBox
+    spinBox: currentTheme.spinBox
     textField: currentTheme.textField
     tabButton: currentTheme.tabButton
     iconTabButton: currentTheme.iconTabButton

@@ -28,4 +28,5 @@ StyleDefinitions {
     property ThemeIconTabButton iconTabButton: ThemeIconTabButton {}
     property ThemeScrollBar scrollBar: ThemeScrollBar {}
     property ThemeItemSelector itemSelector: ThemeItemSelector {}
+    property ThemeSpinBox spinBox: ThemeSpinBox {}
 }
