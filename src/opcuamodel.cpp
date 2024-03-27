@@ -17,7 +17,10 @@
 #include "opcuahelper.h"
 
 #ifdef HAS_GENERIC_STRUCT_HANDLER
+#  include <QOpcUaBinaryDataEncoding>
 #  include <QOpcUaGenericStructValue>
+#  include <QOpcUaStructureDefinition>
+#  include <QOpcUaStructureField>
 #endif
 
 Q_LOGGING_CATEGORY(opcuaModelLog, "opcua_browser.model");
@@ -729,9 +732,16 @@ void OpcUaModel::browseEnumStrings(QOpcUaNode *node)
                                         } else if (data.first()
                                                            .canConvert<QOpcUaExtensionObject>()) {
 #ifdef HAS_GENERIC_STRUCT_HANDLER
-                                            if (mGenericStructHandler) {
-                                                QHash<qint32, QString> entries;
+                                            QHash<qint32, QString> entries;
 
+                                            if (mGenericStructHandler
+                                                && !mGenericStructHandler
+                                                            ->structureDefinitionForBinaryEncodingId(
+                                                                    data.first()
+                                                                            .value<QOpcUaExtensionObject>()
+                                                                            .encodingTypeId())
+                                                            .fields()
+                                                            .isEmpty()) {
                                                 const auto displayNameKey =
                                                         QStringLiteral("DisplayName");
                                                 const auto valueKey = QStringLiteral("Value");
@@ -763,10 +773,39 @@ void OpcUaModel::browseEnumStrings(QOpcUaNode *node)
                                                             entries[value] = name;
                                                     }
                                                 }
+                                            } else {
+                                                for (const auto &entry : data) {
+                                                    const auto ext =
+                                                            entry.value<QOpcUaExtensionObject>();
+                                                    if (ext.encoding()
+                                                                != QOpcUaExtensionObject::Encoding::
+                                                                        ByteString
+                                                        || ext.encodingTypeId()
+                                                                != QOpcUa::namespace0Id(
+                                                                        QOpcUa::NodeIds::Namespace0::
+                                                                                EnumValueType_Encoding_DefaultBinary))
+                                                        continue;
 
-                                                if (!entries.isEmpty())
-                                                    mEnumStringsList[parentNodeId] = entries;
+                                                    auto data = ext.encodedBody();
+                                                    QOpcUaBinaryDataEncoding decoder(&data);
+
+                                                    bool success = false;
+                                                    const auto value =
+                                                            decoder.decode<qint64>(success);
+                                                    if (!success)
+                                                        continue;
+                                                    const auto name =
+                                                            decoder.decode<QOpcUaLocalizedText>(
+                                                                    success);
+                                                    if (!success)
+                                                        continue;
+
+                                                    if (!name.text().isEmpty())
+                                                        entries[value] = name.text();
+                                                }
                                             }
+                                            if (!entries.isEmpty())
+                                                mEnumStringsList[parentNodeId] = entries;
 #endif
                                         }
                                     }
