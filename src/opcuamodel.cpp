@@ -114,6 +114,7 @@ void OpcUaModel::setOpcUaClient(QOpcUaClient *client)
     mBrowsedTypes = EBrowseType::None;
     mReferencesList.clear();
     mDataTypesList.clear();
+    mEnumStringsList.clear();
     mOpcUaClient = client;
 
     if (nullptr != mOpcUaClient) {
