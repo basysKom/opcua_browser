@@ -105,11 +105,13 @@ void MonitoredItemModel::addEventItem(QOpcUaNode *node,
     const int pos = mItems.size() - 1;
     MonitoredItem *monitoredItem = new MonitoredItem(node, eventFilter);
     connect(monitoredItem, &MonitoredItem::displayNameChanged, this, [=]() {
+        const auto pos = mItems.indexOf(monitoredItem);
         emit dataChanged(index(pos), index(pos), QList<int>() << DisplayNameRole);
         emit updated();
     });
 
     connect(monitoredItem, &MonitoredItem::lastEventsChanged, this, [=]() {
+        const auto pos = mItems.indexOf(monitoredItem);
         emit dataChanged(index(pos), index(pos), QList<int>() << LastEventsRole);
         emit updated();
     });
