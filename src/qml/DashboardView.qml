@@ -302,7 +302,7 @@ Rectangle {
             Rectangle {
                 id: content
 
-                width: itemWidth * 2 + 10
+                width: flowListView.width - 20
                 implicitHeight: Math.max(80, eventColumn.height)
                 radius: 5
                 color: eventMouseArea.hasError ? view.theme.item.backgroundError : view.theme.item.background
