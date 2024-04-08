@@ -139,9 +139,15 @@ qt_add_resources(appOPC_UA_Browser "icons"
           languages/German.utf8)
 
 qt_add_translations(appOPC_UA_Browser
+          QM_FILES_OUTPUT_VARIABLE APP_QM_FILES
           TS_FILES languages/English_en_GB.ts
                    languages/German_de_DE.ts
           LUPDATE_OPTIONS -locations none)
+
+qt_add_resources(appOPC_UA_Browser "i18n"
+    PREFIX "/i18n"
+    BASE "${CMAKE_CURRENT_BINARY_DIR}"
+    FILES ${APP_QM_FILES})
 
 target_compile_options(appOPC_UA_Browser PRIVATE -Wall -Wextra -Wdeprecated)
 
