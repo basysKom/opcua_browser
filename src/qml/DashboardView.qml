@@ -424,7 +424,7 @@ Rectangle {
 
                                 onClicked: {
                                     fullPopup.name = qsTranslate("Dashboard", "All selected event fields")
-                                    fullPopup.value = modelData
+                                    fullPopup.value = Qt.binding(function() { return modelData })
                                     fullPopup.open()
                                 }
                             }
