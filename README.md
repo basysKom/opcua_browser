@@ -156,13 +156,13 @@ sudo apt-get install docker.io
 
 This build example is written for an APK build for the architecture arm64_v8a with Qt version 6.6.1.
 If you are using a different version, you must change the Qt version for Qt OPC UA in the file getDependencies.sh and the CMAKE_INSTALL_PREFIX in the build example.
-To build an APK for a different architecture, you must change the CMAKE_INSTALL_PREFIX and the OPENSSL_ROOT_DIR in the build example.
-| Architecture  | CMAKE_INSTALL_PREFIX            | OPENSSL_ROOT_DIR                                       |
-| ------------- | ------------------------------- | ------------------------------------------------------ |
-| arm64_v8a     | /opt/Qt/6.6.1/android_arm64_v8a | ${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/   |
-| armeabi_v7a   | /opt/Qt/6.6.1/android_armv7     | ${PWD}/dependencies/android_openssl/ssl_3/armeabi-v7a/ |
-| x86           | /opt/Qt/6.6.1/android_x86       | ${PWD}/dependencies/android_openssl/ssl_3/x86/         |
-| x86_64        | /opt/Qt/6.6.1/android_x86_64    | ${PWD}/dependencies/android_openssl/ssl_3/x86_64/      |
+To build an APK for a different architecture, you must change the CMAKE_INSTALL_PREFIX, the OPENSSL_ROOT_DIR and the BUILD_ARCH enviroment variable in the build example.
+| Architecture  | CMAKE_INSTALL_PREFIX            | OPENSSL_ROOT_DIR                                       | BUILD_ARCH |
+| ------------- | ------------------------------- | ------------------------------------------------------ | ---------- |
+| arm64_v8a     | /opt/Qt/6.6.1/android_arm64_v8a | ${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/   | arm64_v8a  |
+| armeabi_v7a   | /opt/Qt/6.6.1/android_armv7     | ${PWD}/dependencies/android_openssl/ssl_3/armeabi-v7a/ | armv7      |
+| x86           | /opt/Qt/6.6.1/android_x86       | ${PWD}/dependencies/android_openssl/ssl_3/x86/         | x86        |
+| x86_64        | /opt/Qt/6.6.1/android_x86_64    | ${PWD}/dependencies/android_openssl/ssl_3/x86_64/      | x86_64     |
 
 ```
 git clone https://github.com/basysKom/opcua_browser.git
@@ -172,8 +172,12 @@ cd opcua_browser
 sudo docker run -it --rm -v "${PWD}:/home/user/project:ro" -v "${PWD}/../build_opcua_browser:/home/user/build:rw" stateoftheartio/qt6:6.6-android-aqt \
     sh -c 'rm -rf build/* && \
            cd project && \
-           qt-cmake ./dependencies/qtopcua -G Ninja -B ../build/qtopcua -DCMAKE_BUILD_TYPE=Debug -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.6.1/android_arm64_v8a \
-           	-DOPENSSL_INCLUDE_DIR=${PWD}/dependencies/android_openssl/ssl_3/include/ -DOPENSSL_ROOT_DIR=${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/ && \
+           export BUILD_ARCH=arm64_v8a && \
+           qt-cmake ./dependencies/qtopcua -G Ninja -B ../build/qtopcua \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.6.1/android_arm64_v8a \
+            -DOPENSSL_INCLUDE_DIR=${PWD}/dependencies/android_openssl/ssl_3/include/ \
+            -DOPENSSL_ROOT_DIR=${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/ && \
            cmake --build ../build/qtopcua && \
            sudo /opt/Qt/Tools/CMake/bin/cmake --install ../build/qtopcua && \
            rm -rf ../build/qtopcua && \
