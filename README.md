@@ -54,7 +54,7 @@ The application has been tested on:
 
 ## Dependencies
 
-- Qt 6.5+
+- Qt 6.5+ (Qt 6.7+ is recommended for full custom struct and enum support)
 - Qt OPC UA (available at https://doc.qt.io/qt-6/qtopcua-index.html)
 - OpenSSL >= 3.0
 
@@ -68,7 +68,7 @@ The application has been tested on:
 ```
 git clone https://code.qt.io/qt/qtopcua.git
 cd qtopcua
-git checkout 6.6.1
+git checkout 6.7.2
 mkdir build && cd build
 cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug ..
 ```
@@ -78,11 +78,11 @@ Check whether "Open62541 security support" and "Support for global discovery ser
 -- Configure summary:
 Qt Opcua:
   Open62541 .............................. yes
-  Unified Automation C++ SDK ............. no
   Support for namespace 0 NodeId names ... yes
-  Namespace 0 NodeIds generator .......... no
+  Internal code generator ................ no
   Open62541 security support ............. yes
   Support for global discovery server .... yes
+  Data type code generator ............... no
 ```
 Build OPC UA Plugin
 ```
@@ -109,7 +109,7 @@ ninja
 ```
 git clone https://code.qt.io/qt/qtopcua.git
 cd qtopcua
-git checkout 6.6.1
+git checkout 6.7.2
 mkdir build && cd build
 cmake -G "MinGW Makefiles" -DCMAKE_BUILD_TYPE=Debug -DOPENSSL_ROOT_DIR=C:\Qt\Tools\OpenSSLv3\Win_x64 ..
 ```
@@ -119,11 +119,11 @@ Check whether "Open62541 security support" and "Support for global discovery ser
 -- Configure summary:
 Qt Opcua:
   Open62541 .............................. yes
-  Unified Automation C++ SDK ............. no
   Support for namespace 0 NodeId names ... yes
-  Namespace 0 NodeIds generator .......... no
+  Internal code generator ................ no
   Open62541 security support ............. yes
   Support for global discovery server .... yes
+  Data type code generator ............... no
 ```
 Build OPC UA Plugin
 ```
@@ -154,30 +154,31 @@ To use Docker, the Docker library must be installed.
 sudo apt-get install docker.io
 ```
 
-This build example is written for an APK build for the architecture arm64_v8a with Qt version 6.6.1.
+This build example is written for an APK build for the architecture arm64_v8a with Qt version 6.7.1.
 If you are using a different version, you must change the Qt version for Qt OPC UA in the file getDependencies.sh and the CMAKE_INSTALL_PREFIX in the build example.
 To build an APK for a different architecture, you must change the CMAKE_INSTALL_PREFIX, the OPENSSL_ROOT_DIR and the BUILD_ARCH enviroment variable in the build example.
 | Architecture  | CMAKE_INSTALL_PREFIX            | OPENSSL_ROOT_DIR                                       | BUILD_ARCH |
 | ------------- | ------------------------------- | ------------------------------------------------------ | ---------- |
-| arm64_v8a     | /opt/Qt/6.6.1/android_arm64_v8a | ${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/   | arm64_v8a  |
-| armeabi_v7a   | /opt/Qt/6.6.1/android_armv7     | ${PWD}/dependencies/android_openssl/ssl_3/armeabi-v7a/ | armv7      |
-| x86           | /opt/Qt/6.6.1/android_x86       | ${PWD}/dependencies/android_openssl/ssl_3/x86/         | x86        |
-| x86_64        | /opt/Qt/6.6.1/android_x86_64    | ${PWD}/dependencies/android_openssl/ssl_3/x86_64/      | x86_64     |
+| arm64_v8a     | /opt/Qt/6.7.1/android_arm64_v8a | ${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/   | arm64_v8a  |
+| armeabi_v7a   | /opt/Qt/6.7.1/android_armv7     | ${PWD}/dependencies/android_openssl/ssl_3/armeabi-v7a/ | armv7      |
+| x86           | /opt/Qt/6.7.1/android_x86       | ${PWD}/dependencies/android_openssl/ssl_3/x86/         | x86        |
+| x86_64        | /opt/Qt/6.7.1/android_x86_64    | ${PWD}/dependencies/android_openssl/ssl_3/x86_64/      | x86_64     |
 
 ```
 git clone https://github.com/basysKom/opcua_browser.git
 mkdir build_opcua_browser
 cd opcua_browser
 ./get_dependencies.sh
-sudo docker run -it --rm -v "${PWD}:/home/user/project:ro" -v "${PWD}/../build_opcua_browser:/home/user/build:rw" stateoftheartio/qt6:6.6-android-aqt \
+sudo docker run -it --rm -v "${PWD}:/home/user/project:ro" -v "${PWD}/../build_opcua_browser:/home/user/build:rw" stateoftheartio/qt6:6.7-android-aqt \
     sh -c 'rm -rf build/* && \
            cd project && \
            export BUILD_ARCH=arm64_v8a && \
            qt-cmake ./dependencies/qtopcua -G Ninja -B ../build/qtopcua \
             -DCMAKE_BUILD_TYPE=Debug \
-            -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.6.1/android_arm64_v8a \
+            -DCMAKE_INSTALL_PREFIX=/opt/Qt/6.7.1/android_arm64_v8a \
             -DOPENSSL_INCLUDE_DIR=${PWD}/dependencies/android_openssl/ssl_3/include/ \
-            -DOPENSSL_ROOT_DIR=${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/ && \
+            -DOPENSSL_ROOT_DIR=${PWD}/dependencies/android_openssl/ssl_3/arm64-v8a/ \
+            -DFEATURE_datatypecodegenerator=OFF && \
            cmake --build ../build/qtopcua && \
            sudo /opt/Qt/Tools/CMake/bin/cmake --install ../build/qtopcua && \
            rm -rf ../build/qtopcua && \
