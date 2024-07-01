@@ -9,8 +9,8 @@ on:
       - '!main'
 
 env:
-  QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DCMAKE_BUILD_TYPE=Release"
-  QT_PATH: "/opt/Qt/6.6.1"
+  QTOPCUA_BUILD_ARGS: "-DFEATURE_open62541_security:BOOL=ON -DFEATURE_gds:BOOL=ON -DCMAKE_BUILD_TYPE=Release -DFEATURE_datatypecodegenerator=OFF"
+  QT_PATH: "/opt/Qt/6.7.1"
   SSL_PATH: "dependencies/android_openssl/ssl_3"
   ANDROID_VERSION_CODE: ${{github.run_number}}
   ANDROID_VERSION_NAME: "1.0.0"
@@ -19,7 +19,7 @@ jobs:
   android-build:
     runs-on: ubuntu-latest
     container:
-      image: stateoftheartio/qt6:6.6-android-aqt
+      image: stateoftheartio/qt6:6.7-android-aqt
       options: --user root
     timeout-minutes: 60
 
@@ -107,7 +107,7 @@ jobs:
         alias: ${{ secrets.KEY_ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
       env:
-        BUILD_TOOLS_VERSION: "33.0.0"
+        BUILD_TOOLS_VERSION: "34.0.0"
     - name: Sign app APK
       uses: r0adkll/sign-android-release@v1
       id: sign_apk
@@ -117,7 +117,7 @@ jobs:
         alias: ${{ secrets.KEY_ALIAS }}
         keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
       env:
-        BUILD_TOOLS_VERSION: "33.0.0"
+        BUILD_TOOLS_VERSION: "34.0.0"
     - name: Upload APK
       uses: actions/upload-artifact@v3
       with:
