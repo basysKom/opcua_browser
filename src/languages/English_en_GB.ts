@@ -146,6 +146,14 @@
         <source>Certificates</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Own certificate</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Trusted certificates</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>Connection</name>

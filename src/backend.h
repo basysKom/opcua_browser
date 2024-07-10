@@ -125,6 +125,8 @@ public:
     Q_PROPERTY(QVector<QString> endpointList READ endpointList NOTIFY endpointListChanged FINAL)
     Q_PROPERTY(CertificateItemModel *certificateItemModel READ certificateItemModel NOTIFY
                        certificateItemModelChanged FINAL)
+    Q_PROPERTY(CertificateItemModel *ownCertificateItemModel READ ownCertificateItemModel CONSTANT
+                       FINAL)
     Q_PROPERTY(LoggingViewFilterModel *loggingViewModel READ loggingViewModel NOTIFY
                        loggingViewModelChanged FINAL)
     Q_PROPERTY(OpcUaModel *opcUaModel READ opcUaModel NOTIFY opcUaModelChanged FINAL)
@@ -156,6 +158,7 @@ public:
     const QVector<QString> &serverList() const noexcept;
     QVector<QString> endpointList() const;
     CertificateItemModel *certificateItemModel() const noexcept;
+    CertificateItemModel *ownCertificateItemModel() const noexcept;
     LoggingViewFilterModel *loggingViewModel() const noexcept;
     OpcUaModel *opcUaModel() const noexcept;
     DashboardItemModel *dashboardItemModel() const noexcept;
@@ -223,6 +226,8 @@ public:
 
     Q_INVOKABLE void removeRecentConnection(const QString &name);
 
+    Q_INVOKABLE void regenerateOwnCertificate();
+
     int maxEventsPerObject() const;
     void setMaxEventsPerObject(int newMaxEventsPerObject);
 
@@ -283,6 +288,7 @@ private:
                                      std::shared_ptr<QSet<QString>> visitedNodes = nullptr);
 
     CertificateItemModel *mCertificateItemModel;
+    CertificateItemModel *mOwnCertificateItemModel;
     LoggingViewModel *mLoggingViewModel;
 
     OpcUaModel *mOpcUaModel;

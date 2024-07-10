@@ -545,6 +545,162 @@ Rectangle {
                     text: qsTranslate("Certificate", "Certificates")
                 }
 
+                Text {
+                    color: view.theme.textColor
+                    font {
+                        pointSize: 12
+                        bold: true
+                    }
+                    text: qsTranslate("Certificate", "Own certificate")
+                }
+
+                Rectangle {
+                    color: view.theme.backgroundListView
+                    radius: 5
+
+                    width: parent.width
+                    height: childrenRect.height
+
+                    ListView {
+                        id: ownCert
+
+                        width: parent.width
+                        height: 265
+
+                        clip: true
+
+                        model: BackEnd.ownCertificateItemModel
+                        boundsBehavior: Flickable.StopAtBounds
+                        boundsMovement: Flickable.StopAtBounds
+
+                        ScrollBar.vertical: StyledScrollBar {
+                            policy: ScrollBar.AsNeeded
+                        }
+
+                        delegate: Rectangle {
+                            id: ownCertListViewDelegate
+
+                            component OwnSubitemText : Text {
+                                Layout.leftMargin: 5
+                                Layout.rightMargin: 5
+                                Layout.fillWidth: true
+                                verticalAlignment: Qt.AlignVCenter
+                                color: view.theme.textColor
+                            }
+
+                            component OwnSubitemTitle : OwnSubitemText {
+                                elide: Qt.ElideRight
+                                font {
+                                    pointSize: 11
+                                    bold: true
+                                }
+                            }
+
+                            required property int index
+                            required property string issuerDisplayName
+                            required property date effectiveDate
+                            required property string fingerprint
+                            required property date expiryDate
+                            required property string commonName
+                            required property string serialNumber
+
+                            radius: 5
+                            width: ownCert.width
+                            implicitHeight: delegateLayout.height
+                            color: view.theme.backgroundSelected
+                            clip: true
+
+                            ColumnLayout {
+                                id: delegateLayout
+
+                                width: parent.width
+                                spacing: 0
+
+                                RowLayout {
+                                    Layout.fillWidth: true
+                                    Layout.preferredHeight: 36
+
+                                    Text {
+                                        Layout.fillWidth: true
+                                        Layout.leftMargin: 5
+                                        font.pointSize: 14
+                                        text: ownCertListViewDelegate.issuerDisplayName
+                                        color: view.theme.textColor
+                                        elide: Text.ElideRight
+                                    }
+
+                                    IconImage {
+                                        Layout.alignment: Qt.AlignVCenter
+                                        Layout.rightMargin: 10
+                                        sourceSize.width: 24
+                                        sourceSize.height: 24
+                                        source: "qrc:/icons/refresh.svg"
+                                        color: view.theme.textColor
+
+                                        MouseArea {
+                                            anchors.fill: parent
+                                            cursorShape: Qt.PointingHandCursor
+                                            onClicked: BackEnd.regenerateOwnCertificate()
+                                        }
+                                    }
+                                }
+
+                                OwnSubitemTitle {
+                                    text: qsTranslate("Certificate", "Valid from")
+                                }
+
+                                OwnSubitemText {
+                                    text: ownCertListViewDelegate.effectiveDate.toLocaleString(Qt.locale(), qsTranslate("General", "MM/dd/yyyy"))
+                                }
+
+                                OwnSubitemTitle {
+                                    text: qsTranslate("Certificate", "Valid to")
+                                }
+
+                                OwnSubitemText {
+                                    text: ownCertListViewDelegate.expiryDate.toLocaleString(Qt.locale(), qsTranslate("General", "MM/dd/yyyy"))
+                                }
+
+                                OwnSubitemTitle {
+                                    text: qsTranslate("Certificate", "Fingerprint (SHA-256)")
+                                }
+
+                                OwnSubitemText {
+                                    text: ownCertListViewDelegate.fingerprint
+                                    wrapMode: Text.Wrap
+                                }
+
+                                OwnSubitemTitle {
+                                    text: qsTranslate("Certificate", "Common name")
+                                }
+
+                                OwnSubitemText {
+                                    text: ownCertListViewDelegate.commonName
+                                }
+
+                                OwnSubitemTitle {
+                                    text: qsTranslate("Certificate", "Serial number")
+                                }
+
+                                OwnSubitemText {
+                                    Layout.bottomMargin: 5
+                                    text: ownCertListViewDelegate.serialNumber
+                                    wrapMode: Text.Wrap
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Text {
+                    color: view.theme.textColor
+                    font {
+                        pointSize: 12
+                        bold: true
+                    }
+                    text: qsTranslate("Certificate", "Trusted certificates")
+                }
+
                 Rectangle {
                     color: view.theme.backgroundListView
                     radius: 5

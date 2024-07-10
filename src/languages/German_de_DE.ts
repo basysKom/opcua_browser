@@ -146,6 +146,14 @@
         <source>Certificates</source>
         <translation>Zertifikate</translation>
     </message>
+    <message>
+        <source>Own certificate</source>
+        <translation>Eigenes Zertifikat</translation>
+    </message>
+    <message>
+        <source>Trusted certificates</source>
+        <translation>Vertrauenswürdige Zertifikate</translation>
+    </message>
 </context>
 <context>
     <name>Connection</name>
