@@ -64,6 +64,8 @@ static void removeItemFromStringListModel(QStringListModel *model, const QString
 BackEnd::BackEnd(QObject *parent)
     : QObject{ parent },
       mCertificateItemModel(new CertificateItemModel(defaultTrustedCertsPath(), this)),
+      mOwnCertificateItemModel(
+              new CertificateItemModel(defaultPkiPath() % QStringLiteral("/own/certs/"), this)),
       mLoggingViewModel(new LoggingViewModel(this)),
       mOpcUaModel(new OpcUaModel(this)),
       mOpcUaProvider(new QOpcUaProvider(this)),
@@ -163,6 +165,11 @@ QVector<QString> BackEnd::endpointList() const
 CertificateItemModel *BackEnd::certificateItemModel() const noexcept
 {
     return mCertificateItemModel;
+}
+
+CertificateItemModel *BackEnd::ownCertificateItemModel() const noexcept
+{
+    return mOwnCertificateItemModel;
 }
 
 LoggingViewFilterModel *BackEnd::loggingViewModel() const noexcept
@@ -558,7 +565,6 @@ int BackEnd::instantiateDefaultEventDashboard(const QString &name)
 
 void BackEnd::renameSavedVariableDashboard(const QString &previousName, const QString &newName)
 {
-
     QSettings settings;
     const QString settingsGroupName =
             Constants::SettingsKey::DashboardsVariables % QChar::fromLatin1('/') % previousName;
@@ -996,6 +1002,12 @@ void BackEnd::removeRecentConnection(const QString &name)
         emit recentConnectionsChanged();
         syncRecentConnectionsToSettings();
     }
+}
+
+void BackEnd::regenerateOwnCertificate()
+{
+    X509Certificate::createCertificate(defaultPkiPath());
+    mOwnCertificateItemModel->updateCertificateList();
 }
 
 void BackEnd::saveLastDashboards()
