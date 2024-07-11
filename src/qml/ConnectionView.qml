@@ -19,6 +19,12 @@ Item {
     property alias selectedServerUrl: serverListBox.currentText
     property alias selectedEndpointUrl: endpointListBox.currentEndpointUrl
 
+    function clearLoginMethod() {
+        authenticationListBox.currentIndex = 0
+        userName.text = ""
+        password.text = ""
+    }
+
     ColumnLayout {
         id: layout
 
@@ -44,6 +50,9 @@ Item {
 
                 captionText: qsTranslate("Connection", "Recent connections")
                 model: BackEnd.recentConnections
+
+                // Reset the authentication when when changing servers
+                _comboBox.onActivated: clearLoginMethod()
             }
 
             StyledButton {
@@ -55,6 +64,7 @@ Item {
                     BackEnd.findServers(view.selectedHostUrl)
                 }
             }
+
         }
 
         ColumnLayout {
@@ -84,6 +94,7 @@ Item {
                 onClicked: {
                     view.selectedHostUrl = hostUrl.prefixText + hostUrl.text
                     BackEnd.findServers(view.selectedHostUrl)
+                    clearLoginMethod()
                 }
             }
 
