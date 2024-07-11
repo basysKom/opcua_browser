@@ -302,6 +302,7 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
 
     // Automatically add server certificate to the trusted certificates
     const QByteArray ba = mEndpointList[endpointIndex].serverCertificate();
+
     // Use hash as file name to recognise whether the server certificate is already saved
     const QString hash =
             QString::fromUtf8(QCryptographicHash::hash(ba, QCryptographicHash::Md5).toHex());
@@ -310,32 +311,34 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
         const QString filename = trustedCertsPath + QStringLiteral("%1.der").arg(hash);
         if (!QFile::exists(filename)) {
             const QSslCertificate ssl(ba, QSsl::Der);
-            mCertificateInfo.mFilename = filename;
-            mCertificateInfo.mServerCertificate = ba;
-            mCertificateInfo.mExpiryDate = ssl.expiryDate();
-            mCertificateInfo.mEffectiveDate = ssl.effectiveDate();
-            mCertificateInfo.mIssuerCommonName =
-                    ssl.issuerInfo(QSslCertificate::CommonName).join(QChar::fromLatin1(','));
-            mCertificateInfo.mIssuerOrganization =
-                    ssl.issuerInfo(QSslCertificate::Organization).join(QChar::fromLatin1(','));
-            mCertificateInfo.mIssuerOrganizationUnit =
-                    ssl.issuerInfo(QSslCertificate::OrganizationalUnitName)
-                            .join(QChar::fromLatin1(','));
-            mCertificateInfo.mIssuerLocality =
-                    ssl.issuerInfo(QSslCertificate::LocalityName).join(QChar::fromLatin1(','));
-            mCertificateInfo.mIssuerState = ssl.issuerInfo(QSslCertificate::StateOrProvinceName)
-                                                    .join(QChar::fromLatin1(','));
-            mCertificateInfo.mIssuerCountry =
-                    ssl.issuerInfo(QSslCertificate::CountryName).join(QChar::fromLatin1(','));
-            mCertificateInfo.mFingerprint =
-                    QString::fromUtf8(ssl.digest(QCryptographicHash::Sha256).toHex());
-            mCertificateInfo.mSerialNumber =
-                    QString::fromUtf8(ssl.serialNumber()).remove(QChar::fromLatin1(':'));
-            emit certificateInfoChanged();
+            if (!ssl.isNull()) {
+                mCertificateInfo.mFilename = filename;
+                mCertificateInfo.mServerCertificate = ba;
+                mCertificateInfo.mExpiryDate = ssl.expiryDate();
+                mCertificateInfo.mEffectiveDate = ssl.effectiveDate();
+                mCertificateInfo.mIssuerCommonName =
+                        ssl.issuerInfo(QSslCertificate::CommonName).join(QChar::fromLatin1(','));
+                mCertificateInfo.mIssuerOrganization =
+                        ssl.issuerInfo(QSslCertificate::Organization).join(QChar::fromLatin1(','));
+                mCertificateInfo.mIssuerOrganizationUnit =
+                        ssl.issuerInfo(QSslCertificate::OrganizationalUnitName)
+                                .join(QChar::fromLatin1(','));
+                mCertificateInfo.mIssuerLocality =
+                        ssl.issuerInfo(QSslCertificate::LocalityName).join(QChar::fromLatin1(','));
+                mCertificateInfo.mIssuerState = ssl.issuerInfo(QSslCertificate::StateOrProvinceName)
+                                                        .join(QChar::fromLatin1(','));
+                mCertificateInfo.mIssuerCountry =
+                        ssl.issuerInfo(QSslCertificate::CountryName).join(QChar::fromLatin1(','));
+                mCertificateInfo.mFingerprint =
+                        QString::fromUtf8(ssl.digest(QCryptographicHash::Sha256).toHex());
+                mCertificateInfo.mSerialNumber =
+                        QString::fromUtf8(ssl.serialNumber()).remove(QChar::fromLatin1(':'));
+                emit certificateInfoChanged();
 
-            mMessageType = MessageType::TrustCertificate;
-            emit messageTypeChanged();
-            return;
+                mMessageType = MessageType::TrustCertificate;
+                emit messageTypeChanged();
+                return;
+            }
         }
     }
 
