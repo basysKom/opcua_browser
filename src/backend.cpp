@@ -901,8 +901,12 @@ void BackEnd::setupPkiConfiguration()
 
     const bool createCertificate =
             !QFile::exists(certFileName) || !QFile::exists(privateKeyFileName);
-    if (createCertificate && !X509Certificate::createCertificate(pkiPath))
-        qCFatal(backendLog, "Could not set up directory %s!", qUtf8Printable(pkiPath));
+    if (createCertificate) {
+        if (!X509Certificate::createCertificate(pkiPath))
+            qCFatal(backendLog, "Could not set up directory %s!", qUtf8Printable(pkiPath));
+        else
+            mOwnCertificateItemModel->updateCertificateList();
+    }
 
     mPkiConfig.setClientCertificateFile(certFileName);
     mPkiConfig.setPrivateKeyFile(privateKeyFileName);
