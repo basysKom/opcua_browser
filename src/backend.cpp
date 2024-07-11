@@ -819,13 +819,17 @@ void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)
 void BackEnd::clientError(QOpcUaClient::ClientError error)
 {
     qCDebug(backendLog) << "client error:" << error;
-    setState(tr("client error: %1").arg(error));
+    const auto errorString =
+            QString::fromUtf8(QMetaEnum::fromType<QOpcUaClient::ClientState>().valueToKey(error));
+    setState(tr("client error: %1").arg(errorString));
 }
 
 void BackEnd::clientState(QOpcUaClient::ClientState state)
 {
     qCDebug(backendLog) << "client state:" << state;
-    setState(tr("client state changed: %1").arg(state));
+    const auto stateString =
+            QString::fromUtf8(QMetaEnum::fromType<QOpcUaClient::ClientState>().valueToKey(state));
+    setState(tr("client state changed: %1").arg(stateString));
 }
 
 void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
