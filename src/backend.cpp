@@ -68,12 +68,12 @@ BackEnd::BackEnd(QObject *parent)
               new CertificateItemModel(defaultPkiPath() % QStringLiteral("/own/certs/"), this)),
       mLoggingViewModel(new LoggingViewModel(this)),
       mOpcUaModel(new OpcUaModel(this)),
-      mOpcUaProvider(new QOpcUaProvider(this)),
       mDashboardItemModel(new DashboardItemModel(this)),
       mDefaultVariableDashboardsModel(new QStringListModel(this)),
       mDefaultEventDashboardsModel(new QStringListModel(this)),
       mSavedVariableDashboardsModel(new QStringListModel(this)),
-      mSavedEventDashboardsModel(new QStringListModel(this))
+      mSavedEventDashboardsModel(new QStringListModel(this)),
+      mOpcUaProvider(new QOpcUaProvider(this))
 {
     Logging::setLoggingViewModel(mLoggingViewModel);
 
@@ -112,6 +112,9 @@ BackEnd::~BackEnd()
     if (isConnected()) {
         saveLastDashboards();
     }
+
+    if (mOpcUaClient)
+        mBackendMapping.remove(mOpcUaClient.get());
 }
 
 bool BackEnd::isConnected() const
@@ -248,7 +251,7 @@ BackEnd *BackEnd::getBackEndForNode(QOpcUaNode *node)
 
 QOpcUaClient *BackEnd::getOpcUaClient()
 {
-    return mOpcUaClient;
+    return mOpcUaClient.get();
 }
 
 void BackEnd::addDefaultVariableDashboard(const QString &name)
@@ -390,6 +393,10 @@ void BackEnd::connectToEndpoint()
         QOpcUaAuthenticationInformation authInfo;
         authInfo.setUsernameAuthentication(mConnectionConfiguration.mUsername,
                                            mConnectionConfiguration.mPassword);
+        mOpcUaClient->setAuthenticationInformation(authInfo);
+    } else {
+        QOpcUaAuthenticationInformation authInfo;
+        authInfo.setAnonymousAuthentication();
         mOpcUaClient->setAuthenticationInformation(authInfo);
     }
 
@@ -781,7 +788,7 @@ void BackEnd::clientConnected()
     qCDebug(backendLog) << "client connected";
     setState(tr("client connected"));
 
-    connect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this,
+    connect(mOpcUaClient.get(), &QOpcUaClient::namespaceArrayUpdated, this,
             &BackEnd::namespacesArrayUpdated);
     mOpcUaClient->updateNamespaceArray();
 }
@@ -793,10 +800,6 @@ void BackEnd::clientDisconnected()
 
     saveLastDashboards();
     mDashboardItemModel->clearItems();
-
-    mOpcUaClient->deleteLater();
-    mBackendMapping.remove(mOpcUaClient);
-    mOpcUaClient = nullptr;
     mOpcUaModel->setOpcUaClient(nullptr);
 }
 
@@ -810,10 +813,10 @@ void BackEnd::namespacesArrayUpdated(const QStringList &namespaceArray)
     findCompanionSpecObjects();
 
     qCDebug(backendLog) << "namespace array updated" << namespaceArray;
-    disconnect(mOpcUaClient, &QOpcUaClient::namespaceArrayUpdated, this,
+    disconnect(mOpcUaClient.get(), &QOpcUaClient::namespaceArrayUpdated, this,
                &BackEnd::namespacesArrayUpdated);
 
-    mOpcUaModel->setOpcUaClient(mOpcUaClient);
+    mOpcUaModel->setOpcUaClient(mOpcUaClient.get());
 }
 
 void BackEnd::clientError(QOpcUaClient::ClientError error)
@@ -852,7 +855,7 @@ void BackEnd::clientConnectError(QOpcUaErrorState *errorState)
 void BackEnd::createClient()
 {
     if (mOpcUaClient == nullptr) {
-        mOpcUaClient = mOpcUaProvider->createClient(QStringLiteral("open62541"));
+        mOpcUaClient.reset(mOpcUaProvider->createClient(QStringLiteral("open62541")));
         if (!mOpcUaClient) {
             const QString message(tr("A possible cause could be that the backend "
                                      "could not be loaded as a plugin."));
@@ -860,10 +863,12 @@ void BackEnd::createClient()
             return;
         }
 
-        mBackendMapping.insert(mOpcUaClient, this);
+        mBackendMapping.insert(mOpcUaClient.get(), this);
 
-        connect(mOpcUaClient, &QOpcUaClient::stateChanged, this, &BackEnd::connectionStateChanged);
-        connect(mOpcUaClient, &QOpcUaClient::connectError, this, &BackEnd::clientConnectError);
+        connect(mOpcUaClient.get(), &QOpcUaClient::stateChanged, this,
+                &BackEnd::connectionStateChanged);
+        connect(mOpcUaClient.get(), &QOpcUaClient::connectError, this,
+                &BackEnd::clientConnectError);
 
         mOpcUaClient->setApplicationIdentity(mIdentity);
         mOpcUaClient->setPkiConfiguration(mPkiConfig);
@@ -875,13 +880,14 @@ void BackEnd::createClient()
             mOpcUaClient->setAuthenticationInformation(authInfo);
         }
 
-        connect(mOpcUaClient, &QOpcUaClient::connected, this, &BackEnd::clientConnected);
-        connect(mOpcUaClient, &QOpcUaClient::disconnected, this, &BackEnd::clientDisconnected);
-        connect(mOpcUaClient, &QOpcUaClient::errorChanged, this, &BackEnd::clientError);
-        connect(mOpcUaClient, &QOpcUaClient::stateChanged, this, &BackEnd::clientState);
-        connect(mOpcUaClient, &QOpcUaClient::endpointsRequestFinished, this,
+        connect(mOpcUaClient.get(), &QOpcUaClient::connected, this, &BackEnd::clientConnected);
+        connect(mOpcUaClient.get(), &QOpcUaClient::disconnected, this,
+                &BackEnd::clientDisconnected);
+        connect(mOpcUaClient.get(), &QOpcUaClient::errorChanged, this, &BackEnd::clientError);
+        connect(mOpcUaClient.get(), &QOpcUaClient::stateChanged, this, &BackEnd::clientState);
+        connect(mOpcUaClient.get(), &QOpcUaClient::endpointsRequestFinished, this,
                 &BackEnd::getEndpointsComplete);
-        connect(mOpcUaClient, &QOpcUaClient::findServersFinished, this,
+        connect(mOpcUaClient.get(), &QOpcUaClient::findServersFinished, this,
                 &BackEnd::findServersComplete);
     }
 }

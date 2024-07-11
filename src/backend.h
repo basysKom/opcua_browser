@@ -294,8 +294,6 @@ private:
     LoggingViewModel *mLoggingViewModel;
 
     OpcUaModel *mOpcUaModel;
-    QOpcUaProvider *mOpcUaProvider;
-    QOpcUaClient *mOpcUaClient = nullptr;
     QOpcUaApplicationIdentity mIdentity;
     QOpcUaPkiConfiguration mPkiConfig;
 
@@ -333,6 +331,9 @@ private:
     QStringList mSelectedEventSourceNodes;
 
     int mMaxEventsPerObject = 0;
+
+    QScopedPointer<QOpcUaProvider> mOpcUaProvider;
+    QScopedPointer<QOpcUaClient> mOpcUaClient;
 };
 
 #endif // BACKEND_H
