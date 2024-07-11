@@ -287,6 +287,8 @@ private:
     QFuture<QString> findAllSubtypes(const QString &nodeId,
                                      std::shared_ptr<QSet<QString>> visitedNodes = nullptr);
 
+    void clearServerSpecificData();
+
     CertificateItemModel *mCertificateItemModel;
     CertificateItemModel *mOwnCertificateItemModel;
     LoggingViewModel *mLoggingViewModel;

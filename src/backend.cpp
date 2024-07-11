@@ -345,6 +345,7 @@ void BackEnd::connectToEndpoint(int endpointIndex, bool usePassword, const QStri
 void BackEnd::disconnectFromEndpoint()
 {
     mOpcUaClient->disconnectFromEndpoint();
+    clearServerSpecificData();
 }
 
 void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId,
@@ -375,6 +376,8 @@ void BackEnd::monitorNode(MonitoredItemModel *model, const QString &nodeId,
 
 void BackEnd::connectToEndpoint()
 {
+    clearServerSpecificData();
+
     setState(tr("connect with security policy \"%1\"")
                      .arg(mConnectionConfiguration.mEndpoint.securityPolicy()));
 
@@ -1123,6 +1126,15 @@ QFuture<QString> BackEnd::findAllSubtypes(const QString &nodeId,
     node->browseChildren(QOpcUa::ReferenceTypeId::HasSubtype, QOpcUa::NodeClass::DataType);
 
     return future;
+}
+
+void BackEnd::clearServerSpecificData()
+{
+    mDefaultEventDashboardsModel->setStringList({});
+    mDefaultVariableDashboardsModel->setStringList({});
+    mCompanionSpecEventDashboards.clear();
+    mCompanionSpecVariableDashboards.clear();
+    mCompanionSpecDevices.clear();
 }
 
 int BackEnd::maxEventsPerObject() const
