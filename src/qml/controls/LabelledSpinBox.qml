@@ -26,7 +26,7 @@ ColumnLayout {
 
     QQC.SpinBox {
         id: spinBox
-        height: 30
+        implicitHeight: 30
 
         from: spinBox.from
         to: spinBox.to

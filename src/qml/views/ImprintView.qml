@@ -7,8 +7,6 @@
 
 import QtQuick
 
-import OPC_UA_Browser
-
 Rectangle {
     id: view
 

@@ -12,8 +12,6 @@ import QtQuick.Controls.impl // IconImage
 import QtQuick.Layouts
 import com.basyskom.quickcontrols as QQC
 
-import OPC_UA_Browser
-
 QQC.Popup {
     id: menu
 

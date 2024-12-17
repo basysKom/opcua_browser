@@ -135,7 +135,7 @@ Rectangle {
 
         clip: true
 
-        anchors.centerIn: browser
+        anchors.centerIn: view
 
         background: Rectangle {
             radius: 3
@@ -145,15 +145,15 @@ Rectangle {
 
         Flickable {
             id: popupFlickable
-            width: browser.width * 0.8
-            height: Math.max(100, Math.min(browser.height * 0.8, contentHeight))
+            width: view.width * 0.8
+            height: Math.max(100, Math.min(view.height * 0.8, contentHeight))
 
             contentWidth: width
             contentHeight: contentItem.childrenRect.height
 
             Column {
                 Text {
-                    width: browser.width * 0.8
+                    width: view.width * 0.8
                     id: nameText
                     padding: 3
                     font {
@@ -165,7 +165,7 @@ Rectangle {
                 }
 
                 Text {
-                    width: browser.width * 0.8
+                    width: view.width * 0.8
                     id: valueText
                     padding: 3
                     font {

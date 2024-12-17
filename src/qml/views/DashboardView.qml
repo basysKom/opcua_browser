@@ -229,7 +229,7 @@ Rectangle {
                 onEntered: drag => {
                                if (!dragArea.isAddItem) {
                                    visualModel.model.moveItem(
-                                       drag.source.index,
+                                       drag.source.index,  // qmllint disable missing-property
                                        dragArea.index)
                                }
                            }
@@ -341,12 +341,12 @@ Rectangle {
                             sourceSize.height: 24
                             source: "qrc:/icons/keyboard_arrow_down.svg"
                             color: view.palette.windowText
-                            visible: index !== visualModel.count - 2
+                            visible: eventMouseArea.index !== visualModel.count - 2
 
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: visualModel.model.moveItem(index, index + 1)
+                                onClicked: visualModel.model.moveItem(eventMouseArea.index, eventMouseArea.index + 1)
                             }
                         }
 
@@ -356,12 +356,12 @@ Rectangle {
                             sourceSize.height: 24
                             source: "qrc:/icons/keyboard_arrow_up.svg"
                             color: view.palette.windowText
-                            visible: index !== 0
+                            visible: eventMouseArea.index !== 0
 
                             MouseArea {
                                 anchors.fill: parent
                                 cursorShape: Qt.PointingHandCursor
-                                onClicked: visualModel.model.moveItem(index, index - 1)
+                                onClicked: visualModel.model.moveItem(eventMouseArea.index, eventMouseArea.index - 1)
                             }
                         }
 
@@ -400,6 +400,8 @@ Rectangle {
                         model: eventMouseArea.lastEventStrings
 
                         delegate: Rectangle {
+                            id: repeaterDelegate
+
                             required property string modelData
 
                             color: palette.window
@@ -413,7 +415,7 @@ Rectangle {
                                 anchors.fill: parent
                                 font.pointSize: 10
                                 color: view.palette.windowText
-                                text: modelData
+                                text: repeaterDelegate.modelData
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 elide: Qt.ElideRight
                             }

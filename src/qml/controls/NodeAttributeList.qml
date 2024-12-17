@@ -78,8 +78,8 @@ Rectangle {
                 color: root.palette.base
 
                 TapHandler {
-                    onTapped: function() {
-                        root.popupRequested(attribute, value)
+                    onTapped: function() { // qmllint disable signal-handler-parameters
+                        root.popupRequested(listViewDelegate.attribute, listViewDelegate.value)
                     }
                 }
 

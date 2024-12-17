@@ -72,7 +72,7 @@ Item {
             onClicked: {
                 if ((BackEnd.defaultEventDashboards.rowCount() === 0)
                         && (BackEnd.savedEventDashboards.rowCount() === 0)) {
-                    addEvents()
+                    view.addEvents()
                 } else {
                     view.type = DashboardConfigurationView.Type.SelectEvents
                 }
@@ -138,11 +138,11 @@ Item {
                     if (view.type === DashboardConfigurationView.Type.SelectVariables) {
                         const index = BackEnd.instantiateDefaultVariableDashboard(defaultDashboardListBox.currentText)
                         if (index >= 0)
-                            showDashboardRequested(index)
+                            view.showDashboardRequested(index)
                     } else if (view.type === DashboardConfigurationView.Type.SelectEvents) {
                         const index = BackEnd.instantiateDefaultEventDashboard(defaultDashboardListBox.currentText)
                         if (index >= 0)
-                            showDashboardRequested(index)
+                            view.showDashboardRequested(index)
                     }
                 }
             }
