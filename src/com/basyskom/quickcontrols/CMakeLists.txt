@@ -9,7 +9,6 @@ qt6_add_qml_module(quickcontrols_module
     QML_FILES
         Button.qml
         CheckBox.qml
-        CheckIndicator.qml
         MenuItem.qml
         MenuSeparator.qml
         Popup.qml

@@ -6,6 +6,8 @@
  */
 
 import QtQuick
+import QtQuick.Controls.impl
+import QtQuick.Controls.Fusion
 import QtQuick.Templates as T
 
 T.CheckBox {
@@ -24,11 +26,33 @@ T.CheckBox {
 
     font.pointSize: 12
 
-    indicator: CheckIndicator {
+    indicator: Rectangle {
+        readonly property color pressedColor: Fusion.mergedColors(control.palette.base, control.palette.windowText, 85)
+        readonly property color checkMarkColor: Qt.darker(control.palette.highlight, 1.2)
+
+        implicitWidth: 24
+        implicitHeight: 24
+
         x: control.text ? (control.mirrored ? control.width - width - control.rightPadding : control.leftPadding) : control.leftPadding + (control.availableWidth - width) / 2
         y: control.topPadding + (control.availableHeight - height) / 2
-        control: control
-        indicatorBackgroundColor: control.indicatorBackgroundColor
+
+        radius: width / 2
+
+        color: control.down ? control.palette.light : control.indicatorBackgroundColor
+        border.width: 1
+        border.color: control.palette.highlight
+
+        ColorImage {
+            anchors.centerIn: parent
+
+            visible: control.checkState === Qt.Checked || (control.checked && control.checkState === undefined)
+            fillMode: Image.PreserveAspectFit
+            color: control.palette.highlight
+
+            source: "qrc:/icons/checkmark.svg"
+            sourceSize.width: parent.height * 0.65
+            sourceSize.height: parent.width * 0.65
+        }
     }
 
     contentItem: Text {
