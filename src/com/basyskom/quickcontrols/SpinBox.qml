@@ -5,6 +5,7 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
+import QtQml
 import QtQuick
 import QtQuick.Controls.impl
 import QtQuick.Templates as T
@@ -23,7 +24,7 @@ T.SpinBox {
     rightPadding: padding + (control.mirrored ? (down.indicator ? down.indicator.width : 0) : (up.indicator ? up.indicator.width : 0))
 
     validator: IntValidator {
-        locale: control.locale.name
+        locale: control.locale.name     // qmllint disable missing-property
         bottom: Math.min(control.from, control.to)
         top: Math.max(control.from, control.to)
     }
@@ -32,7 +33,7 @@ T.SpinBox {
         z: 2
         text: control.displayText
 
-        font: spinBox.font
+        font: control.font
         color: control.palette.windowText
         selectionColor: control.palette.highlight
         selectedTextColor: control.palette.highlightedText
@@ -52,7 +53,7 @@ T.SpinBox {
         sourceSize.width: height
         sourceSize.height: height
 
-        color: control.up.pressed || control.to == value ? control.palette.mid : control.palette.text
+        color: control.up.pressed || control.to == control.value ? control.palette.mid : control.palette.text
     }
 
     down.indicator: IconImage {
@@ -63,7 +64,7 @@ T.SpinBox {
         sourceSize.width: height
         sourceSize.height: height
 
-        color: control.down.pressed || control.from == value ? control.palette.mid : control.palette.text
+        color: control.down.pressed || control.from == control.value ? control.palette.mid : control.palette.text
     }
 
     background: Rectangle {
