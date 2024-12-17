@@ -737,11 +737,11 @@ void BackEnd::getEndpoints(int serverIndex)
 
 void BackEnd::requestEndpoints(const QString &serverUrl)
 {
-    mServerUrl = serverUrl;
-    setState(tr("Request endpoints for \"%1\"").arg(mServerUrl.toString()));
-    qCDebug(backendLog) << "Request endpoints for " << mServerUrl.toString();
+    mServerUrl = QUrl(serverUrl);
+    setState(tr("Request endpoints for \"%1\"").arg(serverUrl));
+    qCDebug(backendLog) << "Request endpoints for " << serverUrl;
     createClient();
-    mOpcUaClient->requestEndpoints(mServerUrl.toString());
+    mOpcUaClient->requestEndpoints(mServerUrl);
 }
 
 void BackEnd::getEndpointsComplete(const QList<QOpcUaEndpointDescription> &endpoints,

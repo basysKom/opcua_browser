@@ -7,17 +7,23 @@
 
 import QtCore
 import QtQuick
-import QtQuick.Controls
 import QtQuick.Controls.impl // IconImage
 import QtQuick.Layouts
+import com.basyskom.quickcontrols as QQC
 
 import OPC_UA_Browser
 
-ApplicationWindow {
-    id: window
+QQC.ApplicationWindow {
+    id: appWindow
 
-    property ThemeMainWindow theme: Style.mainWindow
     property int themeIndex: 0
+
+    palette: Colors.palette
+
+    onThemeIndexChanged: {
+        Colors.isDarkMode = (themeIndex == 0)
+        UiSettings.setStatusAndNavigationBarColor(appWindow.palette.window)
+    }
 
     Connections {
         target: Qt.application
@@ -28,29 +34,18 @@ ApplicationWindow {
         }
     }
 
-    Connections {
-        target: Style
-        function onCurrentThemeIndexChanged() {
-            if (window.themeIndex !== Style.currentThemeIndex) {
-                window.themeIndex = Style.currentThemeIndex
-                UiSettings.setStatusAndNavigationBarColor(window.theme.background)
-            }
-        }
-    }
-
     Settings {
-        property alias themeIndex: window.themeIndex
+        property alias themeIndex: appWindow.themeIndex
     }
 
     Component.onCompleted: {
-        Style.currentThemeIndex = window.themeIndex
-        UiSettings.setStatusAndNavigationBarColor(window.theme.background)
+        UiSettings.setStatusAndNavigationBarColor(appWindow.palette.window)
     }
 
     width: 350
     height: 640
     visible: true
-    color: theme.background
+    color: appWindow.palette.window
     title: "OPC UA Browser"
     header: Rectangle {
         id: headerItem
@@ -58,7 +53,7 @@ ApplicationWindow {
         property bool isSaveMode: false
 
         height: childrenRect.height
-        color: window.theme.header.background
+        color: appWindow.palette.window
         clip: true
 
         Behavior on height {
@@ -87,7 +82,7 @@ ApplicationWindow {
                         sourceSize.width: 24
                         sourceSize.height: 24
                         source: leftImage.showBackButton ? "qrc:/icons/back.svg" : "qrc:/icons/menu.svg"
-                        color: window.theme.header.iconColor
+                        color: appWindow.palette.windowText
                     }
 
                     MouseArea {
@@ -117,7 +112,7 @@ ApplicationWindow {
                     sourceSize.width: 24
                     sourceSize.height: 24
                     source: "qrc:/icons/save.svg"
-                    color: window.theme.header.iconColor
+                    color: appWindow.palette.windowText
                     visible: contentView.canSaveDashboard
                              && !headerItem.isSaveMode
 
@@ -129,7 +124,7 @@ ApplicationWindow {
                 }
             }
 
-            StyledTextField {
+            LabelledTextField {
                 id: name
 
                 visible: headerItem.isSaveMode
@@ -150,7 +145,7 @@ ApplicationWindow {
                 Layout.topMargin: 5
                 Layout.bottomMargin: 5
 
-                StyledButton {
+                QQC.Button {
                     anchors.left: parent.left
                     width: parent.width / 2 - 5
                     highlighted: false
@@ -162,7 +157,7 @@ ApplicationWindow {
                     }
                 }
 
-                StyledButton {
+                QQC.Button {
                     anchors.right: parent.right
                     width: parent.width / 2 - 5
                     text: qsTranslate("General", "Ok")
@@ -182,7 +177,7 @@ ApplicationWindow {
                 Layout.preferredHeight: 2
                 Layout.leftMargin: 5
                 Layout.rightMargin: 5
-                color: window.theme.header.dividerColor
+                color: appWindow.palette.light
             }
         }
     }
@@ -190,8 +185,8 @@ ApplicationWindow {
     SideMenu {
         id: sideMenu
 
-        y: -window.header.height
-        menuHeight: parent.height + window.header.height
+        y: -appWindow.header.height
+        menuHeight: parent.height + appWindow.header.height
         menuWidth: Math.min(310, 0.8 * parent.width)
 
         onAddConnectionSelected: {
