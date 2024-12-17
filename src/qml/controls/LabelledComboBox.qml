@@ -9,8 +9,6 @@ import QtQuick
 import QtQuick.Layouts
 import com.basyskom.quickcontrols as QQC
 
-import OPC_UA_Browser
-
 ColumnLayout {
     id: layout
 

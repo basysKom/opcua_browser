@@ -52,7 +52,7 @@ Item {
                 model: BackEnd.recentConnections
 
                 // Reset the authentication when when changing servers
-                _comboBox.onActivated: clearLoginMethod()
+                _comboBox.onActivated: view.clearLoginMethod()
             }
 
             QQC.Button {
@@ -94,7 +94,7 @@ Item {
                 onClicked: {
                     view.selectedHostUrl = hostUrl.prefixText + hostUrl.text
                     BackEnd.findServers(view.selectedHostUrl)
-                    clearLoginMethod()
+                    view.clearLoginMethod()
                 }
             }
 
@@ -113,7 +113,7 @@ Item {
                 model: BackEnd.serverList
 
                 onModelChanged: {
-                    const urlIndex = serverListBox._comboBox.find(selectedHostUrl, Qt.MatchStartsWith)
+                    const urlIndex = serverListBox._comboBox.find(view.selectedHostUrl, Qt.MatchStartsWith)
 
                     if (urlIndex !== -1)
                         serverListBox.currentIndex = urlIndex

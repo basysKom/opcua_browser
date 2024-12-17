@@ -61,7 +61,7 @@ LabelledComboBox {
         required property int index
 
         readonly property string delegateText: model[comboBox._comboBox.textRole]
-        readonly property string textColor: delegate.highlighted ? comboBox.palette.highlightedText : comboBox.palette.windowText
+        readonly property color textColor: delegate.highlighted ? comboBox.palette.highlightedText : comboBox.palette.windowText
 
         width: ListView.view.width
         font.weight: comboBox._comboBox.currentIndex === index ? Font.DemiBold : Font.Normal

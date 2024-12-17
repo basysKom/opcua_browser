@@ -10,6 +10,8 @@ pragma Singleton
 import QtQuick
 
 QtObject {
+    id: colors
+
     property bool isDarkMode: true
 
     readonly property Palette palette: isDarkMode ? darkPalette : lightPalette
@@ -40,68 +42,68 @@ QtObject {
     readonly property color fatal: isDarkMode ? "#510000" : "#FF7878"
 
     readonly property Palette lightPalette: Palette {
-        window: Colors.foreground
-        text: Colors.anthrazite
-        base: Colors.light
-        alternateBase: Colors.mediumLight
-        mid: Colors.medium
-        dark: Colors.dark
-        light: Colors.light
+        window: colors.foreground
+        text: colors.anthrazite
+        base: colors.light
+        alternateBase: colors.mediumLight
+        mid: colors.medium
+        dark: colors.dark
+        light: colors.light
         // Could use accent in Qt 6.6+
-        highlight: Colors.accent
+        highlight: colors.accent
 
         brightText: highlight
 
         active.windowText: text
-        inactive.windowText: Colors.dark
-        disabled.windowText: Colors.mediumLight
+        inactive.windowText: colors.dark
+        disabled.windowText: colors.mediumLight
 
-        active.highlightedText: Colors.foreground
-        inactive.highlightedText: Colors.light
-        disabled.highlightedText: Colors.mediumLight
+        active.highlightedText: colors.foreground
+        inactive.highlightedText: colors.light
+        disabled.highlightedText: colors.mediumLight
 
-        placeholderText: Colors.medium
+        placeholderText: colors.medium
 
-        active.button: Colors.mediumLight
-        inactive.button: Colors.light
-        disabled.button: Colors.foreground
+        active.button: colors.mediumLight
+        inactive.button: colors.light
+        disabled.button: colors.foreground
 
         active.buttonText: text
-        inactive.buttonText: Colors.dark
-        disabled.buttonText: Colors.mediumLight
+        inactive.buttonText: colors.dark
+        disabled.buttonText: colors.mediumLight
     }
 
     readonly property Palette darkPalette: Palette {
-        window: Colors.anthrazite
-        text: Colors.foreground
-        base: Colors.dark
-        alternateBase: Colors.mediumDark
-        mid: Colors.mediumDark
-        dark: Colors.light
-        light: Colors.dark
+        window: colors.anthrazite
+        text: colors.foreground
+        base: colors.dark
+        alternateBase: colors.mediumDark
+        mid: colors.mediumDark
+        dark: colors.light
+        light: colors.dark
         // Could use accent in Qt 6.6+
-        highlight: Colors.accent
+        highlight: colors.accent
 
         brightText: highlight
 
         link: "#2A82DA"
 
         active.windowText: text
-        inactive.windowText:Colors.light
-        disabled.windowText: Colors.mediumDark
+        inactive.windowText:colors.light
+        disabled.windowText: colors.mediumDark
 
-        placeholderText: Colors.medium
+        placeholderText: colors.medium
 
         active.highlightedText: text
-        inactive.highlightedText: Colors.light
-        disabled.highlightedText: Colors.mediumDark
+        inactive.highlightedText: colors.light
+        disabled.highlightedText: colors.mediumDark
 
-        active.button: Colors.mediumDark
-        inactive.button: Colors.dark
-        disabled.button: Colors.anthrazite
+        active.button: colors.mediumDark
+        inactive.button: colors.dark
+        disabled.button: colors.anthrazite
 
         active.buttonText: text
-        inactive.buttonText: Colors.light
-        disabled.buttonText: Colors.mediumDark
+        inactive.buttonText: colors.light
+        disabled.buttonText: colors.mediumDark
     }
 }
