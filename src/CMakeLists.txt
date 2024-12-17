@@ -9,74 +9,43 @@ cmake_minimum_required(VERSION 3.19)
 set(QT_QML_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/qml)
 set(QML_IMPORT_PATH ${QT_QML_OUTPUT_DIRECTORY} CACHE STRING "Import paths for Qt Creator's code model" FORCE)
 
-qt_add_executable(appOPC_UA_Browser
+qt6_add_executable(appOPC_UA_Browser
     main.cpp
 )
 
-set_source_files_properties(qml/style/Style.qml PROPERTIES
+add_subdirectory(com/basyskom/quickcontrols)
+
+set_source_files_properties(qml/Colors.qml PROPERTIES
     QT_QML_SINGLETON_TYPE TRUE
 )
 
-qt_add_qml_module(appOPC_UA_Browser
+qt6_add_qml_module(appOPC_UA_Browser
     URI OPC_UA_Browser
     VERSION 1.0
     DEPENDENCIES QtCore QtQuick
-    QML_FILES qml/Main.qml
-              qml/BrowserView.qml
-              qml/ConnectionView.qml
-              qml/ContentView.qml
-              qml/ContextMenu.qml
-              qml/DashboardConfigurationView.qml
-              qml/DashboardView.qml
-              qml/ImprintView.qml
-              qml/LicenseView.qml
-              qml/LoggingView.qml
-              qml/MessageView.qml
-              qml/NodeAttributeList.qml
-              qml/NodeDetailView.qml
-              qml/NodeReferenceList.qml
-              qml/NodesView.qml
-              qml/SettingsView.qml
+    QML_FILES qml/Colors.qml
+              qml/Main.qml
+              qml/views/BrowserView.qml
+              qml/views/ConnectionView.qml
+              qml/views/ContentView.qml
+              qml/views/DashboardConfigurationView.qml
+              qml/views/DashboardView.qml
+              qml/views/ImprintView.qml
+              qml/views/LicenseView.qml
+              qml/views/LoggingView.qml
+              qml/views/MessageView.qml
+              qml/views/NodeDetailView.qml
+              qml/views/NodesView.qml
+              qml/views/SettingsView.qml
+              qml/controls/ContextMenu.qml
+              qml/controls/IconTabButton.qml
+              qml/controls/LabelledComboBox.qml
+              qml/controls/LabelledEndpointComboBox.qml
+              qml/controls/LabelledSpinBox.qml
+              qml/controls/LabelledTextField.qml
+              qml/controls/NodeAttributeList.qml
+              qml/controls/NodeReferenceList.qml
               qml/controls/SideMenu.qml
-              qml/controls/StyledButton.qml
-              qml/controls/StyledComboBox.qml
-              qml/controls/StyledEndpointComboBox.qml
-              qml/controls/StyledIconTabButton.qml
-              qml/controls/StyledItemSelector.qml
-              qml/controls/StyledMenuItem.qml
-              qml/controls/StyledMenuSeparator.qml
-              qml/controls/StyledScrollBar.qml
-              qml/controls/StyledSpinBox.qml
-              qml/controls/StyledTabButton.qml
-              qml/controls/StyledTextField.qml
-              qml/style/Style.qml
-              qml/style/StyleDefinitions.qml
-              qml/style/ThemeBright.qml
-              qml/style/ThemeBrowserView.qml
-              qml/style/ThemeButton.qml
-              qml/style/ThemeComboBox.qml
-              qml/style/ThemeConnectionView.qml
-              qml/style/ThemeContextMenu.qml
-              qml/style/ThemeDark.qml
-              qml/style/ThemeDashboard.qml
-              qml/style/ThemeDashboardItem.qml
-              qml/style/ThemeDefault.qml
-              qml/style/ThemeHeader.qml
-              qml/style/ThemeIconTabButton.qml
-              qml/style/ThemeImprintView.qml
-              qml/style/ThemeItemSelector.qml
-              qml/style/ThemeLicenseView.qml
-              qml/style/ThemeListView.qml
-              qml/style/ThemeLoggingView.qml
-              qml/style/ThemeMainWindow.qml
-              qml/style/ThemeMessageView.qml
-              qml/style/ThemeNodesView.qml
-              qml/style/ThemeScrollBar.qml
-              qml/style/ThemeSettingsView.qml
-              qml/style/ThemeSideMenu.qml
-              qml/style/ThemeSpinBox.qml
-              qml/style/ThemeTabButton.qml
-              qml/style/ThemeTextField.qml
     SOURCES attribute.h attribute.cpp
             attributemodel.h attributemodel.cpp
             backend.h backend.cpp
@@ -103,7 +72,7 @@ qt_add_qml_module(appOPC_UA_Browser
             woodworkingdashboardcreator.cpp
 )
 
-qt_add_resources(appOPC_UA_Browser "icons"
+qt6_add_resources(appOPC_UA_Browser "icons"
     PREFIX "/"
     FILES font/Swansea.ttf
           font/SwanseaBold.ttf
@@ -138,22 +107,28 @@ qt_add_resources(appOPC_UA_Browser "icons"
           languages/German.png
           languages/German.utf8)
 
-qt_add_translations(appOPC_UA_Browser
+qt6_add_translations(appOPC_UA_Browser
           QM_FILES_OUTPUT_VARIABLE APP_QM_FILES
           TS_FILES languages/English_en_GB.ts
                    languages/German_de_DE.ts
           LUPDATE_OPTIONS -locations none)
 
-qt_add_resources(appOPC_UA_Browser "i18n"
+qt6_add_resources(appOPC_UA_Browser "i18n"
     PREFIX "/i18n"
     BASE "${CMAKE_CURRENT_BINARY_DIR}"
     FILES ${APP_QM_FILES})
 
 target_compile_options(appOPC_UA_Browser PRIVATE -Wall -Wextra -Wdeprecated)
 
-target_link_libraries(appOPC_UA_Browser
-    PRIVATE Qt6::Core Qt6::Quick Qt6::QuickControls2 Qt::OpcUa
+target_link_libraries(appOPC_UA_Browser PRIVATE
+    Qt6::Core
+    Qt6::Quick
+    Qt6::QuickControls2
+    Qt::OpcUa
+
+    quickcontrols_moduleplugin
 )
+
 
 set_property(TARGET appOPC_UA_Browser APPEND PROPERTY
     QT_ANDROID_PACKAGE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/android

@@ -6,16 +6,15 @@
  */
 
 import QtQuick
-import QtQuick.Controls
+import com.basyskom.quickcontrols as QQC
 
 import OPC_UA_Browser
 
-Menu {
+QQC.Menu {
     id: control
 
     property int menuHeight: implicitHeight
     property int menuWidth: implicitWidth
-    property ThemeSideMenu theme: Style.sideMenu
 
     signal addConnectionSelected
     signal closeConnectionSelected
@@ -50,20 +49,20 @@ Menu {
     }
 
     background: Rectangle {
-        color: control.theme.background
+        color: control.palette.window
     }
 
     Text {
         topPadding: 10
         font.pointSize: 20
         font.bold: true
-        color: control.theme.textColor
+        color: control.palette.text
         text: "OPC UA Browser"
     }
 
-    StyledMenuSeparator {}
+    QQC.MenuSeparator {}
 
-    StyledMenuItem {
+    QQC.MenuItem {
         enabled: BackEnd.isConnected
         text: qsTranslate("Connection", "Close connection")
         iconSource: "qrc:/icons/disconnect.svg"
@@ -71,49 +70,49 @@ Menu {
     }
 
 
-    /*StyledMenuItem {
+    /*QQC.MenuItem {
         enabled: BackEnd.isConnected
         text: qsTranslate("Connection", "Add connection")
         iconSource: "qrc:/icons/connect.svg"
         onTriggered: control.addConnectionSelected()
     }*/
-    StyledMenuItem {
+    QQC.MenuItem {
         enabled: BackEnd.isConnected
         text: qsTranslate("ExpertMode", "Expert mode")
         iconSource: "qrc:/icons/expert.svg"
         onTriggered: control.showExpertModeSelected()
     }
 
-    StyledMenuItem {
+    QQC.MenuItem {
         enabled: BackEnd.isConnected
         text: qsTranslate("Dashboard", "Dashboards")
         iconSource: "qrc:/icons/dashboard.svg"
         onTriggered: control.showDashboardsSelected()
     }
 
-    StyledMenuSeparator {
+    QQC.MenuSeparator {
         enabled: BackEnd.isConnected
     }
 
-    StyledMenuItem {
+    QQC.MenuItem {
         text: qsTranslate("General", "Settings")
         iconSource: "qrc:/icons/settings.svg"
         onTriggered: control.showSettingsSelected()
     }
 
-    StyledMenuItem {
+    QQC.MenuItem {
         text: qsTranslate("Logging", "Log")
         iconSource: "qrc:/icons/log.svg"
         onTriggered: control.showLogSelected()
     }
 
-    StyledMenuItem {
+    QQC.MenuItem {
         text: qsTranslate("Imprint", "Imprint")
-        iconSource: "qrc:/icons/info.svg"
+        icon.source: "qrc:/icons/info.svg"
         onTriggered: control.showImprintSelected()
     }
 
-    StyledMenuItem {
+    QQC.MenuItem {
         text: qsTranslate("License", "License")
         iconSource: "qrc:/icons/license.svg"
         onTriggered: control.showLicenseSelected()

@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: none
 
 CMakeLists.txt.user
+build/
 build-*/
 config.cppcheck
 config-cppcheck-build-dir
