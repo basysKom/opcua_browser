@@ -5,7 +5,6 @@
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
-import QtCore
 import QtQuick
 import QtQuick.Controls.impl // IconImage
 import QtQuick.Layouts
@@ -16,14 +15,7 @@ import OPC_UA_Browser
 QQC.ApplicationWindow {
     id: appWindow
 
-    property int themeIndex: 0
-
     palette: Colors.palette
-
-    onThemeIndexChanged: {
-        Colors.isDarkMode = (themeIndex == 0)
-        UiSettings.setStatusAndNavigationBarColor(appWindow.palette.window)
-    }
 
     Connections {
         target: Qt.application
@@ -32,14 +24,6 @@ QQC.ApplicationWindow {
                 BackEnd.applicationSuspended()
             }
         }
-    }
-
-    Settings {
-        property alias themeIndex: appWindow.themeIndex
-    }
-
-    Component.onCompleted: {
-        UiSettings.setStatusAndNavigationBarColor(appWindow.palette.window)
     }
 
     width: 350

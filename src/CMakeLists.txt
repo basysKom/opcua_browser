@@ -45,6 +45,7 @@ qt6_add_qml_module(appOPC_UA_Browser
               qml/controls/LabelledTextField.qml
               qml/controls/NodeAttributeList.qml
               qml/controls/NodeReferenceList.qml
+              qml/controls/SettingsList.qml
               qml/controls/SideMenu.qml
     SOURCES attribute.h attribute.cpp
             attributemodel.h attributemodel.cpp
