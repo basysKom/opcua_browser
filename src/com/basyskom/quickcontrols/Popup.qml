@@ -9,8 +9,6 @@ pragma ComponentBehavior: Bound
 
 import QtQuick
 import QtQuick.Templates as T
-import QtQuick.Controls.impl
-import QtQuick.Controls.Fusion
 
 T.Popup {
     id: control
@@ -29,10 +27,10 @@ T.Popup {
     }
 
     T.Overlay.modal: Rectangle {
-        color: Color.transparent(control.palette.shadow, 0.5)
+        color: Qt.alpha(control.palette.shadow, 0.5)
     }
 
     T.Overlay.modeless: Rectangle {
-        color: Color.transparent(control.palette.shadow, 0.12)
+        color: Qt.alpha(control.palette.shadow, 0.12)
     }
 }
