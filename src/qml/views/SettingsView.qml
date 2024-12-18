@@ -136,7 +136,6 @@ Rectangle {
                     width: settingsList.listView.width
                     implicitHeight: childrenRect.height
                     color: isCurrentItem ? palette.highlight : palette.light
-                    clip: true
 
                     MouseArea {
                         anchors.fill: parent
@@ -229,7 +228,6 @@ Rectangle {
                     width: recentConnectionsList.listView.width
                     implicitHeight: childrenRect.height
                     color: palette.light
-                    clip: true
 
                     RowLayout {
                         width: parent.width

@@ -67,8 +67,7 @@ T.SpinBox {
         color: control.down.pressed || control.from == control.value ? control.palette.mid : control.palette.text
     }
 
-    background: Rectangle {
+    background: Item {
         implicitWidth: 100
-        color: "transparent"
     }
 }

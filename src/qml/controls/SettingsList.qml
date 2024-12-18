@@ -73,7 +73,6 @@ Column {
                 width: list.width
                 implicitHeight: childrenRect.height
                 color: palette.light
-                clip: true
 
                 RowLayout {
                     width: parent.width

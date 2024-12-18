@@ -44,7 +44,5 @@ T.ScrollBar {
         }
     }
 
-    background: Rectangle {
-        color: "transparent"
-    }
+    background: null
 }

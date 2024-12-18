@@ -13,7 +13,8 @@ T.MenuItem {
     id: control
 
     visible: enabled
-    height: enabled ? 40 : 0
+    height: enabled ? implicitHeight : 0
+    // Workaround for Windows, otherwise the IconLabel text is not displayed after activating a disabled MenuItem
     width: implicitWidth
 
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
@@ -69,13 +70,8 @@ T.MenuItem {
         defaultColor: "#353637"
     }
 
-    background: Rectangle {
+    background: Item {
         implicitWidth: 200
         implicitHeight: 40
-        x: 1
-        y: 1
-        width: control.width - 2
-        height: control.height - 2
-        color: "transparent"
     }
 }

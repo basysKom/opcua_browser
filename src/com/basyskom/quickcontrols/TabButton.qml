@@ -11,7 +11,7 @@ import QtQuick.Templates as T
 T.TabButton {
     id: control
 
-    readonly property bool isCurrentTab: (TabBar.tabBar !== null) && (TabBar.tabBar.currentIndex === TabBar.index)
+    readonly property bool isCurrentTab: (T.TabBar.tabBar !== null) && (T.TabBar.tabBar.currentIndex === T.TabBar.index)
 
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
                             implicitContentWidth + leftPadding + rightPadding)
@@ -23,7 +23,7 @@ T.TabButton {
 
     icon.width: 24
     icon.height: 24
-    icon.color: checked ? control.palette.windowText : control.palette.brightText
+    icon.color: checked ? palette.windowText : palette.brightText
 
     contentItem: Text {
         text: control.text
@@ -41,9 +41,8 @@ T.TabButton {
         color: control.palette.windowText
     }
 
-    background: Rectangle {
+    background: Item {
         implicitHeight: 40
-        color: "transparent"
 
         Rectangle {
             id: divider
@@ -51,7 +50,7 @@ T.TabButton {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             height: 4
-            color: control.palette.mid
+            color: palette.mid
         }
 
         Rectangle {
@@ -59,7 +58,7 @@ T.TabButton {
             width: divider.width / 2
             height: 4
             visible: control.isCurrentTab
-            color: control.palette.highlight
+            color: palette.highlight
         }
     }
 }
