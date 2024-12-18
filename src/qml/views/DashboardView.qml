@@ -553,9 +553,7 @@ Rectangle {
         leftPadding: Math.max(15, (width - contentWidth) / 2)
         spacing: 5
 
-        background: Rectangle {
-            color: "transparent"
-        }
+        background: null
 
         onCurrentIndexChanged: {
             if (tabRepeater.model.isAddItem(currentIndex)

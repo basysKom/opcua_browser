@@ -125,7 +125,7 @@ target_link_libraries(appOPC_UA_Browser PRIVATE
     Qt6::Core
     Qt6::Quick
     Qt6::QuickControls2
-    Qt::OpcUa
+    Qt6::OpcUa
 
     quickcontrols_moduleplugin
 )

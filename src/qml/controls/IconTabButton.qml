@@ -21,9 +21,7 @@ QQC.TabButton {
 
     width: 80
 
-    background: Rectangle {
-        color: "transparent"
-    }
+    background: null
 
     contentItem: ColumnLayout {
         width: control.width

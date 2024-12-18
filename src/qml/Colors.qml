@@ -49,7 +49,6 @@ QtObject {
         mid: colors.medium
         dark: colors.dark
         light: colors.light
-        // Could use accent in Qt 6.6+
         highlight: colors.accent
 
         brightText: highlight
@@ -81,7 +80,6 @@ QtObject {
         mid: colors.mediumDark
         dark: colors.light
         light: colors.dark
-        // Could use accent in Qt 6.6+
         highlight: colors.accent
 
         brightText: highlight
