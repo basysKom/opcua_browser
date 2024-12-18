@@ -578,6 +578,7 @@ Rectangle {
                 required property int index
                 required property bool hasBackgroundActivity
 
+                width: 80
                 showActivityIndicator: hasBackgroundActivity && type !== DashboardItem.DashboardType.Add && !isCurrentTab
 
                 type: model.type
