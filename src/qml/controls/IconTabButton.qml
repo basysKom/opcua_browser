@@ -44,21 +44,21 @@ QQC.TabButton {
                 height: 10
                 radius: 5
 
-                color: control.palette.highlight
+                color: palette.highlight
 
                 anchors.right: parent.right
                 anchors.top: parent.top
             }
         }
 
-        Text {
+        QQC.Label {
             id: label
 
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             font.pointSize: 8
             text: control.text
-            color: control.isCurrentTab ? control.palette.highlight : control.palette.windowText
+            color: control.isCurrentTab ? palette.highlight : palette.windowText
             elide: Text.ElideRight
         }
     }

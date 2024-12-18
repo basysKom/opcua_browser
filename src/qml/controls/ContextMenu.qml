@@ -42,7 +42,7 @@ QQC.Popup {
         width: menu.width
         height: menu.height
         radius: 3
-        color: menu.palette.light
+        color: palette.light
     }
 
     contentItem: Item {
@@ -53,12 +53,11 @@ QQC.Popup {
             width: 200
             clip: true
 
-            Text {
+            QQC.Label {
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 text: menu.headerText
                 visible: menu.headerText != null && menu.headerText !== ""
                 Layout.fillWidth: true
-                color: menu.palette.windowText
                 leftPadding: 3
                 font.bold: true
                 font.pointSize: 12
@@ -81,6 +80,8 @@ QQC.Popup {
                     required property url imageSource
                     required property string name
 
+                    readonly property bool isCurrentItem: popupListView.currentIndex === delegateItem.index
+
                     MouseArea {
                         anchors.fill: parent
                         hoverEnabled: true
@@ -95,8 +96,8 @@ QQC.Popup {
                     Rectangle {
                         anchors.fill: parent
                         radius: transparentBorderRect.radius
-                        color: menu.palette.highlight
-                        opacity: popupListView.currentIndex === delegateItem.index ? 0.8 : 0
+                        color: palette.highlight
+                        visible: delegateItem.isCurrentItem
                     }
 
                     RowLayout {
@@ -109,15 +110,16 @@ QQC.Popup {
                             sourceSize.width: 24
                             sourceSize.height: 24
                             source: delegateItem.imageSource
-                            color: menu.palette.windowText
+                            color: delegateItem.isCurrentItem ? palette.highlightedText : palette.windowText
                         }
-                        Text {
+
+                        QQC.Label {
                             Layout.fillHeight: true
                             Layout.fillWidth: true
                             verticalAlignment: Text.AlignVCenter
                             horizontalAlignment: Text.AlignLeft
-                            color: menu.palette.windowText
                             font.pointSize: 12
+                            color: delegateItem.isCurrentItem ? palette.highlightedText : palette.windowText
                             text: delegateItem.name
                         }
                     }

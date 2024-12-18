@@ -113,7 +113,7 @@ Item {
                                view.width,
                                padding + label.x + label.implicitWidth + padding)
             implicitHeight: 34
-            color: isCurrentItem ? view.palette.base : "transparent"
+            color: isCurrentItem ? palette.base : "transparent"
 
             TapHandler {
                 id: tapHandler
@@ -170,7 +170,7 @@ Item {
                 border.width: 1
             }
 
-            Text {
+            QQC.Label {
                 id: label
 
                 x: nodeClassIndicator.x + nodeClassIndicator.width + 5
@@ -179,7 +179,6 @@ Item {
                 clip: true
                 text: treeDelegate.display
                 font.pointSize: 12
-                color: view.palette.windowText
             }
 
             QQC.CheckBox {

@@ -24,12 +24,12 @@ Rectangle {
     color: palette.window
 
     Component.onCompleted: {
-        UiSettings.setStatusAndNavigationBarColor(view.palette.window)
+        UiSettings.setStatusAndNavigationBarColor(palette.window)
     }
 
     onThemeIndexChanged: {
         Colors.isDarkMode = (themeIndex == 0)
-        UiSettings.setStatusAndNavigationBarColor(view.palette.window)
+        UiSettings.setStatusAndNavigationBarColor(palette.window)
     }
 
     Settings {
@@ -63,8 +63,7 @@ Rectangle {
             rightPadding: leftPadding
             spacing: 10
 
-            Text {
-                color: view.palette.windowText
+            QQC.Label {
                 font {
                     pointSize: 18
                     bold: true
@@ -77,8 +76,7 @@ Rectangle {
                 width: parent.width - content.leftPadding - content.rightPadding
                 spacing: 5
 
-                Text {
-                    color: view.palette.windowText
+                QQC.Label {
                     font {
                         pointSize: 14
                         bold: true
@@ -91,11 +89,12 @@ Rectangle {
                 }
 
                 Row {
+                    id: buttonRow
+
                     anchors.leftMargin: view.leftContentMargin
                     anchors.left: parent.left
 
                     spacing: 25
-                    id: buttonRow
 
                     QQC.CheckBox {
                         id: darkItemSelector
@@ -136,7 +135,7 @@ Rectangle {
                     radius: 5
                     width: settingsList.listView.width
                     implicitHeight: childrenRect.height
-                    color: isCurrentItem ? view.palette.highlight : view.palette.light
+                    color: isCurrentItem ? palette.highlight : palette.light
                     clip: true
 
                     MouseArea {
@@ -159,13 +158,13 @@ Rectangle {
                             fillMode: Image.PreserveAspectFit
                         }
 
-                        Text {
+                        QQC.Label {
                             Layout.fillWidth: true
                             Layout.rightMargin: 5
                             font.pointSize: 14
                             text: languageListViewDelegate.displayName
-                            color: languageListViewDelegate.isCurrentItem ? view.palette.highlightedText :
-                                                                            view.palette.windowText
+                            color: languageListViewDelegate.isCurrentItem ? palette.highlightedText :
+                                                                            palette.windowText
                             elide: Text.ElideRight
                         }
                     }
@@ -229,7 +228,7 @@ Rectangle {
                     radius: 5
                     width: recentConnectionsList.listView.width
                     implicitHeight: childrenRect.height
-                    color: view.palette.light
+                    color: palette.light
                     clip: true
 
                     RowLayout {
@@ -237,7 +236,7 @@ Rectangle {
                         height: 30
                         spacing: 10
 
-                        Text {
+                        QQC.Label {
                             Layout.fillWidth: true
                             Layout.rightMargin: 5
                             Layout.leftMargin: 5
@@ -245,7 +244,6 @@ Rectangle {
                                 pointSize: 11
                             }
                             text: recentConnectionsListDelegate.modelData
-                            color: view.palette.windowText
                             elide: Text.ElideRight
                         }
 
@@ -255,7 +253,7 @@ Rectangle {
                             sourceSize.width: 24
                             sourceSize.height: 24
                             source: "qrc:/icons/delete.svg"
-                            color: view.palette.windowText
+                            color: palette.windowText
 
                             MouseArea {
                                 anchors.fill: parent
@@ -274,8 +272,7 @@ Rectangle {
                 width: parent.width - content.leftPadding - content.rightPadding
                 spacing: 5
 
-                Text {
-                    color: view.palette.windowText
+                QQC.Label {
                     font {
                         pointSize: 14
                         bold: true
@@ -300,8 +297,7 @@ Rectangle {
                 width: parent.width - content.leftPadding - content.rightPadding
                 spacing: 5
 
-                Text {
-                    color: view.palette.windowText
+                QQC.Label {
                     font {
                         pointSize: 14
                         bold: true
@@ -326,12 +322,12 @@ Rectangle {
                     listView.delegate: Rectangle {
                         id: ownCertListViewDelegate
 
-                        component OwnSubitemText : Text {
+                        component OwnSubitemText : QQC.Label {
                             Layout.leftMargin: 5
                             Layout.rightMargin: 5
                             Layout.fillWidth: true
                             verticalAlignment: Qt.AlignVCenter
-                            color: view.palette.highlightedText
+                            color: palette.highlightedText
                         }
 
                         component OwnSubitemTitle : OwnSubitemText {
@@ -353,7 +349,7 @@ Rectangle {
                         radius: 5
                         width: ownCertificateList.listView.width
                         implicitHeight: ownCertificateDelegateLayout.height
-                        color: view.palette.highlight
+                        color: palette.highlight
                         clip: true
 
                         ColumnLayout {
@@ -366,12 +362,12 @@ Rectangle {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 36
 
-                                Text {
+                                QQC.Label {
                                     Layout.fillWidth: true
                                     Layout.leftMargin: 5
                                     font.pointSize: 14
                                     text: ownCertListViewDelegate.issuerDisplayName
-                                    color: view.palette.highlightedText
+                                    color: palette.highlightedText
                                     elide: Text.ElideRight
                                 }
 
@@ -381,7 +377,7 @@ Rectangle {
                                     sourceSize.width: 24
                                     sourceSize.height: 24
                                     source: "qrc:/icons/refresh.svg"
-                                    color: view.palette.highlightedText
+                                    color: palette.highlightedText
 
                                     MouseArea {
                                         anchors.fill: parent
@@ -454,14 +450,14 @@ Rectangle {
                     listView.delegate: Rectangle {
                         id: trustedCertListViewDelegate
 
-                        component SubitemText : Text {
+                        component SubitemText : QQC.Label {
                             Layout.leftMargin: 5
                             Layout.rightMargin: 5
                             Layout.fillWidth: true
                             visible: trustedCertListViewDelegate.isCurrentItem
                             verticalAlignment: Qt.AlignVCenter
-                            color: trustedCertListViewDelegate.isCurrentItem ? view.palette.highlightedText :
-                                                                    view.palette.windowText
+                            color: trustedCertListViewDelegate.isCurrentItem ? palette.highlightedText :
+                                                                               palette.windowText
                         }
 
                         component SubitemTitle : SubitemText {
@@ -490,7 +486,7 @@ Rectangle {
                         radius: 5
                         width: trustedCertificateList.listView.width
                         implicitHeight: trustedCertificateDelegateLayout.height
-                        color: isCurrentItem ? view.palette.highlight : view.palette.light
+                        color: isCurrentItem ? palette.highlight : palette.light
                         clip: true
 
                         Behavior on implicitHeight {
@@ -513,13 +509,13 @@ Rectangle {
                                 Layout.fillWidth: true
                                 Layout.preferredHeight: 36
 
-                                Text {
+                                QQC.Label {
                                     Layout.fillWidth: true
                                     Layout.leftMargin: 5
                                     font.pointSize: 14
                                     text: trustedCertListViewDelegate.issuerDisplayName
-                                    color: trustedCertListViewDelegate.isCurrentItem ? view.palette.highlightedText :
-                                                                                    view.palette.windowText
+                                    color: trustedCertListViewDelegate.isCurrentItem ? palette.highlightedText :
+                                                                                       palette.windowText
                                     elide: Text.ElideRight
                                 }
 
@@ -529,8 +525,8 @@ Rectangle {
                                     sourceSize.width: 24
                                     sourceSize.height: 24
                                     source: "qrc:/icons/delete.svg"
-                                    color: trustedCertListViewDelegate.isCurrentItem ? view.palette.highlightedText :
-                                                                                    view.palette.windowText
+                                    color: trustedCertListViewDelegate.isCurrentItem ? palette.highlightedText :
+                                                                                       palette.windowText
 
                                     MouseArea {
                                         anchors.fill: parent
@@ -687,13 +683,13 @@ Rectangle {
         ColumnLayout {
             width: view.width - 50
             id: contentColumn
-            Text {
+            QQC.Label {
                 padding: 3
                 font {
                     pointSize: 12
                     bold: true
                 }
-                color: view.palette.highlightedText
+                color: palette.highlightedText
                 text: qsTranslate("Settings", "Enter new dashboard name")
             }
 
@@ -704,7 +700,7 @@ Rectangle {
                 font {
                     pointSize: 10
                 }
-                color: view.palette.highlightedText
+                color: palette.highlightedText
                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 cursorVisible: true
             }
@@ -716,7 +712,7 @@ Rectangle {
                     sourceSize.width: 24
                     sourceSize.height: 24
                     source: "qrc:/icons/cancel.svg"
-                    color: view.palette.highlightedText
+                    color: palette.highlightedText
 
                     MouseArea {
                         anchors.fill: parent
@@ -737,7 +733,7 @@ Rectangle {
                     sourceSize.width: 24
                     sourceSize.height: 24
                     source: "qrc:/icons/checkmark.svg"
-                    color: enabled ? view.palette.active.highlightedText : view.palette.disabled.highlightedText
+                    color: enabled ? palette.active.highlightedText : palette.disabled.highlightedText
                     enabled: nameTextEdit.text !== "" && ((!dashboardNameEditPopup.isEventDashboard && !BackEnd.hasSavedVariableDashboard(nameTextEdit.text))
                                                           || (dashboardNameEditPopup.isEventDashboard && !BackEnd.hasSavedEventDashboard(nameTextEdit.text)))
 

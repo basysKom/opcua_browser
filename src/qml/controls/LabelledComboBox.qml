@@ -22,12 +22,11 @@ ColumnLayout {
     property alias currentText: comboBox.currentText
     property alias _comboBox: comboBox
 
-    Text {
+    QQC.Label {
         id: caption
 
         Layout.preferredHeight: layout.textColumnHeight
         verticalAlignment: Qt.AlignVCenter
-        color: palette.windowText
         font.bold: true
     }
 

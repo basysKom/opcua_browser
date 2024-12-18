@@ -49,7 +49,7 @@ ColumnLayout {
             passwordMaskDelay: 500
 
             background: Rectangle {
-                color: layout.palette.base
+                color: palette.base
             }
         }
     }

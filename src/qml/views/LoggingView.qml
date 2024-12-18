@@ -97,34 +97,31 @@ Rectangle {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
                     visible: listViewDelegate.index > 0
-                    color: view.palette.light
+                    color: palette.light
                 }
 
-                Text {
+                QQC.Label {
                     Layout.topMargin: 5
                     Layout.leftMargin: 5
                     Layout.fillWidth: true
                     font.bold: true
                     text: listViewDelegate.timestamp + " " + view.typeString[listViewDelegate.type]
-                    color: view.palette.windowText
                 }
 
-                Text {
+                QQC.Label {
                     Layout.leftMargin: 5
                     Layout.fillWidth: true
                     font.bold: true
                     visible: text.length > 0
                     text: listViewDelegate.category
-                    color: view.palette.windowText
                 }
 
-                Text {
+                QQC.Label {
                     Layout.leftMargin: 5
                     Layout.bottomMargin: 5
                     Layout.fillWidth: true
                     text: listViewDelegate.message
                     wrapMode: Text.WordWrap
-                    color: view.palette.windowText
                 }
             }
         }

@@ -152,7 +152,7 @@ Rectangle {
             contentHeight: contentItem.childrenRect.height
 
             Column {
-                Text {
+                QQC.Label {
                     width: view.width * 0.8
                     id: nameText
                     padding: 3
@@ -160,18 +160,18 @@ Rectangle {
                         pointSize: 12
                         bold: true
                     }
-                    color: view.palette.highlightedText
+                    color: palette.highlightedText
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
 
-                Text {
+                QQC.Label {
                     width: view.width * 0.8
                     id: valueText
                     padding: 3
                     font {
                         pointSize: 10
                     }
-                    color: view.palette.highlightedText
+                    color: palette.highlightedText
                     wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                 }
             }
