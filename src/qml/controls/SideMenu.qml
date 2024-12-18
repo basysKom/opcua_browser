@@ -65,7 +65,7 @@ QQC.Menu {
     QQC.MenuItem {
         enabled: BackEnd.isConnected
         text: qsTranslate("Connection", "Close connection")
-        iconSource: "qrc:/icons/disconnect.svg"
+        icon.source: "qrc:/icons/disconnect.svg"
         onTriggered: control.closeConnectionSelected()
     }
 
@@ -73,20 +73,20 @@ QQC.Menu {
     /*QQC.MenuItem {
         enabled: BackEnd.isConnected
         text: qsTranslate("Connection", "Add connection")
-        iconSource: "qrc:/icons/connect.svg"
+        icon.source: "qrc:/icons/connect.svg"
         onTriggered: control.addConnectionSelected()
     }*/
     QQC.MenuItem {
         enabled: BackEnd.isConnected
         text: qsTranslate("ExpertMode", "Expert mode")
-        iconSource: "qrc:/icons/expert.svg"
+        icon.source: "qrc:/icons/expert.svg"
         onTriggered: control.showExpertModeSelected()
     }
 
     QQC.MenuItem {
         enabled: BackEnd.isConnected
         text: qsTranslate("Dashboard", "Dashboards")
-        iconSource: "qrc:/icons/dashboard.svg"
+        icon.source: "qrc:/icons/dashboard.svg"
         onTriggered: control.showDashboardsSelected()
     }
 
@@ -96,13 +96,13 @@ QQC.Menu {
 
     QQC.MenuItem {
         text: qsTranslate("General", "Settings")
-        iconSource: "qrc:/icons/settings.svg"
+        icon.source: "qrc:/icons/settings.svg"
         onTriggered: control.showSettingsSelected()
     }
 
     QQC.MenuItem {
         text: qsTranslate("Logging", "Log")
-        iconSource: "qrc:/icons/log.svg"
+        icon.source: "qrc:/icons/log.svg"
         onTriggered: control.showLogSelected()
     }
 
@@ -114,7 +114,7 @@ QQC.Menu {
 
     QQC.MenuItem {
         text: qsTranslate("License", "License")
-        iconSource: "qrc:/icons/license.svg"
+        icon.source: "qrc:/icons/license.svg"
         onTriggered: control.showLicenseSelected()
     }
 

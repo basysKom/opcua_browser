@@ -12,12 +12,9 @@ import QtQuick.Templates as T
 T.MenuItem {
     id: control
 
-    property alias iconSource: control.icon.source
-
     visible: enabled
     height: enabled ? 40 : 0
     width: implicitWidth
-
 
     implicitWidth: Math.max(implicitBackgroundWidth + leftInset + rightInset,
                             implicitContentWidth + leftPadding + rightPadding)
