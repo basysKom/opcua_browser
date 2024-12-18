@@ -19,12 +19,9 @@ QQC.TabButton {
 
     property alias showActivityIndicator: activityIndicator.visible
 
-    width: 80
-
     background: null
 
     contentItem: ColumnLayout {
-        width: control.width
         spacing: 5
 
         IconImage {
