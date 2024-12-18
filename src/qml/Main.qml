@@ -29,7 +29,7 @@ QQC.ApplicationWindow {
     width: 350
     height: 640
     visible: true
-    color: appWindow.palette.window
+    color: palette.window
     title: "OPC UA Browser"
     header: Rectangle {
         id: headerItem
@@ -37,7 +37,7 @@ QQC.ApplicationWindow {
         property bool isSaveMode: false
 
         height: childrenRect.height
-        color: appWindow.palette.window
+        color: palette.window
         clip: true
 
         Behavior on height {
@@ -66,7 +66,7 @@ QQC.ApplicationWindow {
                         sourceSize.width: 24
                         sourceSize.height: 24
                         source: leftImage.showBackButton ? "qrc:/icons/back.svg" : "qrc:/icons/menu.svg"
-                        color: appWindow.palette.windowText
+                        color: palette.windowText
                     }
 
                     MouseArea {
@@ -96,7 +96,7 @@ QQC.ApplicationWindow {
                     sourceSize.width: 24
                     sourceSize.height: 24
                     source: "qrc:/icons/save.svg"
-                    color: appWindow.palette.windowText
+                    color: palette.windowText
                     visible: contentView.canSaveDashboard
                              && !headerItem.isSaveMode
 
@@ -161,7 +161,7 @@ QQC.ApplicationWindow {
                 Layout.preferredHeight: 2
                 Layout.leftMargin: 5
                 Layout.rightMargin: 5
-                color: appWindow.palette.light
+                color: palette.light
             }
         }
     }

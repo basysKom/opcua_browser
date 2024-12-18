@@ -130,7 +130,7 @@ Rectangle {
                 width: view.itemWidth
                 implicitHeight: Math.max(80, childrenRect.height)
                 radius: 5
-                color: dragArea.held ? Colors.dashboardHeldBackground : dragArea.hasError ? Colors.dashboardErrorBackground : view.palette.base
+                color: dragArea.held ? Colors.dashboardHeldBackground : dragArea.hasError ? Colors.dashboardErrorBackground : palette.base
 
                 Behavior on color {
                     ColorAnimation {
@@ -165,9 +165,8 @@ Rectangle {
                     RowLayout {
                         width: parent.width - 2 * parent.padding
 
-                        Text {
+                        QQC.Label {
                             Layout.fillWidth: true
-                            color: view.palette.windowText
                             text: dragArea.name
                             font {
                                 pointSize: 12
@@ -181,7 +180,7 @@ Rectangle {
                             sourceSize.width: 24
                             sourceSize.height: 24
                             source: "qrc:/icons/delete.svg"
-                            color: view.palette.windowText
+                            color: palette.windowText
 
                             MouseArea {
                                 anchors.fill: parent
@@ -192,20 +191,18 @@ Rectangle {
                         }
                     }
 
-                    Text {
+                    QQC.Label {
                         width: parent.width - 2 * parent.padding
                         font.pointSize: 10
-                        color: view.palette.windowText
                         text: dragArea.value
                         elide: Text.ElideRight
                         clip: true
                     }
 
-                    Text {
+                    QQC.Label {
                         visible: dragArea.hasError
                         width: parent.width - 2 * parent.padding
                         font.pointSize: 10
-                        color: view.palette.windowText
                         text: dragArea.status
                         elide: Text.ElideRight
                         clip: true
@@ -218,7 +215,7 @@ Rectangle {
                     sourceSize.height: 48
                     visible: dragArea.isAddItem
                     source: "qrc:/icons/plus.svg"
-                    color: view.palette.windowText
+                    color: palette.windowText
                 }
             }
 
@@ -304,7 +301,7 @@ Rectangle {
                 width: flowListView.width - 20
                 implicitHeight: Math.max(80, eventColumn.height)
                 radius: 5
-                color: eventMouseArea.hasError ? Colors.dashboardErrorBackground : view.palette.base
+                color: eventMouseArea.hasError ? Colors.dashboardErrorBackground : palette.base
 
                 Behavior on color {
                     ColorAnimation {
@@ -324,9 +321,8 @@ Rectangle {
                         id: eventRow
                         width: parent.width - 2 * parent.padding
 
-                        Text {
+                        QQC.Label {
                             Layout.fillWidth: true
-                            color: view.palette.windowText
                             text: eventMouseArea.name
                             font {
                                 pointSize: 12
@@ -340,7 +336,7 @@ Rectangle {
                             sourceSize.width: 24
                             sourceSize.height: 24
                             source: "qrc:/icons/keyboard_arrow_down.svg"
-                            color: view.palette.windowText
+                            color: palette.windowText
                             visible: eventMouseArea.index !== visualModel.count - 2
 
                             MouseArea {
@@ -355,7 +351,7 @@ Rectangle {
                             sourceSize.width: 24
                             sourceSize.height: 24
                             source: "qrc:/icons/keyboard_arrow_up.svg"
-                            color: view.palette.windowText
+                            color: palette.windowText
                             visible: eventMouseArea.index !== 0
 
                             MouseArea {
@@ -370,7 +366,7 @@ Rectangle {
                             sourceSize.width: 24
                             sourceSize.height: 24
                             source: "qrc:/icons/clear_all.svg"
-                            color: view.palette.windowText
+                            color: palette.windowText
 
                             MouseArea {
                                 anchors.fill: parent
@@ -385,7 +381,7 @@ Rectangle {
                             sourceSize.width: 24
                             sourceSize.height: 24
                             source: "qrc:/icons/delete.svg"
-                            color: view.palette.windowText
+                            color: palette.windowText
 
                             MouseArea {
                                 anchors.fill: parent
@@ -410,11 +406,10 @@ Rectangle {
                             width: eventRow.width
                             height: 65
 
-                            Text {
+                            QQC.Label {
                                 padding: 5
                                 anchors.fill: parent
                                 font.pointSize: 10
-                                color: view.palette.windowText
                                 text: repeaterDelegate.modelData
                                 wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                                 elide: Qt.ElideRight
@@ -439,7 +434,7 @@ Rectangle {
                     sourceSize.height: 48
                     visible: eventMouseArea.isAddItem
                     source: "qrc:/icons/plus.svg"
-                    color: view.palette.windowText
+                    color: palette.windowText
                 }
             }
         }
@@ -510,7 +505,7 @@ Rectangle {
                 contentHeight: contentItem.childrenRect.height
 
                 Column {
-                    Text {
+                    QQC.Label {
                         width: flowListView.width * 0.8
                         id: nameText
                         padding: 3
@@ -518,18 +513,18 @@ Rectangle {
                             pointSize: 12
                             bold: true
                         }
-                        color: view.palette.highlightedText
+                        color: palette.highlightedText
                         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     }
 
-                    Text {
+                    QQC.Label {
                         width: flowListView.width * 0.8
                         id: valueText
                         padding: 3
                         font {
                             pointSize: 10
                         }
-                        color: view.palette.highlightedText
+                        color: palette.highlightedText
                         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
                     }
                 }

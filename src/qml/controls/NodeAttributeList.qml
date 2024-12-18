@@ -75,7 +75,7 @@ Rectangle {
 
                 width: root.maxDelegateWidth()
                 implicitHeight: childrenRect.height
-                color: root.palette.base
+                color: palette.base
 
                 TapHandler {
                     onTapped: function() { // qmllint disable signal-handler-parameters
@@ -90,10 +90,10 @@ Rectangle {
                         Layout.preferredWidth: flickable.width
                         Layout.preferredHeight: 1
                         visible: listViewDelegate.index > 0
-                        color: root.palette.mid
+                        color: palette.mid
                     }
 
-                    Text {
+                    QQC.Label {
                         id: attributeText
 
                         Layout.topMargin: 5
@@ -102,14 +102,13 @@ Rectangle {
                         verticalAlignment: Qt.AlignVCenter
                         text: listViewDelegate.attribute
                         elide: Qt.ElideRight
-                        color: root.palette.windowText
                         font {
                             pointSize: 11
                             bold: true
                         }
                     }
 
-                    Text {
+                    QQC.Label {
                         id: valueLabel
 
                         Layout.leftMargin: 5
@@ -117,7 +116,6 @@ Rectangle {
                         Layout.fillWidth: true
                         verticalAlignment: Qt.AlignVCenter
                         text: listViewDelegate.value
-                        color: attributeText.color
                     }
                 }
             }

@@ -49,14 +49,13 @@ QQC.Menu {
     }
 
     background: Rectangle {
-        color: control.palette.window
+        color: palette.window
     }
 
-    Text {
+    QQC.Label {
         topPadding: 10
         font.pointSize: 20
         font.bold: true
-        color: control.palette.text
         text: "OPC UA Browser"
     }
 

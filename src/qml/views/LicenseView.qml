@@ -46,9 +46,8 @@ Rectangle {
                 width: parent.width
                 spacing: 5
 
-                Text {
+                QQC.Label {
                     width: parent.width
-                    color: view.palette.windowText
                     font {
                         pointSize: 16
                         bold: true
@@ -57,17 +56,15 @@ Rectangle {
                     text: qsTranslate("License", "Copyright")
                 }
 
-                Text {
+                QQC.Label {
                     width: parent.width
-                    color: view.palette.windowText
                     font.pointSize: 12
                     wrapMode: Text.WordWrap
                     text: "Copyright © 2024 basysKom GmbH"
                 }
 
-                Text {
+                QQC.Label {
                     width: parent.width
-                    color: view.palette.windowText
                     font {
                         pointSize: 16
                         bold: true
@@ -76,17 +73,15 @@ Rectangle {
                     text: qsTranslate("License", "License")
                 }
 
-                Text {
+                QQC.Label {
                     width: parent.width
-                    color: view.palette.windowText
                     font.pointSize: 12
                     wrapMode: Text.WordWrap
                     text: qsTranslate("License", "This project is released under the GPLv3.0-or-later License.")
                 }
 
-                Text {
+                QQC.Label {
                     width: parent.width
-                    linkColor: view.palette.link
                     font.pointSize: 12
                     text: ("<a href=\"https://spdx.org/licenses/%1.html\">%2</a>").arg("GPL-3.0-or-later").arg("GNU General Public License v3.0 or later")
                     onLinkActivated: (link) => Qt.openUrlExternally(link)
@@ -102,8 +97,7 @@ Rectangle {
                 width: parent.width
                 spacing: 5
 
-                Text {
-                    color: view.palette.windowText
+                QQC.Label {
                     font {
                         pointSize: 16
                         bold: true
@@ -161,10 +155,8 @@ Rectangle {
                     delegate: ColumnLayout {
                         id: licenseDelegate
 
-                        component TextItem : Text {
+                        component TextItem : QQC.Label {
                             Layout.fillWidth: true
-                            color: view.palette.windowText
-                            linkColor: view.palette.link
                             font.pointSize: 12
                             wrapMode: Text.WordWrap
                         }
@@ -187,7 +179,7 @@ Rectangle {
                             Layout.topMargin: 5
                             Layout.preferredHeight: 1
                             visible: licenseDelegate.index > 0
-                            color: view.palette.windowText
+                            color: palette.windowText
                         }
 
                         TextItem {

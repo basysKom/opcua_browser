@@ -35,10 +35,10 @@ Item {
         width: parent.width - 20
         spacing: 20
 
-        Text {
+        QQC.Label {
             Layout.fillWidth: true
             text: BackEnd.stateText
-            color: view.palette.highlight
+            color: palette.highlight
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         }
 

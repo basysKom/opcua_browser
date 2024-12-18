@@ -18,7 +18,6 @@ Rectangle {
     id: root
 
     property alias references: referenceList.model
-    readonly property color textColor: palette.windowText
 
     function maxDelegateWidth() {
         var max = flickable.width
@@ -64,13 +63,13 @@ Rectangle {
                 implicitHeight: childrenRect.height
                 z: 2
 
-                color: root.palette.window
+                color: palette.window
 
                 RowLayout {
                     spacing: 0
                     height: 30
 
-                    Text {
+                    QQC.Label {
                         Layout.margins: 5
                         Layout.fillHeight: true
                         Layout.preferredWidth: root.width / 3 + 20
@@ -78,16 +77,15 @@ Rectangle {
                         text: qsTranslate("ExpertMode", "Reference")
                         elide: Qt.ElideRight
                         font.bold: true
-                        color: root.textColor
                     }
 
                     Rectangle {
                         Layout.fillHeight: true
                         Layout.preferredWidth: 1
-                        color: root.textColor
+                        color: palette.windowText
                     }
 
-                    Text {
+                    QQC.Label {
                         Layout.margins: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -95,7 +93,6 @@ Rectangle {
                         text: qsTranslate("ExpertMode", "Target")
                         elide: Qt.ElideRight
                         font.bold: true
-                        color: root.textColor
                     }
                 }
             }
@@ -113,7 +110,7 @@ Rectangle {
 
                 width: root.maxDelegateWidth()
                 implicitHeight: childrenRect.height
-                color: ((listViewDelegate.index % 2) == 0) ? root.palette.base : root.palette.alternateBase
+                color: ((listViewDelegate.index % 2) == 0) ? palette.base : palette.alternateBase
 
                 RowLayout {
                     spacing: 0
@@ -125,17 +122,16 @@ Rectangle {
                         sourceSize.width: 15
                         sourceSize.height: 15
                         source: referenceList.model.isForward ? "qrc:/icons/forward.svg" : "qrc:/icons/inverse.svg"
-                        color: root.textColor
+                        color: palette.windowText
                     }
 
-                    Text {
+                    QQC.Label {
                         Layout.margins: 5
                         Layout.fillHeight: true
                         Layout.preferredWidth: root.width / 3
                         verticalAlignment: Qt.AlignVCenter
                         text: listViewDelegate.type
                         elide: Qt.ElideRight
-                        color: root.textColor
 
                         MouseArea {
                             anchors.fill: parent
@@ -147,17 +143,16 @@ Rectangle {
                     Rectangle {
                         Layout.fillHeight: true
                         Layout.preferredWidth: 1
-                        color: root.textColor
+                        color: palette.windowText
                     }
 
-                    Text {
+                    QQC.Label {
                         Layout.margins: 5
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.minimumWidth: root.width - x
                         verticalAlignment: Qt.AlignVCenter
                         text: listViewDelegate.target
-                        color: root.textColor
 
                         MouseArea {
                             anchors.fill: parent

@@ -25,10 +25,9 @@ Column {
 
     spacing: 5
 
-    Text {
+    QQC.Label {
         id: title
 
-        color: root.palette.windowText
         font {
             pointSize: root.titlePointSize
             bold: true
@@ -46,7 +45,7 @@ Column {
 
         height: childrenRect.height
 
-        color: root.palette.light
+        color: palette.light
         radius: 5
 
         ListView {
@@ -73,7 +72,7 @@ Column {
                 radius: 5
                 width: list.width
                 implicitHeight: childrenRect.height
-                color: root.palette.light
+                color: palette.light
                 clip: true
 
                 RowLayout {
@@ -81,7 +80,7 @@ Column {
                     height: 30
                     spacing: 10
 
-                    Text {
+                    QQC.Label {
                         Layout.fillWidth: true
                         Layout.rightMargin: 5
                         Layout.leftMargin: 5
@@ -89,7 +88,6 @@ Column {
                             pointSize: 11
                         }
                         text: listViewDelegate.display
-                        color: root.palette.windowText
                         elide: Text.ElideRight
                     }
 
@@ -98,7 +96,7 @@ Column {
                         sourceSize.width: 24
                         sourceSize.height: 24
                         source: "qrc:/icons/edit.svg"
-                        color: root.palette.windowText
+                        color: palette.windowText
 
                         MouseArea {
                             anchors.fill: parent
@@ -113,7 +111,7 @@ Column {
                         sourceSize.width: 24
                         sourceSize.height: 24
                         source: "qrc:/icons/delete.svg"
-                        color: root.palette.windowText
+                        color: palette.windowText
 
                         MouseArea {
                             anchors.fill: parent
