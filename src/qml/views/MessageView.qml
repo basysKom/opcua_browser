@@ -203,6 +203,7 @@ Flickable {
                 QQC.Button {
                     Layout.preferredWidth: Math.min(view.width / 3, 200)
                     text: view.getMessageCancelText()
+                    highlighted: true
 
                     onClicked: BackEnd.hideMessage()
                 }
@@ -214,6 +215,7 @@ Flickable {
                 QQC.Button {
                     Layout.preferredWidth: Math.min(view.width / 3, 200)
                     text: view.getMessageOkText()
+                    highlighted: true
 
                     onClicked: {
                         switch (BackEnd.messageType) {

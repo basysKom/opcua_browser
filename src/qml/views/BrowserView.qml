@@ -103,7 +103,6 @@ Rectangle {
         anchors.margins: 10
         width: parent.width / 3
         visible: (view.type !== BrowserView.Type.ExpertMode)
-        highlighted: false
         text: qsTranslate("General", "Cancel")
 
         onClicked: view.selectionCancelled()
@@ -117,6 +116,7 @@ Rectangle {
         anchors.margins: 10
         width: parent.width / 3
         visible: (view.type !== BrowserView.Type.ExpertMode) && BackEnd.opcUaModel.hasSelectedItems
+        highlighted: true
         text: qsTranslate("General", "Ok")
 
         onClicked: view.selectionAccepted()
