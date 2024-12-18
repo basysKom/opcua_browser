@@ -47,6 +47,7 @@ Item {
             Layout.fillWidth: true
             text: qsTranslate("Dashboard", "Use last session")
             visible: view.showLastSessionButton && BackEnd.hasLastDashboards
+            highlighted: true
 
             onClicked: view.useLastSession()
         }
@@ -54,6 +55,7 @@ Item {
         QQC.Button {
             Layout.fillWidth: true
             text: qsTranslate("Dashboard", "Add data dashboard")
+            highlighted: true
 
             onClicked: {
                 if ((BackEnd.defaultVariableDashboards.rowCount() === 0)
@@ -68,6 +70,7 @@ Item {
         QQC.Button {
             Layout.fillWidth: true
             text: qsTranslate("Dashboard", "Add event dashboard")
+            highlighted: true
 
             onClicked: {
                 if ((BackEnd.defaultEventDashboards.rowCount() === 0)
@@ -84,6 +87,7 @@ Item {
             text: qsTranslate("Dashboard", "Add alarms and conditions dashboard")
             // ToDo: Add alarms and conditons handling
             visible: false
+            highlighted: true
 
             onClicked: {
 
@@ -100,6 +104,7 @@ Item {
         QQC.Button {
             Layout.fillWidth: true
             text: (view.type === DashboardConfigurationView.Type.SelectVariables) ? qsTranslate("Dashboard", "Select monitored variables manually") : qsTranslate("Dashboard", "Select events manually")
+            highlighted: true
 
             onClicked: {
                 if (view.type === DashboardConfigurationView.Type.SelectVariables) {
@@ -133,6 +138,7 @@ Item {
             QQC.Button {
                 Layout.fillWidth: true
                 text: qsTranslate("Dashboard", "Add dashboard")
+                highlighted: true
 
                 onClicked: {
                     if (view.type === DashboardConfigurationView.Type.SelectVariables) {
@@ -162,6 +168,7 @@ Item {
             QQC.Button {
                 Layout.fillWidth: true
                 text: qsTranslate("Dashboard", "Add dashboard")
+                highlighted: true
 
                 onClicked: {
                     if (view.type === DashboardConfigurationView.Type.SelectVariables) {
@@ -182,7 +189,6 @@ Item {
         anchors.margins: 10
         visible: !selection.visible && !view.showCancelButton
         width: parent.width / 3
-        highlighted: false
         text: qsTranslate("General", "Back")
 
         onClicked: view.type = DashboardConfigurationView.Type.Unknown
@@ -194,7 +200,6 @@ Item {
         anchors.margins: 10
         visible: view.showCancelButton
         width: parent.width / 3
-        highlighted: false
         text: qsTranslate("General", "Cancel")
 
         onClicked: view.viewCanceled()

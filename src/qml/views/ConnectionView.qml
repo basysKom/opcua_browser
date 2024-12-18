@@ -58,6 +58,7 @@ Item {
             QQC.Button {
                 Layout.fillWidth: true
                 text: qsTranslate("Connection", "Discover")
+                highlighted: true
 
                 onClicked: {
                     view.selectedHostUrl = recentConnections.currentText
@@ -123,6 +124,7 @@ Item {
             QQC.Button {
                 Layout.fillWidth: true
                 text: qsTranslate("Connection", "Browse")
+                highlighted: true
 
                 onClicked: BackEnd.getEndpoints(serverListBox.currentIndex)
             }
@@ -197,6 +199,7 @@ Item {
                 QQC.Button {
                     Layout.fillWidth: true
                     text: BackEnd.isConnected ? qsTranslate("Connection", "Disconnect") : qsTranslate("Connection", "Connect")
+                    highlighted: true
 
                     onClicked: {
                         if (BackEnd.isConnected) {
@@ -219,7 +222,6 @@ Item {
         anchors.margins: 10
         visible: serverListBox.model.length > 0
         width: parent.width / 3
-        highlighted: false
         text: qsTranslate("General", "Back")
 
         onClicked: {

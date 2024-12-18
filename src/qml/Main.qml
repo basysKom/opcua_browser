@@ -132,7 +132,6 @@ QQC.ApplicationWindow {
                 QQC.Button {
                     anchors.left: parent.left
                     width: parent.width / 2 - 5
-                    highlighted: false
                     text: qsTranslate("General", "Cancel")
 
                     onClicked: {
@@ -144,6 +143,7 @@ QQC.ApplicationWindow {
                 QQC.Button {
                     anchors.right: parent.right
                     width: parent.width / 2 - 5
+                    highlighted: true
                     text: qsTranslate("General", "Ok")
                     visible: name.text.length > 0
 
